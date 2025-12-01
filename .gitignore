@@ -11,3 +11,9 @@ design/*
 frontend/*
 backend/*
 tests/*
+
+# Playwright persistent browser data
+user-data/
+
+# Debug screenshots
+login-page-debug.png
