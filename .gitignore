@@ -1,0 +1,13 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+
+# Codex & workflow output files
+design/*
+frontend/*
+backend/*
+tests/*
