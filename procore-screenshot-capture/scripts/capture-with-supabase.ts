@@ -24,7 +24,7 @@ import * as dotenv from 'dotenv';
 // Load environment variables from .env file
 dotenv.config();
 
-import { db, Screenshot } from './lib/supabase';
+import { db, Screenshot } from '../lib/supabase';
 
 const OUTPUT_DIR = './procore-app-screenshots';
 const AUTH_FILE = './auth.json';
