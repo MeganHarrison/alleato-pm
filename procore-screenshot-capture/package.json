@@ -1,0 +1,33 @@
+{
+  "name": "procore-screenshot-capture",
+  "version": "1.0.0",
+  "description": "Automated screenshot capture for Procore application analysis with Supabase storage",
+  "scripts": {
+    "setup": "npm install && npx playwright install chromium",
+    "auth": "npx playwright codegen app.procore.com --save-storage=auth.json",
+    "capture:public": "npx playwright test capture-public-docs.ts",
+    "capture:app": "npx playwright test capture-authenticated.ts",
+    "capture:supabase": "npx playwright test capture-with-supabase.ts",
+    "capture:all": "npm run capture:public && npm run capture:supabase",
+    "organize": "node scripts/organize-for-figma.js",
+    "preview": "npx serve procore-app-screenshots",
+    "db:modules": "npx ts-node scripts/query-data.ts modules",
+    "db:progress": "npx ts-node scripts/query-data.ts progress",
+    "db:estimate": "npx ts-node scripts/query-data.ts estimate",
+    "db:screenshots": "npx ts-node scripts/query-data.ts screenshots",
+    "ai:analyze": "npx ts-node scripts/analyze-screenshots.ts analyze",
+    "ai:report": "npx ts-node scripts/analyze-screenshots.ts report"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "dotenv": "^17.2.3",
+    "openai": "^4.20.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "serve": "^14.2.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.3.0"
+  }
+}

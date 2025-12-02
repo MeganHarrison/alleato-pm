@@ -1,0 +1,128 @@
+[
+  {
+    "file": "figma-ready/01-Portfolio/company-company-admin.png",
+    "category": "01-Portfolio",
+    "name": "company-admin",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/01-Portfolio/company-company-directory.png",
+    "category": "01-Portfolio",
+    "name": "company-directory",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/01-Portfolio/company-portfolio.png",
+    "category": "01-Portfolio",
+    "name": "portfolio",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/05-Design-Coordination/design_coordination-coordination-issues.png",
+    "category": "05-Design-Coordination",
+    "name": "design_coordination-coordination-issues",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/05-Design-Coordination/design_coordination-rfi.png",
+    "category": "05-Design-Coordination",
+    "name": "design_coordination-rfi",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/05-Design-Coordination/design_coordination-submittals.png",
+    "category": "05-Design-Coordination",
+    "name": "design_coordination-submittals",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/06-Financials/financials-budget.png",
+    "category": "06-Financials",
+    "name": "financials-budget",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/06-Financials/financials-change-events.png",
+    "category": "06-Financials",
+    "name": "financials-change-events",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/06-Financials/financials-commitments.png",
+    "category": "06-Financials",
+    "name": "financials-commitments",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/06-Financials/financials-invoicing.png",
+    "category": "06-Financials",
+    "name": "financials-invoicing",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/03-Core-Tools/project_management-daily-log.png",
+    "category": "03-Core-Tools",
+    "name": "project_management-daily-log",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/03-Core-Tools/project_management-directory.png",
+    "category": "03-Core-Tools",
+    "name": "project_management-directory",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/03-Core-Tools/project_management-documents.png",
+    "category": "03-Core-Tools",
+    "name": "project_management-documents",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/03-Core-Tools/project_management-drawings.png",
+    "category": "03-Core-Tools",
+    "name": "project_management-drawings",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/03-Core-Tools/project_management-photos.png",
+    "category": "03-Core-Tools",
+    "name": "project_management-photos",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/99-Uncategorized/project_management-project-home.png",
+    "category": "99-Uncategorized",
+    "name": "project_management-home",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/03-Core-Tools/project_management-schedule.png",
+    "category": "03-Core-Tools",
+    "name": "project_management-schedule",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/04-Quality-Safety/quality_safety-incidents.png",
+    "category": "04-Quality-Safety",
+    "name": "quality_safety-incidents",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/04-Quality-Safety/quality_safety-inspections.png",
+    "category": "04-Quality-Safety",
+    "name": "quality_safety-inspections",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/04-Quality-Safety/quality_safety-observations.png",
+    "category": "04-Quality-Safety",
+    "name": "quality_safety-observations",
+    "type": "viewport"
+  },
+  {
+    "file": "figma-ready/04-Quality-Safety/quality_safety-punch-list.png",
+    "category": "04-Quality-Safety",
+    "name": "quality_safety-punch-list",
+    "type": "viewport"
+  }
+]

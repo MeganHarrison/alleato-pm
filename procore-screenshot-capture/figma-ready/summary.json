@@ -1,0 +1,15 @@
+{
+  "totalScreenshots": 21,
+  "byCategory": {
+    "01-Portfolio": 3,
+    "05-Design-Coordination": 3,
+    "06-Financials": 4,
+    "03-Core-Tools": 6,
+    "99-Uncategorized": 1,
+    "04-Quality-Safety": 4
+  },
+  "byType": {
+    "viewport": 21
+  },
+  "generatedAt": "2025-12-02T02:34:44.825Z"
+}
