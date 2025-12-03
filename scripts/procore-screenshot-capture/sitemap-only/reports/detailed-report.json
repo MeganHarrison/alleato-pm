@@ -1,0 +1,2244 @@
+{
+  "metadata": {
+    "generatedAt": "2025-12-02T23:55:52.837Z",
+    "totalPages": 3,
+    "successfulCaptures": 3,
+    "failedCaptures": 0,
+    "categories": [
+      "Financials",
+      "Project Management"
+    ],
+    "totalComponents": 748,
+    "totalTables": 4,
+    "totalForms": 64
+  },
+  "pages": [
+    {
+      "id": "commitments",
+      "name": "Commitments",
+      "url": "https://us02.procore.com/webclients/host/companies/562949953443325/projects/562949954728542/tools/contracts/commitments",
+      "originalUrl": "https://us02.procore.com/562949954728542/project/commitments",
+      "category": "Financials",
+      "title": "Commitments • Goodwill Bart",
+      "timestamp": "2025-12-02T23:13:20.591Z",
+      "screenshotPath": "pages/commitments/screenshot.png",
+      "domPath": "pages/commitments/dom.html",
+      "analysisPath": "pages/commitments/analysis.md",
+      "linkCount": 25,
+      "componentCount": 283,
+      "tableCount": 0,
+      "formCount": 0,
+      "analysis": {
+        "components": {
+          "buttons": 54,
+          "forms": 0,
+          "inputs": 25,
+          "tables": 0,
+          "modals": 0,
+          "navigation": 2,
+          "cards": 0,
+          "lists": 1,
+          "tabs": 0,
+          "dropdowns": 0,
+          "images": 2,
+          "icons": 199
+        },
+        "tableHeaders": [],
+        "hasModals": false,
+        "hasGridSystem": false,
+        "colorCount": 1
+      },
+      "links": [
+        {
+          "text": "Help",
+          "href": "https://support.procore.com/products/online/user-guide/project-level/commitments/tutorials/view-commitments",
+          "rel": "noreferrer"
+        },
+        {
+          "text": "Contracts",
+          "href": "https://us02.procore.com/webclients/host/companies/562949953443325/projects/562949954728542/tools/contracts/commitments",
+          "rel": ""
+        },
+        {
+          "text": "Recycle Bin",
+          "href": "https://us02.procore.com/webclients/host/companies/562949953443325/projects/562949954728542/tools/contracts/commitments/recycled",
+          "rel": ""
+        },
+        {
+          "text": "SC-001",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957166626",
+          "rel": ""
+        },
+        {
+          "text": "SC-003",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957166673",
+          "rel": ""
+        },
+        {
+          "text": "SC-004",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957166702",
+          "rel": ""
+        },
+        {
+          "text": "SC-005",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957167482",
+          "rel": ""
+        },
+        {
+          "text": "SC-006",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957179824",
+          "rel": ""
+        },
+        {
+          "text": "SC-007",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957179879",
+          "rel": ""
+        },
+        {
+          "text": "PO-001",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/purchase_order_contracts/562949957274109",
+          "rel": ""
+        },
+        {
+          "text": "PO-002",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/purchase_order_contracts/562949957274119",
+          "rel": ""
+        },
+        {
+          "text": "SC-008",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957642101",
+          "rel": ""
+        },
+        {
+          "text": "PO-003",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/purchase_order_contracts/562949957643548",
+          "rel": ""
+        },
+        {
+          "text": "SC-009",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957643666",
+          "rel": ""
+        },
+        {
+          "text": "PO-004",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/purchase_order_contracts/562949957643866",
+          "rel": ""
+        },
+        {
+          "text": "SC-010",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957644001",
+          "rel": ""
+        },
+        {
+          "text": "SC-011",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957644081",
+          "rel": ""
+        },
+        {
+          "text": "SC-012",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957702055",
+          "rel": ""
+        },
+        {
+          "text": "SC-013",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957710151",
+          "rel": ""
+        },
+        {
+          "text": "SC-014",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957715119",
+          "rel": ""
+        },
+        {
+          "text": "SC-015",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957720215",
+          "rel": ""
+        },
+        {
+          "text": "SC-016",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957735829",
+          "rel": ""
+        },
+        {
+          "text": "SC-017",
+          "href": "https://us02.procore.com/562949954728542/project/contracts/commitments/work_order_contracts/562949957988967",
+          "rel": ""
+        },
+        {
+          "text": "Terms of Service",
+          "href": "https://www.procore.com/fine-print/terms",
+          "rel": "noreferrer"
+        },
+        {
+          "text": "Privacy Policy",
+          "href": "https://www.procore.com/fine-print/privacy-policy",
+          "rel": "noreferrer"
+        }
+      ],
+      "fullAnalysis": {
+        "components": {
+          "buttons": 54,
+          "forms": 0,
+          "inputs": 25,
+          "tables": 0,
+          "modals": 0,
+          "navigation": 2,
+          "cards": 0,
+          "lists": 1,
+          "tabs": 0,
+          "dropdowns": 0,
+          "images": 2,
+          "icons": 199
+        },
+        "tables": [],
+        "navigation": [
+          {
+            "text": "Contracts",
+            "href": "https://us02.procore.com/webclients/host/companies/562949953443325/projects/562949954728542/tools/contracts/commitments",
+            "isActive": false
+          },
+          {
+            "text": "Recycle Bin",
+            "href": "https://us02.procore.com/webclients/host/companies/562949953443325/projects/562949954728542/tools/contracts/commitments/recycled",
+            "isActive": false
+          }
+        ],
+        "forms": [],
+        "colors": [
+          "rgb(35, 39, 41)"
+        ],
+        "interactive": {
+          "clickable": 129,
+          "hoverable": 1,
+          "focusable": 149
+        },
+        "layout": {
+          "hasHeader": true,
+          "hasFooter": true,
+          "hasSidebar": true,
+          "hasMainContent": true,
+          "gridSystem": false,
+          "flexbox": true
+        },
+        "title": "Commitments • Goodwill Bart",
+        "headings": {
+          "h1": 1,
+          "h2": 1,
+          "h3": 0
+        }
+      }
+    },
+    {
+      "id": "directory",
+      "name": "Directory",
+      "url": "https://us02.procore.com/562949954728542/project/directory/groups/users?page=1&per_page=150&search=&group_by=vendor.id&sort=vendor_name%2Cname",
+      "originalUrl": "https://us02.procore.com/562949954728542/project/directory",
+      "category": "Project Management",
+      "title": "Directory • Goodwill Bart",
+      "timestamp": "2025-12-02T23:13:10.553Z",
+      "screenshotPath": "pages/directory/screenshot.png",
+      "domPath": "pages/directory/dom.html",
+      "analysisPath": "pages/directory/analysis.md",
+      "linkCount": 160,
+      "componentCount": 436,
+      "tableCount": 0,
+      "formCount": 64,
+      "analysis": {
+        "components": {
+          "buttons": 72,
+          "forms": 64,
+          "inputs": 156,
+          "tables": 0,
+          "modals": 0,
+          "navigation": 2,
+          "cards": 0,
+          "lists": 2,
+          "tabs": 0,
+          "dropdowns": 1,
+          "images": 2,
+          "icons": 137
+        },
+        "tableHeaders": [],
+        "hasModals": false,
+        "hasGridSystem": false,
+        "colorCount": 0
+      },
+      "links": [
+        {
+          "text": "Help",
+          "href": "https://support.procore.com/products/online/user-guide/project-level/directory",
+          "rel": ""
+        },
+        {
+          "text": "Alleato Group",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949956955785",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10753964/edit",
+          "rel": ""
+        },
+        {
+          "text": "AA",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10753964/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12640369/edit",
+          "rel": ""
+        },
+        {
+          "text": "AA",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12640369/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/11855884/edit",
+          "rel": ""
+        },
+        {
+          "text": "AC",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/11855884/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8095660/edit",
+          "rel": ""
+        },
+        {
+          "text": "BC",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8095660/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/11722976/edit",
+          "rel": ""
+        },
+        {
+          "text": "JD",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/11722976/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12808642/edit",
+          "rel": ""
+        },
+        {
+          "text": "NJ",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12808642/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13425864/edit",
+          "rel": ""
+        },
+        {
+          "text": "JM",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13425864/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12016026/edit",
+          "rel": ""
+        },
+        {
+          "text": "FN",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12016026/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12675505/edit",
+          "rel": ""
+        },
+        {
+          "text": "CR",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12675505/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8709927/edit",
+          "rel": ""
+        },
+        {
+          "text": "AT",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8709927/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13276000/edit",
+          "rel": ""
+        },
+        {
+          "text": "CT",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13276000/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13832742/edit",
+          "rel": ""
+        },
+        {
+          "text": "AW",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13832742/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Alleato LLC",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949962798415",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13021363/edit",
+          "rel": ""
+        },
+        {
+          "text": "MC",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13021363/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13408722/edit",
+          "rel": ""
+        },
+        {
+          "text": "JC",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13408722/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Budget Blinds (Columbus, IN)",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949964058288",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/4072878/edit",
+          "rel": ""
+        },
+        {
+          "text": "AM",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/4072878/vcard",
+          "rel": ""
+        },
+        {
+          "text": "C&S Heating & Cooling Inc.",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949963561980",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/3437348/edit",
+          "rel": ""
+        },
+        {
+          "text": "JC",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/3437348/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Central Indiana Hardware, CO, Inc",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949958616941",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/9485978/edit",
+          "rel": ""
+        },
+        {
+          "text": "DB",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/9485978/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/4744386/edit",
+          "rel": ""
+        },
+        {
+          "text": "KL",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/4744386/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/7414623/edit",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/3920653/edit",
+          "rel": ""
+        },
+        {
+          "text": "MM",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/3920653/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/11080811/edit",
+          "rel": ""
+        },
+        {
+          "text": "KP",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/11080811/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/4342529/edit",
+          "rel": ""
+        },
+        {
+          "text": "BW",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/4342529/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Central Security and Communications",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949964191277",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/7092788/edit",
+          "rel": ""
+        },
+        {
+          "text": "DL",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/7092788/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Deem, LLC",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949957188072",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1327958/edit",
+          "rel": ""
+        },
+        {
+          "text": "RH",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1327958/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8257144/edit",
+          "rel": ""
+        },
+        {
+          "text": "BR",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8257144/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/5964175/edit",
+          "rel": ""
+        },
+        {
+          "text": "MR",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/5964175/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10856155/edit",
+          "rel": ""
+        },
+        {
+          "text": "KS",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10856155/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Diamond Glassworks and Aluminum Systems",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949958798913",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10028723/edit",
+          "rel": ""
+        },
+        {
+          "text": "DD",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10028723/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1350854/edit",
+          "rel": ""
+        },
+        {
+          "text": "KD",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1350854/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/939221/edit",
+          "rel": ""
+        },
+        {
+          "text": "DL",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/939221/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10292581/edit",
+          "rel": ""
+        },
+        {
+          "text": "HM",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10292581/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/4071554/edit",
+          "rel": ""
+        },
+        {
+          "text": "LP",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/4071554/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/5318173/edit",
+          "rel": ""
+        },
+        {
+          "text": "EW",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/5318173/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Foundation Building Materials, Inc",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949962692216",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/3475860/edit",
+          "rel": ""
+        },
+        {
+          "text": "MR",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/3475860/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Glenmark Construction Co., Inc",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949958459505",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1815782/edit",
+          "rel": ""
+        },
+        {
+          "text": "GK",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1815782/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/11184768/edit",
+          "rel": ""
+        },
+        {
+          "text": "GK",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/11184768/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12034909/edit",
+          "rel": ""
+        },
+        {
+          "text": "NK",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12034909/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Goodwill Industries of Central Indiana, Llc",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949960492361",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/11564530/edit",
+          "rel": ""
+        },
+        {
+          "text": "AM",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/11564530/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12968180/edit",
+          "rel": ""
+        },
+        {
+          "text": "JR",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12968180/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Integrity Concrete Cutters",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949962466218",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1553513/edit",
+          "rel": ""
+        },
+        {
+          "text": "JB",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1553513/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Kenny Glass, Inc.",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949963403262",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/3809550/edit",
+          "rel": ""
+        },
+        {
+          "text": "RC",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/3809550/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/2130899/edit",
+          "rel": ""
+        },
+        {
+          "text": "SC",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/2130899/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Market Ready Interiors Inc",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949962692498",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12044757/edit",
+          "rel": ""
+        },
+        {
+          "text": "JD",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12044757/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/7509114/edit",
+          "rel": ""
+        },
+        {
+          "text": "MG",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/7509114/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8060724/edit",
+          "rel": ""
+        },
+        {
+          "text": "NG",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8060724/vcard",
+          "rel": ""
+        },
+        {
+          "text": "McCray & Sons INC",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949964413333",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/5446832/edit",
+          "rel": ""
+        },
+        {
+          "text": "HM",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/5446832/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1305843/edit",
+          "rel": ""
+        },
+        {
+          "text": "RM",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1305843/vcard",
+          "rel": ""
+        },
+        {
+          "text": "McCurdy Mechanical Corporation",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949960822508",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8619463/edit",
+          "rel": ""
+        },
+        {
+          "text": "CA",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8619463/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/246470/edit",
+          "rel": ""
+        },
+        {
+          "text": "DM",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/246470/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1244386/edit",
+          "rel": ""
+        },
+        {
+          "text": "MN",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1244386/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/788712/edit",
+          "rel": ""
+        },
+        {
+          "text": "BZ",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/788712/vcard",
+          "rel": ""
+        },
+        {
+          "text": "MDC Group",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949964058254",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/4314498/edit",
+          "rel": ""
+        },
+        {
+          "text": "AF",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/4314498/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10886276/edit",
+          "rel": ""
+        },
+        {
+          "text": "M",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10886276/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Quality Roofing Services, Inc",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949959060572",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1814843/edit",
+          "rel": ""
+        },
+        {
+          "text": "GB",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1814843/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/2167727/edit",
+          "rel": ""
+        },
+        {
+          "text": "SD",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/2167727/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10776547/edit",
+          "rel": ""
+        },
+        {
+          "text": "DR",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/10776547/vcard",
+          "rel": ""
+        },
+        {
+          "text": "S & M Painting and Drywall Co.",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949962679058",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/789954/edit",
+          "rel": ""
+        },
+        {
+          "text": "JH",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/789954/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1185706/edit",
+          "rel": ""
+        },
+        {
+          "text": "AR",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/1185706/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Siemens Industry, Inc",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949958521169",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8533660/edit",
+          "rel": ""
+        },
+        {
+          "text": "CL",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/8533660/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Vista Building Services, Inc",
+          "href": "https://us02.procore.com/562949954728542/project/directory/edit_vendor/562949959922910",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/3001478/edit",
+          "rel": ""
+        },
+        {
+          "text": "ES",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/3001478/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/6495078/edit",
+          "rel": ""
+        },
+        {
+          "text": "BA",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/6495078/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12721877/edit",
+          "rel": ""
+        },
+        {
+          "text": "AB",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/12721877/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13473393/edit",
+          "rel": ""
+        },
+        {
+          "text": "SD",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/13473393/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/5638375/edit",
+          "rel": ""
+        },
+        {
+          "text": "RS",
+          "href": "https://us02.procore.com/562949954728542/project/directory/users/5638375/vcard",
+          "rel": ""
+        },
+        {
+          "text": "Add User",
+          "href": "https://us02.procore.com/562949954728542/project/directory/popup_add_person",
+          "rel": ""
+        },
+        {
+          "text": "Add Distribution Group",
+          "href": "https://us02.procore.com/562949954728542/project/directory/popup_add_distribution_group",
+          "rel": ""
+        },
+        {
+          "text": "Bulk Add from Co. Directory",
+          "href": "https://us02.procore.com/562949954728542/project/directory/bulk_add",
+          "rel": ""
+        },
+        {
+          "text": "Download",
+          "href": "https://s3.amazonaws.com/procore-imports-release/ProcoreImportsSetup.exe",
+          "rel": ""
+        },
+        {
+          "text": "Download Validated Template",
+          "href": "https://support.procore.com/references/procore-import-templates",
+          "rel": ""
+        },
+        {
+          "text": "Send Completed Template",
+          "href": "mailto:imports@procore.com?body=Requesting%20user%3A%20bclymer%40alleatogroup.com.%0A%0APlease%20attach%20your%20completed%20user%20import%20template%20to%20this%20email.&subject=Project%20562949954728542%3A%20Goodwill%20Bart%20User%20Import%20Requested",
+          "rel": ""
+        },
+        {
+          "text": "Download Validated Template",
+          "href": "https://support.procore.com/references/procore-import-templates",
+          "rel": ""
+        },
+        {
+          "text": "Download Existing Vendors for Import",
+          "href": "https://us02.procore.com/562949954728542/project/directory/vendors_for_import",
+          "rel": ""
+        },
+        {
+          "text": "Send Completed Template",
+          "href": "mailto:imports@procore.com?body=Requesting%20user%3A%20bclymer%40alleatogroup.com.%0A%0APlease%20attach%20your%20completed%20company%20import%20template%20to%20this%20email.&subject=Project%20562949954728542%3A%20Goodwill%20Bart%20Company%20Import%20Requested",
+          "rel": ""
+        },
+        {
+          "text": "Terms of Service",
+          "href": "https://www.procore.com/fine-print/terms",
+          "rel": ""
+        },
+        {
+          "text": "Privacy Policy",
+          "href": "https://www.procore.com/fine-print/privacy-policy",
+          "rel": ""
+        }
+      ],
+      "fullAnalysis": {
+        "components": {
+          "buttons": 72,
+          "forms": 64,
+          "inputs": 156,
+          "tables": 0,
+          "modals": 0,
+          "navigation": 2,
+          "cards": 0,
+          "lists": 2,
+          "tabs": 0,
+          "dropdowns": 1,
+          "images": 2,
+          "icons": 137
+        },
+        "tables": [],
+        "navigation": [],
+        "forms": [
+          {
+            "index": 1,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/10753964/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/12640369/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 3,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/11855884/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 4,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/8095660/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 5,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/11722976/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 6,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/12808642/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 7,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/13425864/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 8,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/12016026/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 9,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/12675505/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 10,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/8709927/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 11,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/13276000/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 12,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/13832742/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 13,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/13021363/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 14,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/13408722/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 15,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/4072878/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 16,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/3437348/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 17,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/9485978/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 18,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/4744386/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 19,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/7414623/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 20,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/3920653/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 21,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/11080811/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 22,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/4342529/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 23,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/7092788/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 24,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/1327958/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 25,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/8257144/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 26,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/5964175/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 27,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/10856155/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 28,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/10028723/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 29,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/1350854/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 30,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/939221/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 31,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/10292581/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 32,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/4071554/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 33,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/5318173/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 34,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/3475860/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 35,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/1815782/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 36,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/11184768/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 37,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/12034909/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 38,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/11564530/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 39,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/12968180/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 40,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/1553513/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 41,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/3809550/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 42,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/2130899/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 43,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/12044757/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 44,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/7509114/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 45,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/8060724/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 46,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/5446832/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 47,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/1305843/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 48,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/8619463/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 49,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/246470/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 50,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/1244386/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 51,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/788712/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 52,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/4314498/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 53,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/10886276/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 54,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/1814843/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 55,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/2167727/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 56,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/10776547/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 57,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/789954/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 58,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/1185706/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 59,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/8533660/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 60,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/3001478/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 61,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/6495078/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 62,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/12721877/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 63,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/13473393/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          },
+          {
+            "index": 64,
+            "action": "https://us02.procore.com/562949954728542/project/directory/users/5638375/invite",
+            "method": "post",
+            "inputs": [
+              {
+                "type": "hidden",
+                "name": "authenticity_token",
+                "placeholder": "",
+                "required": false
+              }
+            ]
+          }
+        ],
+        "colors": [],
+        "interactive": {
+          "clickable": 240,
+          "hoverable": 7,
+          "focusable": 395
+        },
+        "layout": {
+          "hasHeader": true,
+          "hasFooter": true,
+          "hasSidebar": false,
+          "hasMainContent": true,
+          "gridSystem": false,
+          "flexbox": true
+        },
+        "title": "Directory • Goodwill Bart",
+        "headings": {
+          "h1": 1,
+          "h2": 0,
+          "h3": 0
+        }
+      }
+    },
+    {
+      "id": "project_home",
+      "name": "Project Home",
+      "url": "https://us02.procore.com/562949954728542/project/home",
+      "originalUrl": "https://us02.procore.com/562949954728542/project/home",
+      "category": "Project Management",
+      "title": "Home • Goodwill Bart",
+      "timestamp": "2025-12-02T23:13:04.326Z",
+      "screenshotPath": "pages/project_home/screenshot.png",
+      "domPath": "pages/project_home/dom.html",
+      "analysisPath": "pages/project_home/analysis.md",
+      "linkCount": 14,
+      "componentCount": 29,
+      "tableCount": 4,
+      "formCount": 0,
+      "analysis": {
+        "components": {
+          "buttons": 2,
+          "forms": 0,
+          "inputs": 2,
+          "tables": 4,
+          "modals": 0,
+          "navigation": 1,
+          "cards": 0,
+          "lists": 0,
+          "tabs": 0,
+          "dropdowns": 0,
+          "images": 9,
+          "icons": 11
+        },
+        "tableHeaders": [
+          [
+            "Role",
+            "Name",
+            "Email",
+            "Office",
+            "Mobile"
+          ],
+          [
+            "Overview",
+            "Overdue\n            \n            \n               Next 7 Days\n            \n            \n               > 7 Days",
+            "Total Open"
+          ],
+          [
+            "",
+            "Item Type",
+            "Details",
+            "Status",
+            "Due Date"
+          ],
+          [
+            "Role",
+            "Name",
+            "Email",
+            "Office",
+            "Mobile"
+          ]
+        ],
+        "hasModals": false,
+        "hasGridSystem": false,
+        "colorCount": 1
+      },
+      "links": [
+        {
+          "text": "Help",
+          "href": "https://support.procore.com/products/online/user-guide/project-level/home",
+          "rel": ""
+        },
+        {
+          "text": "Edit",
+          "href": "https://us02.procore.com/562949954728542/project/directory/configure_tab",
+          "rel": ""
+        },
+        {
+          "text": "Schedule",
+          "href": "https://us02.procore.com/562949954728542/project/home/ajax_overview_details",
+          "rel": ""
+        },
+        {
+          "text": "28",
+          "href": "https://us02.procore.com/562949954728542/project/home/ajax_overview_details?domain_name=calendar&filter=overdue&row_models%5B%5D=Task&row_models%5B%5D=TodoItem&row_title=Schedule",
+          "rel": ""
+        },
+        {
+          "text": "Punch List",
+          "href": "https://us02.procore.com/562949954728542/project/home/ajax_overview_details",
+          "rel": ""
+        },
+        {
+          "text": "5",
+          "href": "https://us02.procore.com/562949954728542/project/home/ajax_overview_details?domain_name=punch_list&filter=overdue&row_models%5B%5D=PunchItem&row_title=Punch+List",
+          "rel": ""
+        },
+        {
+          "text": "Meetings",
+          "href": "https://us02.procore.com/562949954728542/project/home/ajax_overview_details",
+          "rel": ""
+        },
+        {
+          "text": "3",
+          "href": "https://us02.procore.com/562949954728542/project/home/ajax_overview_details?domain_name=meetings&filter=overdue&row_models%5B%5D=MeetingTopic&row_title=Meetings",
+          "rel": ""
+        },
+        {
+          "text": "20",
+          "href": "https://us02.procore.com/562949954728542/project/home/ajax_overview_details?domain_name=meetings&filter=open&row_models%5B%5D=MeetingTopic&row_title=Meetings",
+          "rel": ""
+        },
+        {
+          "text": "Goodwill Bart - Current Schedule",
+          "href": "https://us02.procore.com/562949954728542/project/meetings/show_meeting_topic/562949972597337",
+          "rel": ""
+        },
+        {
+          "text": "Click for forecast",
+          "href": "https://us02.procore.com/562949954728542/project/home/ajax_weather_forecast",
+          "rel": ""
+        },
+        {
+          "text": "+ New",
+          "href": "javascript:;",
+          "rel": ""
+        },
+        {
+          "text": "Terms of Service",
+          "href": "https://www.procore.com/fine-print/terms",
+          "rel": ""
+        },
+        {
+          "text": "Privacy Policy",
+          "href": "https://www.procore.com/fine-print/privacy-policy",
+          "rel": ""
+        }
+      ],
+      "fullAnalysis": {
+        "components": {
+          "buttons": 2,
+          "forms": 0,
+          "inputs": 2,
+          "tables": 4,
+          "modals": 0,
+          "navigation": 1,
+          "cards": 0,
+          "lists": 0,
+          "tabs": 0,
+          "dropdowns": 0,
+          "images": 9,
+          "icons": 11
+        },
+        "tables": [
+          {
+            "index": 1,
+            "headers": [
+              "Role",
+              "Name",
+              "Email",
+              "Office",
+              "Mobile"
+            ],
+            "rows": 2,
+            "hasActions": false,
+            "classes": "item_list",
+            "id": null
+          },
+          {
+            "index": 2,
+            "headers": [
+              "Overview",
+              "Overdue\n            \n            \n               Next 7 Days\n            \n            \n               > 7 Days",
+              "Total Open"
+            ],
+            "rows": 3,
+            "hasActions": "ref: <Node>",
+            "classes": "item-list",
+            "id": "562949954728542"
+          },
+          {
+            "index": 3,
+            "headers": [
+              "",
+              "Item Type",
+              "Details",
+              "Status",
+              "Due Date"
+            ],
+            "rows": 1,
+            "hasActions": "ref: <Node>",
+            "classes": "item_list",
+            "id": "my_open_items_tasks"
+          },
+          {
+            "index": 4,
+            "headers": [
+              "Role",
+              "Name",
+              "Email",
+              "Office",
+              "Mobile"
+            ],
+            "rows": 0,
+            "hasActions": false,
+            "classes": "pc-sticky-header-wrapper item_list",
+            "id": null
+          }
+        ],
+        "navigation": [],
+        "forms": [],
+        "colors": [
+          "rgb(68, 71, 73)"
+        ],
+        "interactive": {
+          "clickable": 23,
+          "hoverable": 1,
+          "focusable": 24
+        },
+        "layout": {
+          "hasHeader": true,
+          "hasFooter": true,
+          "hasSidebar": false,
+          "hasMainContent": true,
+          "gridSystem": false,
+          "flexbox": true
+        },
+        "title": "Home • Goodwill Bart",
+        "headings": {
+          "h1": 0,
+          "h2": 6,
+          "h3": 0
+        }
+      }
+    }
+  ],
+  "linkAnalysis": {
+    "totalUniqueLinks": 192,
+    "mostLinkedPages": [
+      {
+        "name": "Directory",
+        "url": "https://us02.procore.com/562949954728542/project/directory/groups/users?page=1&per_page=150&search=&group_by=vendor.id&sort=vendor_name%2Cname",
+        "linkCount": 160
+      },
+      {
+        "name": "Commitments",
+        "url": "https://us02.procore.com/webclients/host/companies/562949953443325/projects/562949954728542/tools/contracts/commitments",
+        "linkCount": 25
+      },
+      {
+        "name": "Project Home",
+        "url": "https://us02.procore.com/562949954728542/project/home",
+        "linkCount": 14
+      }
+    ]
+  },
+  "componentAnalysis": {
+    "mostComponentRichPages": [
+      {
+        "name": "Directory",
+        "url": "https://us02.procore.com/562949954728542/project/directory/groups/users?page=1&per_page=150&search=&group_by=vendor.id&sort=vendor_name%2Cname",
+        "componentCount": 436
+      },
+      {
+        "name": "Commitments",
+        "url": "https://us02.procore.com/webclients/host/companies/562949953443325/projects/562949954728542/tools/contracts/commitments",
+        "componentCount": 283
+      },
+      {
+        "name": "Project Home",
+        "url": "https://us02.procore.com/562949954728542/project/home",
+        "componentCount": 29
+      }
+    ],
+    "pagesWithTables": [
+      {
+        "name": "Project Home",
+        "tableCount": 4,
+        "category": "Project Management"
+      }
+    ],
+    "pagesWithForms": [
+      {
+        "name": "Directory",
+        "formCount": 64,
+        "category": "Project Management"
+      }
+    ],
+    "categoryBreakdown": [
+      {
+        "category": "Financials",
+        "pageCount": 1,
+        "successfulPages": 1,
+        "avgComponents": 283,
+        "totalTables": 0,
+        "totalForms": 0
+      },
+      {
+        "category": "Project Management",
+        "pageCount": 2,
+        "successfulPages": 2,
+        "avgComponents": 233,
+        "totalTables": 4,
+        "totalForms": 64
+      }
+    ]
+  }
+}

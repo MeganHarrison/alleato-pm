@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Edit Helper - Quick capture for AI assistants
+# Makes it easy to capture code and create edit requests
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+NODE_SCRIPT="$SCRIPT_DIR/capture-for-ai.js"
+
+# Check if we're in the project root
+if [ ! -f "CLAUDE.md" ]; then
+    echo "⚠️  Warning: Not in project root. CLAUDE.md not found."
+    echo "Navigate to the alleato-procore directory first."
+fi
+
+# Run the node script with all arguments
+node "$NODE_SCRIPT" "$@"
+
+# If successful and file was created, offer to copy to clipboard
+if [ $? -eq 0 ] && [ -f "edit-request.md" ] && [ -n "$1" ]; then
+    echo ""
+    echo "Quick actions:"
+    echo "  c - Copy to clipboard"
+    echo "  v - View the file"
+    echo "  e - Edit the file"
+    echo "  q - Quit"
+    echo ""
+    read -p "Choose action [c/v/e/q]: " -n 1 -r
+    echo ""
+    
+    case $REPLY in
+        c|C)
+            if command -v pbcopy &> /dev/null; then
+                cat edit-request.md | pbcopy
+                echo "✅ Copied to clipboard! Paste into Claude or Codex."
+            else
+                echo "❌ pbcopy not found (are you on macOS?)"
+            fi
+            ;;
+        v|V)
+            cat edit-request.md
+            ;;
+        e|E)
+            ${EDITOR:-vim} edit-request.md
+            ;;
+        *)
+            ;;
+    esac
+fi

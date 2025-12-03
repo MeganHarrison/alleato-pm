@@ -1,0 +1,19 @@
+I want to build a commitments module for our construction management app. 
+
+It needs to be like Procore's but better - cleaner UI, faster performance. 
+
+Should show all our subcontractor contracts in a table. Need to track the original amount, 
+any changes, and what we've paid so far. 
+
+Users are mostly project managers using iPads on job sites, so it needs to work well on tablets.
+
+Oh and we already have Supabase set up with a commitments table. Use our existing Next.js 
+app with ShadCN components.
+
+Some features I'm thinking:
+- Quick search/filter
+- Export to Excel
+- Link to our existing change orders module
+- Show which commitments are over budget
+
+Make sure it handles the approval workflow - draft, pending approval, approved, complete.
