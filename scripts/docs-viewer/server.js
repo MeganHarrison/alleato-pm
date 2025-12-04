@@ -42,46 +42,44 @@ const htmlTemplate = (title, content, navigation) => `
     <link rel="stylesheet" href="/assets/custom.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📚 Alleato Documentation</h1>
-            <div class="actions">
-                <button id="theme-toggle" title="Toggle theme">🌙</button>
-                <a href="/" class="home-link">Home</a>
-            </div>
-        </header>
-        
-        <div class="layout">
-            <nav class="sidebar">
-                <div class="nav-wrapper">
-                    ${navigation}
+    <div class="app-shell">
+        <aside class="primary-sidebar">
+            <div class="brand">
+                <div>
+                    <p class="brand-label">Alleato</p>
+                    <p class="brand-subtitle">Documentation</p>
                 </div>
+            </div>
+            <nav class="nav-wrapper">
+                <a href="/" class="primary-link">Home</a>
+                ${navigation}
             </nav>
-            
-            <main class="content markdown-body">
-                ${content}
-            </main>
-        </div>
+            <div class="primary-footer">
+                <button id="theme-toggle" title="Toggle theme">🌙</button>
+            </div>
+        </aside>
+
+        <main class="content markdown-body">
+            ${content}
+        </main>
     </div>
-    
+
     <script>
-        // Theme toggle
-        const toggle = document.getElementById('theme-toggle');
         const html = document.documentElement;
+        const toggle = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme') || 'light';
         html.setAttribute('data-theme', currentTheme);
         toggle.textContent = currentTheme === 'light' ? '🌙' : '☀️';
-        
+
         toggle.addEventListener('click', () => {
             const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
             html.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             toggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
         });
-        
-        // Highlight current page in nav
+
         const currentPath = window.location.pathname;
-        const links = document.querySelectorAll('.sidebar a');
+        const links = document.querySelectorAll('.primary-nav a');
         links.forEach(link => {
             if (link.getAttribute('href') === currentPath) {
                 link.classList.add('active');

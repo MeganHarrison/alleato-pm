@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "crawl:simple": "node scripts/crawl-procore-simple.js",
-    "crawl:deep": "node scripts/crawl-procore.js", 
+    "crawl:deep": "node scripts/crawl-procore.js",
     "crawl:sitemap": "node scripts/enhanced-procore-crawl.js",
     "crawl:auto": "node scripts/auto-login-crawl.js",
     "sitemap:generate": "node scripts/generate-sitemap.js",
@@ -14,6 +14,9 @@
     "organize": "node scripts/organize-for-figma.js"
   },
   "dependencies": {
+    "dotenv": "^17.2.3",
+    "jsdom": "^27.2.0",
+    "openai": "^6.9.1",
     "playwright": "^1.40.0"
   },
   "devDependencies": {
@@ -21,7 +24,7 @@
   },
   "keywords": [
     "procore",
-    "web-scraping", 
+    "web-scraping",
     "screenshot",
     "sitemap",
     "playwright"

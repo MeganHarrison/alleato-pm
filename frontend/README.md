@@ -98,6 +98,25 @@ If you wish to just develop locally and not deploy to Vercel, [follow the steps 
 
 > Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
 
+## Agents chat setup
+
+The `/chat` page now talks directly to `client.agents.messages.create()` via `/api/chat`. No ChatKit workflows are required—just a configured agent plus the documents you want the agent to reference.
+
+1. **Configure the agent** – provision an agent or workflow via the OpenAI dashboard/SDK and copy its ID into your backend environment:
+
+   ```env
+   OPENAI_API_KEY=sk-…
+   OPENAI_AGENT_ID=agent-1234
+   ```
+
+   Store these values in `frontend/.env`/`.env.local` so the server route can sign requests with your OpenAI API key and target the right agent.
+
+2. **Keep RAG data in sync** – `/api/chat` runs a text search against `document_metadata` to gather the latest summaries and appends them to the user prompt before hitting the agent. Ensure the Supabase table has up-to-date docs/embeddings (or adjust the query) so retrieval history reflects your newest content.
+
+3. **Inspect the response payload** – the API returns the assistant text plus any retrieved documents. When the agent is not configured, the endpoint will still return a friendly guidance message (e.g., “Set OPENAI_AGENT_ID in your environment…”), and the UI surfaces that text while logging the missing configuration.
+
+4. **Run the dev server and test** – `pnpm dev` keeps the Next server running, and `scripts/playwright/chat-check.js` covers the happy-path UI (input box, prompt buttons, and retrieved-doc cards). The agent conversation automatically updates when your env vars/github docs change, so relaunch the server whenever you tweak keys.
+
 ## Feedback and issues
 
 Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
