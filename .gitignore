@@ -7,10 +7,10 @@ __pycache__/
 .env
 
 # Codex & workflow output files
-design/*
-frontend/*
-backend/*
-tests/*
+# Removed frontend/* to track frontend code
+# design/*
+# backend/*
+# tests/*
 
 # Playwright persistent browser data
 user-data/

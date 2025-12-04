@@ -1,0 +1,99 @@
+'use client';
+
+import * as React from 'react';
+import Link from 'next/link';
+import {
+  Calendar,
+  FileText,
+  HelpCircle,
+  ClipboardCheck,
+  LucideIcon,
+} from 'lucide-react';
+import { MyOpenItem } from '@/types/project-home';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
+interface MyOpenItemsProps {
+  items: MyOpenItem[];
+  projectId: string;
+}
+
+const iconMap: Record<string, LucideIcon> = {
+  Calendar,
+  FileText,
+  HelpCircle,
+  ClipboardCheck,
+};
+
+function formatDate(date: Date | undefined): string {
+  if (!date) return '';
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date);
+}
+
+export function MyOpenItems({ items, projectId }: MyOpenItemsProps) {
+  return (
+    <div className="bg-white rounded-md border border-gray-200">
+      <div className="px-6 py-4 border-b border-gray-200">
+        <h2 className="text-base font-semibold text-gray-900">My Open Items</h2>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[50px]"></TableHead>
+            <TableHead>Item Type</TableHead>
+            <TableHead>Details</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Due Date</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((item) => {
+            const Icon = iconMap[item.icon] || FileText;
+            const href = item.link.replace('[projectId]', projectId);
+            return (
+              <TableRow key={item.id}>
+                <TableCell>
+                  <Icon className="w-5 h-5 text-gray-400" />
+                </TableCell>
+                <TableCell className="text-sm text-gray-600">
+                  {item.itemType}
+                </TableCell>
+                <TableCell>
+                  <Link
+                    href={href}
+                    className="text-blue-600 hover:underline"
+                  >
+                    {item.details}
+                  </Link>
+                </TableCell>
+                <TableCell className="text-sm text-gray-600">
+                  {item.status}
+                </TableCell>
+                <TableCell className="text-right text-sm text-gray-600">
+                  {formatDate(item.dueDate)}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+          {items.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                No open items
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
