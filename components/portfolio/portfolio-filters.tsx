@@ -163,7 +163,7 @@ export function PortfolioFilters({
                 onClick={() => onStageFilterChange(null)}
                 className="flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200"
               >
-                Stage: {stageFilter}
+                {stageLabel}: {stageFilter}
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
@@ -172,7 +172,7 @@ export function PortfolioFilters({
                 onClick={() => onTypeFilterChange(null)}
                 className="flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200"
               >
-                Type: {typeFilter}
+                {typeLabel}: {typeFilter}
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
@@ -192,26 +192,28 @@ export function PortfolioFilters({
       </div>
 
       {/* Right side - View type toggles */}
-      <div className="flex items-center gap-1 border rounded-md p-0.5">
-        {viewTypes.map((type) => {
-          const Icon = type.icon;
-          return (
-            <button
-              key={type.value}
-              onClick={() => onViewTypeChange(type.value)}
-              className={cn(
-                'p-2 rounded transition-colors',
-                viewType === type.value
-                  ? 'bg-gray-100 text-gray-900'
-                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-              )}
-              title={type.label}
-            >
-              <Icon className="w-4 h-4" />
-            </button>
-          );
-        })}
-      </div>
+      {!hideViewToggle && (
+        <div className="flex items-center gap-1 border rounded-md p-0.5">
+          {viewTypes.map((type) => {
+            const Icon = type.icon;
+            return (
+              <button
+                key={type.value}
+                onClick={() => onViewTypeChange(type.value)}
+                className={cn(
+                  'p-2 rounded transition-colors',
+                  viewType === type.value
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                )}
+                title={type.label}
+              >
+                <Icon className="w-4 h-4" />
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
