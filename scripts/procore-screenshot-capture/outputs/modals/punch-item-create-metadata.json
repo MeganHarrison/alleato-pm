@@ -1,0 +1,7 @@
+{
+  "name": "punch-item-create",
+  "url": "https://us02.procore.com/webclients/host/companies/562949953443325/projects/562949954728542/tools/punch_list",
+  "captureDate": "2025-12-08T12:12:59.243Z",
+  "modalFound": false,
+  "error": "Could not trigger modal with any selector"
+}

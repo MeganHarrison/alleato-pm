@@ -1,0 +1,7 @@
+{
+  "name": "submittal-create",
+  "url": "https://us02.procore.com/webclients/host/companies/562949953443325/projects/562949954728542/tools/submittal_log",
+  "captureDate": "2025-12-08T12:12:33.346Z",
+  "modalFound": false,
+  "error": "Could not trigger modal with any selector"
+}

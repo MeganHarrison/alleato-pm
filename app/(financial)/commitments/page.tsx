@@ -1,10 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Download } from 'lucide-react';
+import { Plus, Download, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { CommitmentsTable } from '@/components/financial/commitments/commitments-table';
 import { StatusBadge } from '@/components/financial/shared/status-badge';
 import { useFinancialStore } from '@/lib/stores/financial-store';
@@ -95,8 +101,12 @@ export default function CommitmentsPage() {
     }
   };
 
-  const handleCreateNew = () => {
-    router.push('/protected/financial/commitments/new');
+  const handleCreateSubcontract = () => {
+    router.push('/commitments/subcontracts/new');
+  };
+
+  const handleCreatePurchaseOrder = () => {
+    router.push('/commitments/purchase-orders/new');
   };
 
   const handleEdit = (commitment: Commitment) => {
@@ -209,10 +219,25 @@ export default function CommitmentsPage() {
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
-              <Button onClick={handleCreateNew} size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                New Commitment
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange-hover))] text-white">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create
+                    <ChevronDown className="h-4 w-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleCreateSubcontract}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Subcontract
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleCreatePurchaseOrder}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Purchase Order
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
