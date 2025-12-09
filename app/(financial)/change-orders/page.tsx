@@ -14,19 +14,19 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { ChangeOrder } from '@/types/financial';
 
 export default function ChangeOrdersPage() {
   const router = useRouter();
-  const [changeOrders, setChangeOrders] = useState<any[]>([]);
+  const [changeOrders] = useState<ChangeOrder[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // For now, just set empty data to avoid errors
     setLoading(false);
   }, []);
 
-  const getStatusBadgeVariant = (status: string) => {
+  const getStatusBadgeVariant = (status: string): "success" | "warning" | "secondary" | "default" | "outline" | "destructive" | null | undefined => {
     switch (status) {
       case 'approved':
         return 'success';
@@ -91,10 +91,6 @@ export default function ChangeOrdersPage() {
             <div className="flex justify-center items-center h-64">
               <p className="text-muted-foreground">Loading change orders...</p>
             </div>
-          ) : error ? (
-            <div className="flex justify-center items-center h-64">
-              <p className="text-red-600">Error: {error}</p>
-            </div>
           ) : changeOrders.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">No change orders found</p>
@@ -120,14 +116,14 @@ export default function ChangeOrdersPage() {
                   <TableRow key={order.id} className="cursor-pointer hover:bg-gray-50">
                     <TableCell className="font-medium">{order.number}</TableCell>
                     <TableCell>{order.title}</TableCell>
-                    <TableCell>{order.contract}</TableCell>
+                    <TableCell>{order.commitment?.title || '-'}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusBadgeVariant(order.status)}>
                         {order.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">${order.amount.toFixed(2)}</TableCell>
-                    <TableCell>{order.dueDate || '-'}</TableCell>
+                    <TableCell>{order.executed_date || '-'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

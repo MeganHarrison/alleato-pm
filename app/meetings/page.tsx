@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useInfiniteQuery } from '@/hooks/use-infinite-query';
 import { PortfolioFilters } from '@/components/portfolio';
 import { Button } from '@/components/ui/button';
-import { formatDistanceToNow, format } from 'date-fns';
+import { format } from 'date-fns';
 import { Users, Calendar, Clock, ExternalLink, Settings, ChevronDown, FileText } from 'lucide-react';
 import {
   DropdownMenu,
@@ -180,7 +180,7 @@ export default function MeetingsPage() {
         <PortfolioFilters
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          statusFilter={statusFilter as any}
+          statusFilter={statusFilter}
           onStatusFilterChange={(status) => setStatusFilter(status as StatusFilter)}
           viewType="list"
           onViewTypeChange={() => {}}

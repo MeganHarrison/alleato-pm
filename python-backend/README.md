@@ -1,0 +1,433 @@
+# README Backend RAG Retrieval Architecture
+
+This document describes the retrieval-augmented generation (RAG) strategy implemented for the AI Chief of Staff system, focusing on the retrieval layer and supporting code.
+
+
+## File Structure
+
+```
+alleato_agent_workflow/
+├── alleato_agent_workflow.py  # Main entry point (re-exports all)
+├── embeddings.py              # Embedding generation
+├── guardrails.py              # Safety/PII handling
+├── workflow.py                # Main workflow orchestration
+├── agents/
+│   ├── __init__.py
+│   ├── classification.py      # Query routing
+│   ├── project.py             # Project agent (10 tools)
+│   ├── knowledge_base.py      # KB agent (3 tools)
+│   └── strategist.py          # Strategy agent (9 tools)
+└── tools/
+    ├── __init__.py
+    ├── mcp.py                 # MCP & web search configs
+    ├── vector_search.py       # 5 semantic search tools
+    └── retrieval.py           # 5 standard query tools
+
+```
+
+## Overview
+
+The system uses a **multi-resolution, structured knowledge retrieval** approach that goes beyond simple chunk-based RAG. It combines:
+
+1. **Semantic vector search** across multiple knowledge layers
+2. **Structured knowledge tables** (decisions, risks, opportunities)
+3. **Hierarchical meeting segmentation** (meeting → segment → chunk)
+4. **Query classification** to route to specialized agents
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        User Query                               │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   Classification Agent                          │
+│         Routes to: project | policy | strategic                 │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+            ┌─────────────────┼─────────────────┐
+            ▼                 ▼                 ▼
+     ┌──────────┐      ┌──────────┐      ┌──────────┐
+     │ Project  │      │ Policy   │      │Strategist│
+     │  Agent   │      │  Agent   │      │  Agent   │
+     └──────────┘      └──────────┘      └──────────┘
+            │                 │                 │
+            └─────────────────┼─────────────────┘
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     Vector Search Tools                         │
+│  search_meetings | search_decisions | search_risks | ...        │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      Supabase + pgvector                        │
+│                                                                 │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │meeting_segments │  │   decisions     │  │     risks       │ │
+│  │(summary_embed)  │  │   (embedding)   │  │   (embedding)   │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
+│  │  opportunities  │  │document_chunks  │  │   documents     │ │
+│  │   (embedding)   │  │   (embedding)   │  │   (embedding)   │ │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Database Schema
+
+### Core Tables
+
+| Table | Purpose | Embedding Column |
+|-------|---------|------------------|
+| `meeting_segments` | Semantic segments of meetings with title, summary, decisions, risks, tasks | `summary_embedding` |
+| `decisions` | Extracted decisions with owner, impact, rationale | `embedding` |
+| `risks` | Extracted risks with category, likelihood, impact, mitigation | `embedding` |
+| `opportunities` | Extracted opportunities with type, owner, next steps | `embedding` |
+| `document_chunks` | Raw transcript chunks for detailed retrieval | `embedding` |
+| `documents` | Full document records | `embedding` |
+| `document_metadata` | Meeting metadata (participants, date, summary) | - |
+
+### Key Relationships
+
+```
+document_metadata (1) ──────< meeting_segments (N)
+       │                            │
+       │                            ├──────< decisions (N)
+       │                            ├──────< risks (N)
+       │                            └──────< tasks (N)
+       │
+       └──────< document_chunks (N)
+```
+
+---
+
+## Vector Search Functions (Supabase RPC)
+
+All functions use **cosine similarity** via pgvector's `<=>` operator.
+
+### Basic Search Functions
+
+| Function | Table | Returns |
+|----------|-------|---------|
+| `match_meeting_segments` | `meeting_segments` | id, title, summary, decisions, risks, tasks, similarity |
+| `match_decisions` | `decisions` | id, description, rationale, owner, impact, status, similarity |
+| `match_risks` | `risks` | id, description, category, likelihood, impact, mitigation, similarity |
+| `match_opportunities` | `opportunities` | id, description, type, owner, next_step, similarity |
+| `match_documents_full` | `documents` | id, title, content, source, metadata, similarity |
+
+### Project-Filtered Search Functions
+
+| Function | Purpose |
+|----------|---------|
+| `match_meeting_segments_by_project` | Search segments for specific project(s) |
+| `match_decisions_by_project` | Search decisions for specific project(s) |
+| `match_risks_by_project` | Search risks for specific project(s) |
+
+### Combined Search
+
+| Function | Purpose |
+|----------|---------|
+| `search_all_knowledge` | Search across ALL tables (decisions, risks, opportunities, segments) and return unified results |
+
+### Function Signature Example
+
+```sql
+CREATE FUNCTION match_meeting_segments(
+    query_embedding vector(1536),
+    match_count int DEFAULT 10,
+    match_threshold float DEFAULT 0.5
+)
+RETURNS TABLE (
+    id uuid,
+    metadata_id text,
+    segment_index int,
+    title text,
+    summary text,
+    decisions jsonb,
+    risks jsonb,
+    tasks jsonb,
+    project_ids int[],
+    created_at timestamptz,
+    similarity float
+)
+```
+
+---
+
+## Retrieval Tools (Python)
+
+Located in: `alleato_agent_workflow/alleato_agent_workflow.py`
+
+### Embedding Generation
+
+```python
+async def get_query_embedding_async(query: str) -> List[float]:
+    """Generate embedding for a search query using OpenAI."""
+    client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    response = await client.embeddings.create(
+        model="text-embedding-3-small",
+        input=query
+    )
+    return response.data[0].embedding
+```
+
+```
+source venv/bin/activate
+
+# Stage 1: Parse documents (raw_ingested → segmented) - Creates semantic segments from raw documents
+python backfill_pipeline.py --stage raw_ingested
+
+# Stage 2: Create embeddings (segmented → embedded) - Generates vector embeddings and stores chunks in documents table
+python backfill_pipeline.py --stage segmented --run-until-complete
+
+# Stage 3: Extract structured data (embedded → done) - Extracts tasks, decisions, risks from embedded documents
+python backfill_pipeline.py --stage embedded --run-until-complete
+
+# Monitor status
+python check_pipeline_status.py
+```
+
+### Vector Search Tools
+
+| Tool | Purpose |
+|------|---------|
+| `search_meetings` | Semantic search on meeting segments |
+| `search_decisions` | Semantic search on decisions |
+| `search_risks` | Semantic search on risks |
+| `search_opportunities` | Semantic search on opportunities |
+| `search_all_knowledge` | Combined search across all tables |
+| `get_recent_meetings(limit, project_id)` | Fetch most recent meetings chronologically |
+| `get_tasks_and_decisions(status, project_id, limit)` | List tasks with optional filters |
+| `get_project_insights(project_id, limit)` | Get strategic insights |
+| `list_all_projects()` | List all projects with stats |
+| `get_project_details(project_id)` | Get detailed project info |
+| `company_rag_search` | Searches meeting transcripts using vector/keyword search |
+| `structured_analytics_query` | Queries tasks, insights, and project metadata |
+| `get_recent_meetings` | Gets recent meetings with summaries |
+| `task_writer` | Creates tasks from strategic recommendations |
+| `list_projects` | Lists all projects with activity summaries |
+
+
+#### Standard Retrieval Tools
+
+
+#### `search_meetings(query, limit, project_id)`
+Semantic search across meeting segments.
+
+```python
+@function_tool
+async def search_meetings(query: str, limit: int = 10, project_id: int = None) -> str:
+    supabase = get_supabase_client()
+    embedding = await get_query_embedding_async(query)
+
+    result = supabase.rpc('match_meeting_segments', {
+        'query_embedding': embedding,
+        'match_count': limit,
+        'match_threshold': 0.3
+    }).execute()
+
+    # Format and return results with similarity scores
+```
+
+#### `search_decisions(query, limit, project_id)`
+Semantic search for decisions.
+
+#### `search_risks(query, limit, project_id)`
+Semantic search for risks.
+
+#### `search_opportunities(query, limit, project_id)`
+Semantic search for opportunities.
+
+#### `search_all_knowledge(query, limit)`
+Combined search across all knowledge tables - returns blended results grouped by source.
+
+```python
+@function_tool
+async def search_all_knowledge(query: str, limit: int = 20) -> str:
+    supabase = get_supabase_client()
+    embedding = await get_query_embedding_async(query)
+
+    result = supabase.rpc('search_all_knowledge', {
+        'query_embedding': embedding,
+        'match_count': limit,
+        'match_threshold': 0.35
+    }).execute()
+
+    # Group by source_table and format results
+```
+
+---
+
+## Agent Configuration
+
+### Classification Agent
+Routes queries to the appropriate specialist:
+
+```python
+classification_agent = Agent(
+    name="Classification agent",
+    instructions="""Classify the user's intent into:
+    - "project": specific meetings, tasks, decisions, project status
+    - "policy": company policies, procedures, documentation
+    - "strategic": high-level strategy, market analysis, cross-cutting insights
+    """,
+    model="gpt-4.1-mini",
+    output_type=ClassificationAgentSchema
+)
+```
+
+### Specialist Agents
+
+| Agent | Purpose | Tools |
+|-------|---------|-------|
+| **Project** | Project-specific queries, tasks, decisions | All search tools + project tools |
+| **Internal Knowledge Base** | Policies, procedures, documentation | All search tools |
+| **Strategist** | High-level strategic analysis | All search tools + web search |
+
+---
+
+## Retrieval Flow
+
+### 1. Query Processing
+
+```
+User Query → Classification Agent → Route to Specialist
+```
+
+### 2. Semantic Search
+
+```python
+# 1. Generate query embedding
+embedding = await get_query_embedding_async(query)
+
+# 2. Call appropriate RPC function
+result = supabase.rpc('match_meeting_segments', {
+    'query_embedding': embedding,
+    'match_count': 10,
+    'match_threshold': 0.3  # Minimum similarity
+}).execute()
+
+# 3. Results include similarity scores
+for item in result.data:
+    print(f"{item['title']}: {item['similarity']:.0%} match")
+```
+
+### 3. Result Synthesis
+
+Agents receive formatted results and synthesize into executive-level responses with:
+- Reasoning before conclusions
+- Pattern identification across results
+- Actionable recommendations
+
+---
+
+## Embedding Strategy
+
+### Model
+- **Model**: `text-embedding-3-small` (OpenAI)
+- **Dimensions**: 1536
+- **Similarity**: Cosine distance (`1 - (a <=> b)`)
+
+### What Gets Embedded
+
+| Content Type | Table | Column |
+|--------------|-------|--------|
+| Meeting segment summaries | `meeting_segments` | `summary_embedding` |
+| Decision descriptions | `decisions` | `embedding` |
+| Risk descriptions | `risks` | `embedding` |
+| Opportunity descriptions | `opportunities` | `embedding` |
+| Document chunks | `document_chunks` | `embedding` |
+| Full documents | `documents` | `embedding` |
+
+### Embedding Text Construction
+
+For meeting segments:
+```python
+def create_embedding_text(segment):
+    parts = []
+    if segment.get('title'):
+        parts.append(f"Topic: {segment['title']}")
+    if segment.get('summary'):
+        parts.append(segment['summary'])
+    return "\n".join(parts)
+```
+
+---
+
+## Similarity Thresholds
+
+| Use Case | Threshold | Rationale |
+|----------|-----------|-----------|
+| General search | 0.3 | Broader recall |
+| Combined search | 0.35 | Slightly stricter for blended results |
+| Default functions | 0.5 | Conservative default |
+| Project-filtered | 0.3 | Already filtered by project |
+
+---
+
+## Performance Optimizations
+
+### HNSW Indexes
+
+```sql
+CREATE INDEX meeting_segments_summary_embedding_idx
+ON meeting_segments
+USING hnsw (summary_embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 64);
+
+CREATE INDEX decisions_embedding_idx
+ON decisions
+USING hnsw (embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 64);
+```
+
+### Query Efficiency
+
+1. **Threshold filtering**: Results below threshold excluded at database level
+2. **Limit enforcement**: Results capped at `match_count`
+3. **Project filtering**: Uses GIN index on `project_ids` array
+4. **Cached client**: Supabase client cached via `@lru_cache`
+
+---
+
+## File Locations
+
+| File | Purpose |
+|------|---------|
+| `alleato_agent_workflow/alleato_agent_workflow.py` | Agent definitions, tools, workflow |
+| `supabase_helpers.py` | Database client, helper functions |
+| `scripts/sql/create_vector_search_functions.sql` | RPC function definitions |
+| `scripts/backfill_segment_embeddings.py` | Embedding backfill script |
+| `ingestion/fireflies_pipeline.py` | Meeting ingestion with embedding |
+
+---
+
+## Usage Example
+
+```python
+from alleato_agent_workflow.alleato_agent_workflow import run_workflow
+
+# Run a query through the full workflow
+result = await run_workflow(
+    input_data={"input_as_text": "What are the main risks across our infrastructure projects?"},
+    conversation_history=[]
+)
+
+# Result includes:
+# - Classification (strategic)
+# - Agent response with synthesized insights
+# - Tool calls made (search_risks, search_all_knowledge, etc.)
+```
+
+---
+
+## Future Enhancements
+
+1. **Two-stage retrieval**: Query summaries first, then drill into chunks
+2. **Hybrid search**: Combine vector + keyword search
+3. **Reranking**: Apply cross-encoder reranking to top results
+4. **Temporal weighting**: Boost recent content
+5. **User context**: Filter by user's projects/role

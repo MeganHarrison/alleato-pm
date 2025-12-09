@@ -1,0 +1,248 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - list [ref=e6]:
+        - listitem [ref=e7]:
+          - link "Alleato Alleato" [ref=e8] [cursor=pointer]:
+            - /url: /protected
+            - img "Alleato" [ref=e9]
+            - generic [ref=e10]: Alleato
+      - generic [ref=e11]:
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Dashboard" [ref=e16] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e17]
+              - generic [ref=e21]: Dashboard
+          - listitem [ref=e22]:
+            - link "Projects" [ref=e23] [cursor=pointer]:
+              - /url: /
+              - img [ref=e24]
+              - generic [ref=e26]: Projects
+          - listitem [ref=e27]:
+            - link "Meetings" [ref=e28] [cursor=pointer]:
+              - /url: /meetings
+              - img [ref=e29]
+              - generic [ref=e32]: Meetings
+          - listitem [ref=e33]:
+            - link "Chat" [ref=e34] [cursor=pointer]:
+              - /url: /chat
+              - img [ref=e35]
+              - generic [ref=e39]: Chat
+        - generic [ref=e40]:
+          - generic [ref=e41]: Financial
+          - list [ref=e42]:
+            - listitem [ref=e43]:
+              - link "Contracts" [ref=e44] [cursor=pointer]:
+                - /url: /contracts
+                - img [ref=e45]
+                - generic [ref=e49]: Contracts
+              - button "More" [ref=e50] [cursor=pointer]:
+                - img [ref=e51]
+                - generic [ref=e55]: More
+            - listitem [ref=e56]:
+              - link "Budget" [ref=e57] [cursor=pointer]:
+                - /url: /budget
+                - img [ref=e58]
+                - generic [ref=e62]: Budget
+              - button "More" [ref=e63] [cursor=pointer]:
+                - img [ref=e64]
+                - generic [ref=e68]: More
+            - listitem [ref=e69]:
+              - link "Commitments" [ref=e70] [cursor=pointer]:
+                - /url: /commitments
+                - img [ref=e71]
+                - generic [ref=e77]: Commitments
+              - button "More" [ref=e78] [cursor=pointer]:
+                - img [ref=e79]
+                - generic [ref=e83]: More
+            - listitem [ref=e84]:
+              - link "Change Orders - Create" [ref=e85] [cursor=pointer]:
+                - /url: /#
+                - img [ref=e86]
+                - generic [ref=e90]: Change Orders - Create
+              - button "More" [ref=e91] [cursor=pointer]:
+                - img [ref=e92]
+                - generic [ref=e96]: More
+            - listitem [ref=e97]:
+              - link "Change Events - Create" [ref=e98] [cursor=pointer]:
+                - /url: /#
+                - img [ref=e99]
+                - generic [ref=e102]: Change Events - Create
+              - button "More" [ref=e103] [cursor=pointer]:
+                - img [ref=e104]
+                - generic [ref=e108]: More
+            - listitem [ref=e109]:
+              - link "Direct Costs - Create" [ref=e110] [cursor=pointer]:
+                - /url: /#
+                - img [ref=e111]
+                - generic [ref=e117]: Direct Costs - Create
+              - button "More" [ref=e118] [cursor=pointer]:
+                - img [ref=e119]
+                - generic [ref=e123]: More
+            - listitem [ref=e124]:
+              - link "Invoicing - Create" [ref=e125] [cursor=pointer]:
+                - /url: /#
+                - img [ref=e126]
+                - generic [ref=e128]: Invoicing - Create
+              - button "More" [ref=e129] [cursor=pointer]:
+                - img [ref=e130]
+                - generic [ref=e134]: More
+            - listitem [ref=e135]:
+              - button "More" [ref=e136] [cursor=pointer]:
+                - img [ref=e137]
+                - generic [ref=e141]: More
+        - list [ref=e144]:
+          - listitem [ref=e145]:
+            - link "Settings" [ref=e146] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e147]
+              - generic [ref=e150]: Settings
+          - listitem [ref=e151]:
+            - link "Sitemap" [ref=e152] [cursor=pointer]:
+              - /url: /sitemap-view
+              - img [ref=e153]
+              - generic [ref=e156]: Sitemap
+          - listitem [ref=e157]:
+            - link "Doc Viewer" [ref=e158] [cursor=pointer]:
+              - /url: http://localhost:3333
+              - img [ref=e159]
+              - generic [ref=e165]: Doc Viewer
+          - listitem [ref=e166]:
+            - link "Docs Infinite" [ref=e167] [cursor=pointer]:
+              - /url: /documents-infinite
+              - img [ref=e168]
+              - generic [ref=e172]: Docs Infinite
+          - listitem [ref=e173]:
+            - link "Docs Query" [ref=e174] [cursor=pointer]:
+              - /url: /infinite-query
+              - img [ref=e175]
+              - generic [ref=e178]: Docs Query
+      - list [ref=e180]:
+        - listitem [ref=e181]:
+          - button "CN User user@alleato.com" [ref=e182] [cursor=pointer]:
+            - generic [ref=e184]: CN
+            - generic [ref=e185]:
+              - generic [ref=e186]: User
+              - generic [ref=e187]: user@alleato.com
+            - img [ref=e188]
+    - main [ref=e192]:
+      - generic [ref=e194]:
+        - button "Toggle Sidebar" [ref=e195] [cursor=pointer]:
+          - img
+          - generic [ref=e196]: Toggle Sidebar
+        - navigation "Breadcrumb" [ref=e197]:
+          - generic [ref=e198]:
+            - link "Home" [ref=e199] [cursor=pointer]:
+              - /url: /
+            - img [ref=e200]
+          - generic [ref=e203]: Chat Rag
+        - generic [ref=e204]:
+          - button "Alleato Group | 24-104 - Goodwill Bart" [ref=e205] [cursor=pointer]:
+            - generic [ref=e206]: Alleato Group
+            - generic [ref=e207]: "|"
+            - generic [ref=e208]: 24-104 - Goodwill Bart
+            - img
+          - button "Project Tools Home" [ref=e209] [cursor=pointer]:
+            - generic [ref=e210]: Project Tools
+            - generic [ref=e211]: Home
+            - img
+          - link "Team chat" [ref=e212] [cursor=pointer]:
+            - /url: /team-chat
+            - img
+          - button "Open search" [ref=e213] [cursor=pointer]:
+            - img
+          - button "Toggle notifications sidebar" [ref=e214] [cursor=pointer]:
+            - img
+          - button "Open user menu" [ref=e215] [cursor=pointer]:
+            - img "User avatar" [ref=e217]
+      - generic [ref=e219]:
+        - generic [ref=e220]:
+          - generic [ref=e221]:
+            - img [ref=e222]
+            - heading "Agent View" [level=1] [ref=e225]
+            - generic [ref=e226]: Airline Co.
+          - generic [ref=e227]:
+            - generic [ref=e228]:
+              - heading "Available Agents" [level=2] [ref=e229] [cursor=pointer]:
+                - generic [ref=e230]:
+                  - img [ref=e232]
+                  - generic [ref=e235]: Available Agents
+                - img [ref=e236]
+              - generic [ref=e238]:
+                - generic [ref=e239]:
+                  - generic [ref=e241]: classification
+                  - generic [ref=e242]:
+                    - paragraph [ref=e243]: Classifies user queries
+                    - generic [ref=e244]: Active
+                - generic [ref=e245]:
+                  - generic [ref=e247]: project
+                  - paragraph [ref=e249]: Handles project-related queries
+                - generic [ref=e250]:
+                  - generic [ref=e252]: internal_knowledge
+                  - paragraph [ref=e254]: Searches internal knowledge base
+                - generic [ref=e255]:
+                  - generic [ref=e257]: strategist
+                  - paragraph [ref=e259]: Provides strategic insights
+            - heading "Guardrails" [level=2] [ref=e261] [cursor=pointer]:
+              - generic [ref=e262]:
+                - img [ref=e264]
+                - generic [ref=e266]: Guardrails
+              - img [ref=e267]
+            - heading "Conversation Context" [level=2] [ref=e270] [cursor=pointer]:
+              - generic [ref=e271]:
+                - img [ref=e273]
+                - generic [ref=e275]: Conversation Context
+              - img [ref=e276]
+            - generic [ref=e281]:
+              - heading "Runner Output" [level=2] [ref=e282] [cursor=pointer]:
+                - generic [ref=e283]:
+                  - img [ref=e285]
+                  - generic [ref=e287]: Runner Output
+                - img [ref=e288]
+              - paragraph [ref=e294]: No runner events yet
+        - generic [ref=e295]:
+          - heading "Alleato Intelligence Chat" [level=2] [ref=e297]
+          - iframe [ref=e301]:
+            - generic [ref=f1e4]:
+              - banner [ref=f1e5]:
+                - generic [ref=f1e7]:
+                  - button "New chat" [disabled]:
+                    - generic:
+                      - img
+                  - button "Conversation history" [ref=f1e8] [cursor=pointer]:
+                    - img [ref=f1e10]
+              - main [ref=f1e12]:
+                - generic [ref=f1e15]:
+                  - heading "Hi! I'm Alleato's AI Chief of Staff. I can help you understand patterns across meetings, track decisions and risks, and provide strategic insights. What would you like to know?" [level=2] [ref=f1e16]
+                  - generic [ref=f1e17]:
+                    - button "Recent decisions" [ref=f1e18] [cursor=pointer]:
+                      - generic [ref=f1e21]: Recent decisions
+                      - img [ref=f1e22]
+                    - button "Project risks" [ref=f1e24] [cursor=pointer]:
+                      - generic [ref=f1e27]: Project risks
+                      - img [ref=f1e28]
+                    - button "Pending tasks" [ref=f1e30] [cursor=pointer]:
+                      - generic [ref=f1e33]: Pending tasks
+                      - img [ref=f1e34]
+                    - button "Pattern analysis" [ref=f1e36] [cursor=pointer]:
+                      - generic [ref=f1e39]: Pattern analysis
+                      - img [ref=f1e40]
+              - generic [ref=f1e45]:
+                - button "Choose File" [ref=f1e46]
+                - generic [ref=f1e47]:
+                  - textbox "Ask about meetings, decisions, or projects..." [ref=f1e48]
+                  - button "Send message" [ref=f1e50] [cursor=pointer]:
+                    - img [ref=f1e52]
+  - status [ref=e302]:
+    - generic [ref=e303]:
+      - img [ref=e305]
+      - generic [ref=e307]:
+        - text: Static route
+        - button "Hide static indicator" [ref=e308] [cursor=pointer]:
+          - img [ref=e309]
+  - alert [ref=e312]
+```

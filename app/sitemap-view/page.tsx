@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { staticRoutes, getRoutesByCategory, searchRoutes, SitemapRoute } from '@/lib/sitemap-utils';
 import { cn } from '@/lib/utils';
 
-const categoryIcons: Record<string, any> = {
+const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   'Main': LayoutDashboard,
   'Financial': DollarSign,
   'Project Management': FolderOpen,
@@ -59,7 +59,7 @@ function RouteCard({ route }: { route: SitemapRoute }) {
 function RouteTree({ routes, level = 0 }: { routes: SitemapRoute[], level?: number }) {
   return (
     <div className={cn("space-y-1", level > 0 && "ml-4 border-l-2 border-gray-200 pl-4")}>
-      {routes.map((route, index) => (
+      {routes.map((route) => (
         <div key={route.url}>
           <Link 
             href={route.url}
@@ -152,7 +152,7 @@ export default function SitemapPage() {
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground">No results found for "{searchQuery}"</p>
+            <p className="text-muted-foreground">No results found for &quot;{searchQuery}&quot;</p>
           )}
         </div>
       )}

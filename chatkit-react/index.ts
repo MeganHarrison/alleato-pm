@@ -5,4 +5,4 @@ export {
   type UseChatKitOptions,
   type UseChatKitReturn,
   type ChatKitControl,
-} from "./useChatKit";
+} from "../hooks/useChatKit";

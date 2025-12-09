@@ -28,8 +28,9 @@ export default function NewCommitmentPage() {
       const newCommitment = await response.json();
       addCommitment(newCommitment);
       router.push('/protected/financial/commitments');
-    } catch (error: any) {
-      setError('commitments', error.message);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      setError('commitments', errorMessage);
       throw error; // Re-throw to be handled by the form
     }
   };

@@ -30,6 +30,7 @@ export default function MeetingDetailPage() {
 
   useEffect(() => {
     fetchMeetingData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id])
 
   const fetchMeetingData = async () => {
@@ -69,9 +70,9 @@ export default function MeetingDetailPage() {
       } else {
         setTranscript('No transcript available for this meeting.')
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error fetching meeting:', err)
-      setError(err.message || 'Failed to load meeting')
+      setError(err instanceof Error ? err.message : 'Failed to load meeting')
     } finally {
       setLoading(false)
     }

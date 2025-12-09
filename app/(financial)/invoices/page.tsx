@@ -14,19 +14,19 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Invoice } from '@/types/financial';
 
 export default function InvoicesPage() {
   const router = useRouter();
-  const [invoices, setInvoices] = useState<any[]>([]);
+  const [invoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // For now, just set empty data to avoid errors
     setLoading(false);
   }, []);
 
-  const getStatusBadgeVariant = (status: string) => {
+  const getStatusBadgeVariant = (status: string): "success" | "default" | "secondary" | "outline" | "destructive" | "warning" | null | undefined => {
     switch (status) {
       case 'paid':
         return 'success';
@@ -91,10 +91,6 @@ export default function InvoicesPage() {
             <div className="flex justify-center items-center h-64">
               <p className="text-muted-foreground">Loading invoices...</p>
             </div>
-          ) : error ? (
-            <div className="flex justify-center items-center h-64">
-              <p className="text-red-600">Error: {error}</p>
-            </div>
           ) : invoices.length === 0 ? (
             <div className="text-center py-12">
               <DollarSign className="h-12 w-12 mx-auto text-gray-400 mb-4" />
@@ -121,15 +117,15 @@ export default function InvoicesPage() {
                 {invoices.map((invoice) => (
                   <TableRow key={invoice.id} className="cursor-pointer hover:bg-gray-50">
                     <TableCell className="font-medium">{invoice.number}</TableCell>
-                    <TableCell>{invoice.contract}</TableCell>
-                    <TableCell>{invoice.billingPeriod}</TableCell>
+                    <TableCell>{invoice.commitment?.title || '-'}</TableCell>
+                    <TableCell>{invoice.billing_period_start} - {invoice.billing_period_end}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusBadgeVariant(invoice.status)}>
                         {invoice.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">${invoice.amount.toFixed(2)}</TableCell>
-                    <TableCell>{invoice.dueDate || '-'}</TableCell>
+                    <TableCell className="text-right">${invoice.total_amount.toFixed(2)}</TableCell>
+                    <TableCell>{invoice.due_date || '-'}</TableCell>
                     <TableCell>
                       <Button variant="ghost" size="sm">View</Button>
                     </TableCell>

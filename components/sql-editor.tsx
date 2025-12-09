@@ -38,10 +38,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 interface SqlEditorProps {
   projectRef: string
   initialSql?: string
-  queryKey?: any
+  queryKey?: unknown
   label?: string
-  onResults?: (data: any[] | undefined) => void
-  onRowClick?: (row: any, queryKey?: any) => void
+  onResults?: (data: Record<string, unknown>[] | undefined) => void
+  onRowClick?: (row: Record<string, unknown>, queryKey?: unknown) => void
   hideSql?: boolean
   readOnly?: boolean
   runAutomatically?: boolean
@@ -113,9 +113,9 @@ export function SqlEditor({
       const { sql: generatedSql } = await response.json()
       setSql(generatedSql)
       runQuery({ projectRef, query: generatedSql, readOnly: true })
-    } catch (error: any) {
+    } catch (error) {
       console.error(error)
-      setAiError(error.message)
+      setAiError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
       setIsGeneratingSql(false)
     }
@@ -154,9 +154,9 @@ export function SqlEditor({
     if (noResults && !isSqlVisible && !isNaturalLanguageMode && !readOnly && !isPending) {
       setIsSqlVisible(true)
     }
-  }, [data, isSqlVisible, isNaturalLanguageMode])
+  }, [data, isSqlVisible, isNaturalLanguageMode, readOnly, isPending])
 
-  const serverErrorMessage = (error as any)?.response?.data?.message || ''
+  const serverErrorMessage = (error as unknown as { response?: { data?: { message?: string } } })?.response?.data?.message || ''
   const isReadOnlyError =
     serverErrorMessage.includes('permission denied') || serverErrorMessage.includes('42501')
   const customReadOnlyError = "You can't directly alter your database schema, use chat instead"
@@ -384,7 +384,7 @@ export function SqlEditor({
   )
 }
 
-function QueryResultChart({ data, xAxis, yAxis }: { data: any[]; xAxis: string; yAxis: string }) {
+function QueryResultChart({ data, xAxis, yAxis }: { data: Record<string, unknown>[]; xAxis: string; yAxis: string }) {
   const chartConfig = {
     [yAxis]: {
       label: yAxis,

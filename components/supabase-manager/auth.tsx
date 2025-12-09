@@ -29,18 +29,18 @@ function ProviderSettingsView({
   onSuccess,
 }: {
   projectRef: string
-  schema: z.ZodObject<any> | z.ZodEffects<z.ZodObject<any>>
+  schema: z.ZodObject<z.ZodRawShape> | z.ZodEffects<z.ZodObject<z.ZodRawShape>>
   title: string
-  initialValues: any
+  initialValues: z.infer<z.ZodObject<z.ZodRawShape>>
   onSuccess: () => void
 }) {
   const { mutate: updateAuthConfig, isPending: isUpdatingConfig } = useUpdateAuthConfig()
 
-  const actualSchema = 'shape' in schema ? schema : (schema._def.schema as z.ZodObject<any>)
+  const actualSchema = 'shape' in schema ? schema : (schema._def.schema as z.ZodObject<z.ZodRawShape>)
 
   const handleUpdateAuthConfig = (formData: z.infer<typeof actualSchema>) => {
     const payload = Object.fromEntries(
-      Object.entries(formData).filter(([_, value]) => value !== undefined)
+      Object.entries(formData).filter(([, value]) => value !== undefined)
     )
 
     if (Object.keys(payload).length === 0) {
@@ -71,7 +71,7 @@ function ProviderSettingsView({
         }
         return acc
       },
-      {} as Record<string, any>
+      {} as Record<string, unknown>
     )
 
     return result
@@ -103,7 +103,7 @@ export function AuthManager({ projectRef }: { projectRef: string }) {
 
   const handleUpdateGeneralSettings = (formData: AuthGeneralSettingsSchema) => {
     const payload = Object.fromEntries(
-      Object.entries(formData).filter(([_, value]) => value !== undefined)
+      Object.entries(formData).filter(([, value]) => value !== undefined)
     )
 
     if (Object.keys(payload).length === 0) {
@@ -121,7 +121,7 @@ export function AuthManager({ projectRef }: { projectRef: string }) {
     name: string
     icon: React.ReactNode
     description: string
-    schema: z.ZodObject<any> | z.ZodEffects<z.ZodObject<any>>
+    schema: z.ZodObject<z.ZodRawShape> | z.ZodEffects<z.ZodObject<z.ZodRawShape>>
   }[] = [
     {
       icon: <Mail className="h-4 w-4 text-muted-foreground" />,
@@ -144,7 +144,7 @@ export function AuthManager({ projectRef }: { projectRef: string }) {
   ]
 
   const handleProviderClick = useCallback(
-    (provider: { name: string; schema: z.ZodObject<any> | z.ZodEffects<z.ZodObject<any>> }) => {
+    (provider: { name: string; schema: z.ZodObject<z.ZodRawShape> | z.ZodEffects<z.ZodObject<z.ZodRawShape>> }) => {
       push({
         title: `${provider.name} Provider Settings`,
         component: (
@@ -173,7 +173,7 @@ export function AuthManager({ projectRef }: { projectRef: string }) {
         }
         return acc
       },
-      {} as Record<string, any>
+      {} as Record<string, unknown>
     )
   }, [authConfigData])
 

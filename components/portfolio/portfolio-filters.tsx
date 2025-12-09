@@ -22,14 +22,12 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { PortfolioViewType, StatusFilter } from '@/types/portfolio';
+import { PortfolioViewType } from '@/types/portfolio';
 import { cn } from '@/lib/utils';
 
 interface PortfolioFiltersProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  statusFilter: StatusFilter;
-  onStatusFilterChange: (status: StatusFilter) => void;
   viewType: PortfolioViewType;
   onViewTypeChange: (type: PortfolioViewType) => void;
   onClearFilters?: () => void;
@@ -47,8 +45,6 @@ interface PortfolioFiltersProps {
 export function PortfolioFilters({
   searchQuery,
   onSearchChange,
-  statusFilter,
-  onStatusFilterChange,
   viewType,
   onViewTypeChange,
   onClearFilters,
@@ -62,11 +58,6 @@ export function PortfolioFilters({
   typeLabel = 'Project Type',
   hideViewToggle = false,
 }: PortfolioFiltersProps) {
-  const statusOptions: { value: StatusFilter; label: string }[] = [
-    { value: 'all', label: 'All' },
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'Inactive' },
-  ];
 
   const viewTypes: { value: PortfolioViewType; icon: React.ElementType; label: string }[] = [
     { value: 'list', icon: List, label: 'List View' },

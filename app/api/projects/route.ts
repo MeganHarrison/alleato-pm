@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit
 
     // Filter params
-    const archived = searchParams.get("archived") === "true"
     const search = searchParams.get("search")
     const state = searchParams.get("state")
     const excludeState = searchParams.get("excludeState")

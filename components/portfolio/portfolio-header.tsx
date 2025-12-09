@@ -44,27 +44,6 @@ export function PortfolioHeader({
             <Settings className="w-5 h-5" />
           </button>
         </div>
-
-        <div className="flex items-center gap-2">
-          {/* Export dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-9">
-                <FileText className="w-4 h-4 mr-2" />
-                Export
-                <ChevronDown className="w-4 h-4 ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onExport?.('pdf')}>
-                Export to PDF
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onExport?.('csv')}>
-                Export to CSV
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
       </div>
 
       {/* View tabs */}
@@ -115,15 +94,37 @@ export function PortfolioHeader({
             </DropdownMenu>
           )}
         </nav>
-        
-        {/* Create Project button */}
-        <Button
-          onClick={onCreateProject}
-          className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange-hover))] text-white"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Create Project
-        </Button>
+
+        {/* Export and Create Project buttons */}
+        <div className="flex items-center gap-2">
+          {/* Export dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="h-9">
+                <FileText className="w-4 h-4 mr-2" />
+                Export
+                <ChevronDown className="w-4 h-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onExport?.('pdf')}>
+                Export to PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onExport?.('csv')}>
+                Export to CSV
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Create Project button */}
+          <Button
+            onClick={onCreateProject}
+            className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange-hover))] text-white h-9"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Project
+          </Button>
+        </div>
       </div>
     </div>
   );

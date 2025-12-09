@@ -46,6 +46,7 @@ export default function CommitmentsPage() {
 
   useEffect(() => {
     fetchCommitments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -94,8 +95,8 @@ export default function CommitmentsPage() {
       
       const data = await response.json();
       setCommitments(data.data || []);
-    } catch (error: any) {
-      setError('commitments', error.message);
+    } catch (error) {
+      setError('commitments', error instanceof Error ? error.message : 'Failed to fetch commitments');
     } finally {
       setLoading('commitments', false);
     }
@@ -133,8 +134,8 @@ export default function CommitmentsPage() {
       }
 
       await fetchCommitments(); // Refresh the list
-    } catch (error: any) {
-      alert(`Error: ${error.message}`);
+    } catch (error) {
+      alert(`Error: ${error instanceof Error ? error.message : 'Failed to delete commitment'}`);
     }
   };
 

@@ -5,12 +5,12 @@ import { Plus, Download } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { PrimeContract } from '@/types/financial';
 
 export default function ContractsPage() {
   const router = useRouter();
-  const [contracts, setContracts] = useState<any[]>([]);
+  const [contracts] = useState<PrimeContract[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // For now, just set empty data to avoid errors
@@ -67,17 +67,17 @@ export default function ContractsPage() {
             <div className="flex justify-center items-center h-64">
               <p className="text-muted-foreground">Loading contracts...</p>
             </div>
-          ) : error ? (
-            <div className="flex justify-center items-center h-64">
-              <p className="text-red-600">Error: {error}</p>
-            </div>
-          ) : (
+          ) : contracts.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">No contracts found</p>
               <Button onClick={() => router.push('/contracts/new')}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create your first contract
               </Button>
+            </div>
+          ) : (
+            <div>
+              {/* Contract table will go here when we have data */}
             </div>
           )}
         </div>

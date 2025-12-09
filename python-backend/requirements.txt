@@ -1,0 +1,8 @@
+openai-agents
+openai-chatkit
+openai
+pydantic
+fastapi
+uvicorn
+supabase
+crawl4ai

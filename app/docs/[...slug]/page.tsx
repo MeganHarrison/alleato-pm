@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { cn } from "@/lib/utils";
-import { buildDocTree, DocFile, DocNode, getDocFiles, loadDocContent } from "@/lib/docs";
+import { buildDocTree, DocNode, getDocFiles, loadDocContent } from "@/lib/docs";
 
 type Params = {
   slug?: string[];

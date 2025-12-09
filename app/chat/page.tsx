@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
 const STARTER_PROMPTS = [
   {
@@ -33,7 +33,7 @@ type DocumentHit = {
   date?: string | null;
 };
 
-const INITIAL_ASSISTANT = `Hi there! Ask me about meetings, documents, or workflows and I’ll surface the context and insights you need.`;
+const INITIAL_ASSISTANT = `Hi there! Ask me about meetings, documents, or workflows and I'll surface the context and insights you need.`;
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([
@@ -47,7 +47,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     scrollTargetRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages, status]);
+  });
 
   const sendMessage = useCallback(
     async (messageText: string) => {
@@ -68,7 +68,11 @@ export default function ChatPage() {
       setError(null);
 
       try {
-        const response = await fetch("/api/chat", {
+        // Use the simple RAG endpoint that doesn't require ChatKit streaming protocol
+        console.log('[Chat Debug] Sending message to /rag-chat-simple:', trimmed);
+        console.log('[Chat Debug] Message history length:', nextMessages.length);
+
+        const response = await fetch("/api/rag-chat-simple", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -76,7 +80,12 @@ export default function ChatPage() {
             history: nextMessages.map((m) => ({ role: m.role, text: m.text })),
           }),
         });
+
+        console.log('[Chat Debug] Response status:', response.status, response.statusText);
+        console.log('[Chat Debug] Response headers:', Object.fromEntries(response.headers.entries()));
+
         const payload = await response.json().catch(() => null);
+        console.log('[Chat Debug] Response payload:', payload);
 
         if (!response.ok) {
           const detail =
@@ -95,10 +104,12 @@ export default function ChatPage() {
         setRetrievedDocs(payload?.retrieved ?? []);
         setError(payload?.error ?? null);
       } catch (err) {
+        console.error('[Chat Debug] Error occurred:', err);
         const failureMessage =
           err instanceof Error ? err.message : "Something went wrong.";
         setError(failureMessage);
       } finally {
+        console.log('[Chat Debug] Request completed, setting status to idle');
         setStatus("idle");
       }
     },

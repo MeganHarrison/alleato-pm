@@ -1,0 +1,191 @@
+/**
+ * Shared Types for Fireflies Pipeline Workers
+ */
+
+// -----------------------------------------------------------------------------
+// Environment
+// -----------------------------------------------------------------------------
+
+export interface Env {
+  SUPABASE_URL: string;
+  SUPABASE_SERVICE_KEY: string;
+  OPENAI_API_KEY: string;
+  FIREFLIES_API_KEY: string;
+}
+
+// -----------------------------------------------------------------------------
+// Fireflies API Types
+// -----------------------------------------------------------------------------
+
+export interface FirefliesTranscript {
+  id: string;
+  title: string;
+  date: string;
+  duration: number;
+  organizer_email?: string;
+  participants?: string[];
+  transcript_url?: string;
+  audio_url?: string;
+  video_url?: string;
+  summary?: {
+    overview?: string;
+    action_items?: string[];
+    keywords?: string[];
+  };
+  sentences?: Array<{
+    speaker_name: string;
+    text: string;
+    start_time: number;
+    end_time: number;
+  }>;
+}
+
+// -----------------------------------------------------------------------------
+// Parsed Meeting Types
+// -----------------------------------------------------------------------------
+
+export interface TranscriptLine {
+  timestamp: string;
+  speaker: string;
+  text: string;
+  index: number;
+}
+
+export interface ParsedMeeting {
+  firefliesId: string;
+  title: string;
+  startedAt: string | null;
+  endedAt: string | null;
+  participants: string[];
+  transcriptLines: TranscriptLine[];
+  rawContent: string;
+  firefliesSummary: string;
+  firefliesActions: { text: string }[];
+  firefliesLink?: string;
+  durationMinutes?: number;
+  audioUrl?: string;
+  videoUrl?: string;
+  storageUrl?: string;
+  keywords?: string[];
+  bulletPoints?: string[];
+}
+
+// -----------------------------------------------------------------------------
+// Segment Types
+// -----------------------------------------------------------------------------
+
+export interface MeetingSegment {
+  segmentIndex: number;
+  title: string;
+  startIndex: number;
+  endIndex: number;
+  summary: string;
+  decisions: string[];
+  risks: string[];
+  tasks: string[];
+  summaryEmbedding?: number[];
+}
+
+// -----------------------------------------------------------------------------
+// Chunk Types
+// -----------------------------------------------------------------------------
+
+export interface DocumentChunk {
+  content: string;
+  chunkIndex: number;
+  segmentIndex: number;
+  docType: "chunk" | "segment_summary" | "meeting_summary";
+  contentHash: string;
+  embedding?: number[];
+}
+
+// -----------------------------------------------------------------------------
+// Structured Extraction Types
+// -----------------------------------------------------------------------------
+
+export interface StructuredData {
+  decisions: Array<{
+    description: string;
+    rationale?: string;
+    owner?: string;
+    embedding?: number[];
+  }>;
+  risks: Array<{
+    description: string;
+    category?: string;
+    likelihood?: string;
+    impact?: string;
+    owner?: string;
+    embedding?: number[];
+  }>;
+  tasks: Array<{
+    description: string;
+    assignee?: string;
+    dueDate?: string;
+    priority?: string;
+    embedding?: number[];
+  }>;
+  opportunities: Array<{
+    description: string;
+    type?: string;
+    owner?: string;
+    embedding?: number[];
+  }>;
+}
+
+// -----------------------------------------------------------------------------
+// Pipeline Job Types
+// -----------------------------------------------------------------------------
+
+export type PipelineStage =
+  | "pending"
+  | "raw_ingested"
+  | "segmented"
+  | "chunked"
+  | "embedded"
+  | "structured_extracted"
+  | "done"
+  | "error";
+
+export interface IngestionJob {
+  id: string;
+  fireflies_id: string;
+  metadata_id: string | null;
+  stage: PipelineStage;
+  attempt_count: number;
+  last_attempt_at: string | null;
+  error_message: string | null;
+}
+
+// -----------------------------------------------------------------------------
+// Worker Request/Response Types
+// -----------------------------------------------------------------------------
+
+export interface IngestRequest {
+  markdown: string;
+  filename?: string;
+  projectId?: number;
+  clientId?: number;
+  storageUrl?: string;
+}
+
+export interface ParserRequest {
+  metadataId: string;
+  firefliesId: string;
+}
+
+export interface EmbedderRequest {
+  metadataId: string;
+  firefliesId: string;
+}
+
+export interface ExtractorRequest {
+  metadataId: string;
+  firefliesId: string;
+}
+
+export interface WorkerResponse {
+  success: boolean;
+  error?: string;
+  data?: Record<string, unknown>;
+}

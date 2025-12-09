@@ -1,5 +1,12 @@
 # AGENTS.md
 
+## Tech Stack
+
+- OpenAI ChatKit UI
+- OpenAI Agents SDK
+- Supabase
+- Next.js
+
 ## Rules
 
 ### Always test with playwright in the broswer before stating a task is completge

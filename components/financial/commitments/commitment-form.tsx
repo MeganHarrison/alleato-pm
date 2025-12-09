@@ -146,7 +146,7 @@ export function CommitmentForm({
           <Label htmlFor="status">Status*</Label>
           <Select
             value={watch('status')}
-            onValueChange={(value) => setValue('status', value as any)}
+            onValueChange={(value) => setValue('status', value as CommitmentFormData['status'])}
             disabled={isSubmitting}
           >
             <SelectTrigger>
@@ -183,7 +183,7 @@ export function CommitmentForm({
           <Label htmlFor="accounting_method">Accounting Method*</Label>
           <Select
             value={watch('accounting_method')}
-            onValueChange={(value) => setValue('accounting_method', value as any)}
+            onValueChange={(value) => setValue('accounting_method', value as CommitmentFormData['accounting_method'])}
             disabled={isSubmitting}
           >
             <SelectTrigger>

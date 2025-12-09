@@ -10,14 +10,11 @@ import {
   IconDatabase,
   IconFileAi,
   IconFileDescription,
-  IconFileWord,
   IconFolder,
-  IconHelp,
   IconListDetails,
   IconReport,
   IconSearch,
   IconSettings,
-  IconUsers,
 } from "@tabler/icons-react"
 
 import { NavDocuments } from "@/components/nav-documents"
@@ -36,9 +33,9 @@ import {
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "User",
+    email: "user@alleato.com",
+    avatar: "",
   },
   navMain: [
     {
@@ -124,12 +121,12 @@ const data = {
     {
       title: "Doc Viewer",
       url: "http://localhost:3333",
-      icon: IconSettings,
+      icon: IconReport,
     },
     {
       title: "Docs Infinite",
       url: "/documents-infinite",
-      icon: IconSearch,
+      icon: IconDatabase,
     },
     {
       title: "Docs Query",
@@ -141,7 +138,7 @@ const data = {
     {
       name: "Contracts",
       url: "/contracts",
-      icon: IconDatabase,
+      icon: IconChartBar,
     },
     {
       name: "Budget",
@@ -156,12 +153,12 @@ const data = {
     {
       name: "Change Orders - Create",
       url: "/#",
-      icon: IconReport,
+      icon: IconFileAi,
     },
     {
       name: "Change Events - Create",
       url: "/#",
-      icon: IconReport,
+      icon: IconCamera,
     },
     {
       name: "Direct Costs - Create",
@@ -171,7 +168,7 @@ const data = {
     {
       name: "Invoicing - Create",
       url: "/#",
-      icon: IconReport,
+      icon: IconFolder,
     },
   ],
 }

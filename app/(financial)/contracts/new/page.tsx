@@ -22,7 +22,7 @@ import {
 import { CalendarIcon, ArrowLeft, Info, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -245,7 +245,7 @@ export default function NewPrimeContractPage() {
                       <label htmlFor="file-upload" className="cursor-pointer text-primary hover:underline">
                         Attach Files
                       </label>
-                      {' '}or Drag & Drop
+                      {' '}or Drag &amp; Drop
                     </p>
                     <input
                       id="file-upload"
@@ -272,7 +272,7 @@ export default function NewPrimeContractPage() {
                 <Alert className="bg-blue-50 border-blue-200">
                   <Info className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-sm">
-                    This contract's default accounting method is amount-based. To use budget codes with a unit of measure association, select{' '}
+                    This contract&apos;s default accounting method is amount-based. To use budget codes with a unit of measure association, select{' '}
                     <button
                       type="button"
                       onClick={() => setContractData({ ...contractData, billingMethod: 'unit-quantity' })}
