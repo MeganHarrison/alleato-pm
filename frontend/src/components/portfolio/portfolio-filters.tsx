@@ -111,7 +111,7 @@ export function PortfolioFilters({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-[12rem]">
-            {clientOptions.length ? (
+            {clientOptions?.length ? (
               clientOptions.map((client) => (
                 <DropdownMenuItem key={client} onClick={() => onClientFilterChange(client)}>
                   {client}
@@ -145,7 +145,7 @@ export function PortfolioFilters({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-[12rem]">
-            {phaseOptions.length ? (
+            {phaseOptions?.length ? (
               phaseOptions.map((phase) => (
                 <DropdownMenuItem key={phase} onClick={() => onPhaseFilterChange(phase)}>
                   {phase}
@@ -179,7 +179,7 @@ export function PortfolioFilters({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-[12rem]">
-            {categoryOptions.length ? (
+            {categoryOptions?.length ? (
               categoryOptions.map((category) => (
                 <DropdownMenuItem key={category} onClick={() => onCategoryFilterChange(category)}>
                   {category}

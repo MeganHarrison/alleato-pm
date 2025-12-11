@@ -30,8 +30,8 @@ def load_env(force_reload: bool = False) -> Path:
         return get_env_path()
 
     # Find the root .env file (going up from this file's location)
-    # python-backend/env_loader.py -> root/.env
-    root_dir = Path(__file__).parent.parent
+    # backend/src/services/env_loader.py -> root/.env (3 levels up)
+    root_dir = Path(__file__).parent.parent.parent.parent
     env_path = root_dir / '.env'
 
     if not env_path.exists():
@@ -53,7 +53,7 @@ def load_env(force_reload: bool = False) -> Path:
 
 def get_env_path() -> Path:
     """Get the path to the root .env file without loading it."""
-    root_dir = Path(__file__).parent.parent
+    root_dir = Path(__file__).parent.parent.parent.parent
     env_path = root_dir / '.env'
 
     if not env_path.exists():

@@ -12,7 +12,7 @@ export default defineConfig({
     ['list'],
   ],
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.BASE_URL || 'http://localhost:3003',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'on-first-retry',
@@ -36,6 +36,14 @@ export default defineConfig({
         storageState: 'tests/.auth/user.json',
       },
       dependencies: ['setup'],
+    },
+    // No-auth tests - for visual checks without authentication
+    {
+      name: 'no-auth',
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+      testMatch: /comprehensive-page-check\.spec\.ts|check-styling\.spec\.ts/,
     },
   ],
   outputDir: 'tests/test-results',

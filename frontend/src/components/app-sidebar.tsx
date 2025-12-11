@@ -4,6 +4,7 @@ import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
+  IconApi,
   IconCamera,
   IconChartBar,
   IconDashboard,
@@ -108,6 +109,11 @@ const data = {
     },
   ],
   navSecondary: [
+    {
+      title: "API Docs",
+      url: "/api-docs",
+      icon: IconApi,
+    },
     {
       title: "Settings",
       url: "#",

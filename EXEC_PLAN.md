@@ -1291,6 +1291,80 @@ These instructions appear in every ExecPlan rewrite and must remain consistent.
 
 These 10 rules ensure project traceability and self-consistency.
 
+# TypeScript Type Strategy
+
+## Overview
+The project uses a **single source of truth** approach for TypeScript types:
+1. **Database types are auto-generated** from Supabase schema
+2. **Application types are derived** from database types via `@/types/index.ts`
+3. **Form validation uses Zod schemas** with types inferred via `z.infer<>`
+
+## Type Generation Commands
+```bash
+# Regenerate database types after schema changes
+cd frontend && npm run db:types
+
+# Verify types compile correctly
+cd frontend && npm run typecheck
+```
+
+## Type Hierarchy
+```
+Supabase Schema (source of truth)
+    ↓
+frontend/src/types/database.ts (auto-generated, NEVER edit manually)
+    ↓
+frontend/src/types/index.ts (derived types, helpers, re-exports)
+    ↓
+Application code (import from @/types)
+```
+
+## Key Table Mappings
+
+### Meetings
+**IMPORTANT**: Meeting data is stored in the `document_metadata` table, NOT a dedicated `meetings` table.
+- Table: `document_metadata`
+- Filter by: `type='meeting'` or `source='fireflies'`
+- Type alias: `Meeting` in `@/types/index.ts` maps to `document_metadata` Row type
+
+```typescript
+// Correct usage
+import { Meeting } from '@/types'
+
+// Meeting fields come from document_metadata table:
+// - id, title, summary, participants, project, date
+// - fireflies_link, fireflies_id (for Fireflies.ai integration)
+// - action_items, bullet_points, overview, content
+// - duration_minutes, audio, video
+```
+
+### Other Key Tables
+| Type | Table | Notes |
+|------|-------|-------|
+| `Project` | `projects` | Core project data |
+| `Commitment` | `commitments` | Subcontracts & POs |
+| `ChangeOrder` | `change_orders` | Change management |
+| `Document` | `documents` | General documents |
+| `OwnerInvoice` | `owner_invoices` | Billing records |
+| `MeetingSegment` | `meeting_segments` | Chunked meeting content for RAG |
+
+## Badge Variants
+The Badge component supports these variants: `default`, `secondary`, `destructive`, `outline`, `success`, `warning`
+
+```typescript
+import { getStatusBadgeVariant } from '@/types'
+import { Badge } from '@/components/ui/badge'
+
+<Badge variant={getStatusBadgeVariant(status)}>{status}</Badge>
+```
+
+## Rules
+1. **NEVER manually edit `frontend/src/types/database.ts`** - it's auto-generated
+2. After database schema changes, run `npm run db:types` to regenerate
+3. Import types from `@/types` not directly from `database.ts`
+4. Use Zod schemas for form validation, derive TypeScript types with `z.infer<>`
+5. Run `npm run typecheck` before committing to catch type errors
+
 # Validation Rules for All Work
 Every agent contribution must:
 - Follow the component-first design

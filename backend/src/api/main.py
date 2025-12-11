@@ -35,7 +35,7 @@ from typing import Any, AsyncIterator, Dict, List, Optional
 from uuid import uuid4
 
 # Load environment variables from root .env file
-from env_loader import load_env
+from src.services.env_loader import load_env
 load_env()
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
@@ -67,7 +67,7 @@ from chatkit.types import (
 )
 from chatkit.store import NotFoundError
 
-from main import (
+from src.api.server import (
     AirlineAgentChatContext,
     AirlineAgentContext,
     cancellation_agent,
@@ -77,9 +77,9 @@ from main import (
     seat_booking_agent,
     triage_agent,
 )
-from memory_store import MemoryStore
-from supabase_helpers import SupabaseRagStore
-from ingestion.fireflies_pipeline import FirefliesIngestionPipeline
+from src.services.memory_store import MemoryStore
+from src.services.supabase_helpers import SupabaseRagStore
+from src.services.ingestion.fireflies_pipeline import FirefliesIngestionPipeline
 
 # Import RAG workflow components
 try:
@@ -136,7 +136,14 @@ except ImportError as e:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(
+    title="Alleato Procore Backend API",
+    description="Backend API for RAG-based chat functionality and agent workflows",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json"
+)
 
 # CORS configuration (adjust as needed for deployment)
 app.add_middleware(
@@ -525,10 +532,11 @@ def get_ingestion_pipeline(
     return FirefliesIngestionPipeline(store)
 
 
-@app.post("/chatkit")
+@app.post("/chatkit", tags=["Airline Demo"], summary="ChatKit endpoint for airline demo")
 async def chatkit_endpoint(
     request: Request, server: AirlineServer = Depends(get_server)
 ) -> Response:
+    """Process ChatKit protocol messages for the airline demo chatbot."""
     payload = await request.body()
     result = await server.process(payload, {"request": request})
     if isinstance(result, StreamingResult):
@@ -538,24 +546,30 @@ async def chatkit_endpoint(
     return Response(content=result)
 
 
-@app.get("/chatkit/state")
+@app.get("/chatkit/state", tags=["Airline Demo"], summary="Get airline chat state")
 async def chatkit_state(
     thread_id: str = Query(..., description="ChatKit thread identifier"),
     server: AirlineServer = Depends(get_server),
 ) -> Dict[str, Any]:
+    """Get the current state of an airline chat conversation."""
     return await server.snapshot(thread_id, {"request": None})
 
 
-@app.get("/chatkit/bootstrap")
+@app.get("/chatkit/bootstrap", tags=["Airline Demo"], summary="Bootstrap airline chat")
 async def chatkit_bootstrap(
     server: AirlineServer = Depends(get_server),
 ) -> Dict[str, Any]:
+    """Initialize a new airline chat session with default state."""
     return await server.snapshot(None, {"request": None})
 
 
-@app.get("/health")
+@app.get("/health", tags=["System"], summary="Health check")
 async def health_check() -> Dict[str, Any]:
-    """Health check endpoint that verifies backend status and OpenAI configuration"""
+    """Health check endpoint that verifies backend status and OpenAI configuration.
+    
+    Returns:
+        Dict containing health status, OpenAI configuration status, and RAG availability.
+    """
     openai_key = os.getenv("OPENAI_API_KEY")
     openai_configured = bool(openai_key and len(openai_key) > 0)
     
@@ -644,11 +658,15 @@ def _transform_keys_to_snake_case(obj: Any) -> Any:
         return obj
 
 
-@app.post("/rag-chatkit")
+@app.post("/rag-chatkit", tags=["RAG Chat"], summary="Main RAG ChatKit endpoint (streaming)")
 async def rag_chatkit_endpoint(
     request: Request,
 ):
-    """Main RAG ChatKit endpoint"""
+    """Main RAG ChatKit endpoint that handles streaming chat interactions.
+    
+    This endpoint processes ChatKit protocol messages and returns Server-Sent Events (SSE)
+    for real-time streaming of chat responses.
+    """
     if not RAG_AVAILABLE:
         return Response(
             content='{"error": "RAG workflow not available"}',
@@ -695,9 +713,16 @@ async def rag_chatkit_endpoint(
         )
 
 
-@app.get("/rag-chatkit/state")
-async def get_rag_state(thread_id: str = Query(...)):
-    """Get current RAG conversation state"""
+@app.get("/rag-chatkit/state", tags=["RAG Chat"], summary="Get RAG chat state")
+async def get_rag_state(thread_id: str = Query(..., description="Thread ID for the conversation")):
+    """Get the current state of a RAG chat conversation.
+    
+    Args:
+        thread_id: Unique identifier for the chat thread
+        
+    Returns:
+        Current conversation state including context, agents, and events.
+    """
     if not RAG_AVAILABLE:
         return {"error": "RAG workflow not available"}
 
@@ -705,9 +730,12 @@ async def get_rag_state(thread_id: str = Query(...)):
     return await rag_server.snapshot(thread_id, {"request": None})
 
 
-@app.get("/rag-chatkit/bootstrap")
+@app.get("/rag-chatkit/bootstrap", tags=["RAG Chat"], summary="Bootstrap RAG chat session")
 async def rag_bootstrap():
-    """Bootstrap a new RAG conversation"""
+    """Bootstrap a new RAG conversation with initial state.
+    
+    Creates a new chat session with default context and available agents.
+    """
     if not RAG_AVAILABLE:
         return {"error": "RAG workflow not available"}
 
@@ -781,13 +809,15 @@ def _build_chat_reply(
 # === Alleato REST API ===
 
 
-@app.get("/api/projects")
+@app.get("/api/projects", tags=["Projects"], summary="List all projects")
 def list_projects_api(store: SupabaseRagStore = Depends(get_rag_store)) -> Dict[str, Any]:
+    """Retrieve a list of all projects from the RAG store."""
     return {"projects": store.list_projects()}
 
 
-@app.get("/api/projects/{project_id}")
+@app.get("/api/projects/{project_id}", tags=["Projects"], summary="Get project details")
 def project_detail_api(project_id: int, store: SupabaseRagStore = Depends(get_rag_store)) -> Dict[str, Any]:
+    """Get detailed information about a specific project including tasks and insights."""
     project = store.get_project(project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -796,8 +826,9 @@ def project_detail_api(project_id: int, store: SupabaseRagStore = Depends(get_ra
     return {"project": project, "tasks": tasks, "insights": insights}
 
 
-@app.post("/api/chat")
+@app.post("/api/chat", tags=["RAG Chat"], summary="Simple chat endpoint")
 def rag_chat_api(payload: ChatRequest, store: SupabaseRagStore = Depends(get_rag_store)) -> Dict[str, Any]:
+    """Process a chat message and return relevant information from the knowledge base."""
     if not payload.message.strip():
         raise HTTPException(status_code=422, detail="Message cannot be empty")
     return _build_chat_reply(payload.message, store=store, project_id=payload.project_id, limit=payload.limit)
@@ -808,12 +839,21 @@ class SimpleChatRequest(BaseModel):
     history: Optional[List[Dict[str, str]]] = None
 
 
-@app.post("/api/rag-chat-simple")
+@app.post("/api/rag-chat-simple", tags=["RAG Chat"], summary="Simple RAG chat (non-streaming)")
 async def rag_chat_simple(payload: SimpleChatRequest) -> Dict[str, Any]:
     """
     Simple RAG chat endpoint that uses agents but returns JSON (not streaming).
-    Accepts: {"message": "...", "history": [{"role": "...", "text": "..."}]}
-    Returns: {"response": "...", "retrieved": [...]}
+    
+    This endpoint is suitable for applications that don't support Server-Sent Events.
+    It processes the chat message through the agent workflow and returns the complete response.
+    
+    Request body:
+        - message: The user's chat message
+        - history: Optional conversation history
+        
+    Returns:
+        - response: The assistant's response
+        - retrieved: List of retrieved documents (if any)
     """
     if not RAG_AVAILABLE:
         raise HTTPException(status_code=503, detail="RAG workflow not available")
@@ -873,10 +913,18 @@ async def rag_chat_simple(payload: SimpleChatRequest) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Error processing chat: {str(e)}")
 
 
-@app.post("/api/ingest/fireflies")
+@app.post("/api/ingest/fireflies", tags=["Ingestion"], summary="Ingest Fireflies transcript")
 def ingest_fireflies_endpoint(
     payload: IngestRequest,
     pipeline: FirefliesIngestionPipeline = Depends(get_ingestion_pipeline),
 ) -> Dict[str, Any]:
+    """Ingest a Fireflies meeting transcript into the knowledge base.
+    
+    This endpoint processes Fireflies meeting transcripts and extracts:
+    - Meeting metadata
+    - Transcript chunks for semantic search
+    - Action items and tasks
+    - Key insights and decisions
+    """
     result = pipeline.ingest_file(payload.path, project_id=payload.project_id, dry_run=payload.dry_run)
     return {"result": result.__dict__}

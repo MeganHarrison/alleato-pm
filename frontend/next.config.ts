@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  devIndicators: false,
+  devIndicators: {
+    appIsrStatus: false,
+    buildActivity: false,
+  },
   // Proxy chatkit requests directly to Python backend (like OpenAI demo)
   async rewrites() {
     return [
