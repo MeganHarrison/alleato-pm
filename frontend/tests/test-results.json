@@ -1,0 +1,1604 @@
+{
+  "config": {
+    "configFile": "/Users/meganharrison/Documents/github/alleato-procore/playwright.config.ts",
+    "rootDir": "/Users/meganharrison/Documents/github/alleato-procore/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/meganharrison/Documents/github/alleato-procore/tests/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "setup",
+        "name": "setup",
+        "testDir": "/Users/meganharrison/Documents/github/alleato-procore/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/auth\\.setup\\.ts/"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "/Users/meganharrison/Documents/github/alleato-procore/tests/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/meganharrison/Documents/github/alleato-procore/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.{ts,js}"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "auth.setup.ts",
+      "file": "auth.setup.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "authenticate",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2297,
+                  "error": {
+                    "message": "Error: Mock auth not working - redirected to login",
+                    "stack": "Error: Mock auth not working - redirected to login\n    at /Users/meganharrison/Documents/github/alleato-procore/tests/auth.setup.ts:26:11",
+                    "location": {
+                      "file": "/Users/meganharrison/Documents/github/alleato-procore/tests/auth.setup.ts",
+                      "column": 11,
+                      "line": 26
+                    },
+                    "snippet": "  24 |   // If we're NOT redirected to login, auth is working\n  25 |   if (page.url().includes('/auth/login')) {\n> 26 |     throw new Error('Mock auth not working - redirected to login');\n     |           ^\n  27 |   }\n  28 |\n  29 |   console.log('Auth verified, saving state...');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/meganharrison/Documents/github/alleato-procore/tests/auth.setup.ts",
+                        "column": 11,
+                        "line": 26
+                      },
+                      "message": "Error: Mock auth not working - redirected to login\n\n  24 |   // If we're NOT redirected to login, auth is working\n  25 |   if (page.url().includes('/auth/login')) {\n> 26 |     throw new Error('Mock auth not working - redirected to login');\n     |           ^\n  27 |   }\n  28 |\n  29 |   console.log('Auth verified, saving state...');\n    at /Users/meganharrison/Documents/github/alleato-procore/tests/auth.setup.ts:26:11"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "Authenticating via mock-login...\n"
+                    },
+                    {
+                      "text": "Final URL: http://localhost:3000/mock-login?redirect=/\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-12-09T22:26:22.540Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/Users/meganharrison/Documents/github/alleato-procore/tests/test-results/auth.setup.ts-authenticate-setup/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/meganharrison/Documents/github/alleato-procore/tests/test-results/auth.setup.ts-authenticate-setup/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/meganharrison/Documents/github/alleato-procore/tests/auth.setup.ts",
+                    "column": 11,
+                    "line": 26
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "17e3fe6f4d9d8bd79c6b-60f085b113a677673906",
+          "file": "auth.setup.ts",
+          "line": 7,
+          "column": 6
+        }
+      ]
+    },
+    {
+      "title": "auth-verification.spec.ts",
+      "file": "auth-verification.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Authentication Verification",
+          "file": "auth-verification.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should authenticate and access protected pages",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "6d7821a208c44cc1844f-5d19381066b9140af2d9",
+              "file": "auth-verification.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "should display user information in sidebar",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "6d7821a208c44cc1844f-f39e7c7ccb297a6c67e2",
+              "file": "auth-verification.spec.ts",
+              "line": 41,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "chat-agent-tools.spec.ts",
+      "file": "chat-agent-tools.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Chat Agent Tool Functionality",
+          "file": "chat-agent-tools.spec.ts",
+          "line": 89,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should respond to questions about decisions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "30ca1f5fed0caddf14d0-d1ab888db8acb0cb5348",
+              "file": "chat-agent-tools.spec.ts",
+              "line": 100,
+              "column": 7
+            },
+            {
+              "title": "should respond to questions about risks",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "30ca1f5fed0caddf14d0-d3015e14c63d32b4ade2",
+              "file": "chat-agent-tools.spec.ts",
+              "line": 112,
+              "column": 7
+            },
+            {
+              "title": "should respond to questions about meetings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "30ca1f5fed0caddf14d0-875efe30adf7918f2441",
+              "file": "chat-agent-tools.spec.ts",
+              "line": 123,
+              "column": 7
+            },
+            {
+              "title": "should respond to questions about patterns",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "30ca1f5fed0caddf14d0-619c8a48a0839dd060db",
+              "file": "chat-agent-tools.spec.ts",
+              "line": 134,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Chat Agent Response Quality",
+          "file": "chat-agent-tools.spec.ts",
+          "line": 146,
+          "column": 6,
+          "specs": [
+            {
+              "title": "agent should switch to correct specialist and show it in UI",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "30ca1f5fed0caddf14d0-2d2f6b64de28c979ac22",
+              "file": "chat-agent-tools.spec.ts",
+              "line": 157,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "commitments.spec.ts",
+      "file": "commitments.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Commitments Page",
+          "file": "commitments.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should load commitments page without errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-8291b477f4d0377b3e8b",
+              "file": "commitments.spec.ts",
+              "line": 10,
+              "column": 7
+            },
+            {
+              "title": "should display financial summary cards",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-20b338387749005790da",
+              "file": "commitments.spec.ts",
+              "line": 32,
+              "column": 7
+            },
+            {
+              "title": "should display status overview",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-1b1ad4030f481a5f6798",
+              "file": "commitments.spec.ts",
+              "line": 61,
+              "column": 7
+            },
+            {
+              "title": "should display commitments table with correct columns",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-5580c5b0a70de97e5041",
+              "file": "commitments.spec.ts",
+              "line": 77,
+              "column": 7
+            },
+            {
+              "title": "should show create dropdown menu",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-566576586685f2de227f",
+              "file": "commitments.spec.ts",
+              "line": 105,
+              "column": 7
+            },
+            {
+              "title": "should handle bulk actions menu",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-ec503fbab720a30d9632",
+              "file": "commitments.spec.ts",
+              "line": 126,
+              "column": 7
+            },
+            {
+              "title": "should have working search functionality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-03d0ca902112da758674",
+              "file": "commitments.spec.ts",
+              "line": 150,
+              "column": 7
+            },
+            {
+              "title": "should have working export functionality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-581c43ae4b619bfd27e4",
+              "file": "commitments.spec.ts",
+              "line": 172,
+              "column": 7
+            },
+            {
+              "title": "should display row actions dropdown",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-fd50153debd32992b55f",
+              "file": "commitments.spec.ts",
+              "line": 191,
+              "column": 7
+            },
+            {
+              "title": "should navigate between tabs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-abae91b98815bd9d5d18",
+              "file": "commitments.spec.ts",
+              "line": 222,
+              "column": 7
+            },
+            {
+              "title": "should handle error state gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-e10c28a596b4e27128d5",
+              "file": "commitments.spec.ts",
+              "line": 253,
+              "column": 7
+            },
+            {
+              "title": "should handle empty state gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-a560ffd9338624ea4aba",
+              "file": "commitments.spec.ts",
+              "line": 273,
+              "column": 7
+            },
+            {
+              "title": "should have responsive layout",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4c74a779112fc3bc6aa7-350e225330ce94314ac3",
+              "file": "commitments.spec.ts",
+              "line": 285,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "comprehensive-screenshots.spec.ts",
+      "file": "comprehensive-screenshots.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Comprehensive Application Screenshots",
+          "file": "comprehensive-screenshots.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "capture all major application screens",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "7283759d0318b2f6e9e5-78a075fc65461749db67",
+              "file": "comprehensive-screenshots.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "capture form screens",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "7283759d0318b2f6e9e5-87a0c17894711903ca10",
+              "file": "comprehensive-screenshots.spec.ts",
+              "line": 125,
+              "column": 7
+            },
+            {
+              "title": "capture UI interactions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "7283759d0318b2f6e9e5-4c82050b73f6cab6ee97",
+              "file": "comprehensive-screenshots.spec.ts",
+              "line": 199,
+              "column": 7
+            },
+            {
+              "title": "capture responsive layouts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "7283759d0318b2f6e9e5-3c4f3d9a3461df0e84a7",
+              "file": "comprehensive-screenshots.spec.ts",
+              "line": 271,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "contract-forms.spec.ts",
+      "file": "contract-forms.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Contract Form",
+          "file": "contract-forms.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should load contract form without errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-13e87f330b0cc3a97991",
+              "file": "contract-forms.spec.ts",
+              "line": 10,
+              "column": 7
+            },
+            {
+              "title": "should display all form tabs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-b174b56249531a96648e",
+              "file": "contract-forms.spec.ts",
+              "line": 33,
+              "column": 7
+            },
+            {
+              "title": "should navigate between tabs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-fef3cdebb5a92b956424",
+              "file": "contract-forms.spec.ts",
+              "line": 48,
+              "column": 7
+            },
+            {
+              "title": "should validate required fields",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-3218f2298937d7a5f8e6",
+              "file": "contract-forms.spec.ts",
+              "line": 82,
+              "column": 7
+            },
+            {
+              "title": "should fill and submit contract form",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-7b20efd49f8f784ed0ca",
+              "file": "contract-forms.spec.ts",
+              "line": 96,
+              "column": 7
+            },
+            {
+              "title": "should handle form submission",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-ac00738d8a2fd60af376",
+              "file": "contract-forms.spec.ts",
+              "line": 129,
+              "column": 7
+            },
+            {
+              "title": "should handle cancel action",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-b07ed2f799a0d7688be5",
+              "file": "contract-forms.spec.ts",
+              "line": 152,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Purchase Order Form",
+          "file": "contract-forms.spec.ts",
+          "line": 168,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should load purchase order form without errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-cebccd5fba2d5668f614",
+              "file": "contract-forms.spec.ts",
+              "line": 175,
+              "column": 7
+            },
+            {
+              "title": "should display purchase order form fields",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-65f5d2b08331d570819f",
+              "file": "contract-forms.spec.ts",
+              "line": 193,
+              "column": 7
+            },
+            {
+              "title": "should handle line items",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-9c0fbb5c585f588bd59a",
+              "file": "contract-forms.spec.ts",
+              "line": 214,
+              "column": 7
+            },
+            {
+              "title": "should calculate totals",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-b36209229657984e70b3",
+              "file": "contract-forms.spec.ts",
+              "line": 231,
+              "column": 7
+            },
+            {
+              "title": "should handle file attachments",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-dc97eb45ccacc370194f",
+              "file": "contract-forms.spec.ts",
+              "line": 249,
+              "column": 7
+            },
+            {
+              "title": "should validate purchase order form",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-dcf23972d41a52466d51",
+              "file": "contract-forms.spec.ts",
+              "line": 264,
+              "column": 7
+            },
+            {
+              "title": "should have responsive forms",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "c63ea98922213e259f3d-debff74c6ef32fcb7322",
+              "file": "contract-forms.spec.ts",
+              "line": 280,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "manual-screenshots.spec.ts",
+      "file": "manual-screenshots.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Manual Screenshot Capture",
+          "file": "manual-screenshots.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "capture all page screenshots with manual login",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "6bf5404880ba83f183a8-2a64bba5845d36f11ea0",
+              "file": "manual-screenshots.spec.ts",
+              "line": 5,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "portfolio.spec.ts",
+      "file": "portfolio.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Portfolio Page",
+          "file": "portfolio.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should load portfolio page without errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "34cb4603fa9a5b79d30c-22411e7e351f1383385e",
+              "file": "portfolio.spec.ts",
+              "line": 10,
+              "column": 7
+            },
+            {
+              "title": "should display project table with correct columns",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "34cb4603fa9a5b79d30c-052747d70dbe782ac514",
+              "file": "portfolio.spec.ts",
+              "line": 30,
+              "column": 7
+            },
+            {
+              "title": "should show status indicators with appropriate colors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "34cb4603fa9a5b79d30c-49cd06083897a1da500a",
+              "file": "portfolio.spec.ts",
+              "line": 57,
+              "column": 7
+            },
+            {
+              "title": "should have working search functionality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "34cb4603fa9a5b79d30c-f8dcbadb1d622cdef387",
+              "file": "portfolio.spec.ts",
+              "line": 86,
+              "column": 7
+            },
+            {
+              "title": "should have working filter functionality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "34cb4603fa9a5b79d30c-4c4c8f6c2acc3b494ef6",
+              "file": "portfolio.spec.ts",
+              "line": 108,
+              "column": 7
+            },
+            {
+              "title": "should navigate to project detail on row click",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "34cb4603fa9a5b79d30c-21d7127ba72987b05a67",
+              "file": "portfolio.spec.ts",
+              "line": 138,
+              "column": 7
+            },
+            {
+              "title": "should show proper empty state when no projects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "34cb4603fa9a5b79d30c-70de857c0e7c662476a5",
+              "file": "portfolio.spec.ts",
+              "line": 167,
+              "column": 7
+            },
+            {
+              "title": "should have responsive layout",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "34cb4603fa9a5b79d30c-88bae3062a292aa6a2c9",
+              "file": "portfolio.spec.ts",
+              "line": 178,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "rag-chat-comprehensive.spec.ts",
+      "file": "rag-chat-comprehensive.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "RAG Chat End-to-End Tests",
+          "file": "rag-chat-comprehensive.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "1. Backend health check",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "07693bfd0f8d6d48728e-a9200c3b5522f732f6a0",
+              "file": "rag-chat-comprehensive.spec.ts",
+              "line": 38,
+              "column": 7
+            },
+            {
+              "title": "2. RAG ChatKit bootstrap endpoint",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "07693bfd0f8d6d48728e-a912d0a9aba8fa240e9b",
+              "file": "rag-chat-comprehensive.spec.ts",
+              "line": 54,
+              "column": 7
+            },
+            {
+              "title": "3. Page loads without errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "07693bfd0f8d6d48728e-06907d522e5ff0738a52",
+              "file": "rag-chat-comprehensive.spec.ts",
+              "line": 68,
+              "column": 7
+            },
+            {
+              "title": "4. ChatKit composer is functional",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "07693bfd0f8d6d48728e-54591c54bd6b08d98293",
+              "file": "rag-chat-comprehensive.spec.ts",
+              "line": 97,
+              "column": 7
+            },
+            {
+              "title": "5. Send message and receive response",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "07693bfd0f8d6d48728e-4dc898e6ec488714bf4e",
+              "file": "rag-chat-comprehensive.spec.ts",
+              "line": 126,
+              "column": 7
+            },
+            {
+              "title": "6. Test direct ChatKit API call",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "07693bfd0f8d6d48728e-f75f3f60fa8ce5c6d7fb",
+              "file": "rag-chat-comprehensive.spec.ts",
+              "line": 231,
+              "column": 7
+            },
+            {
+              "title": "7. Validate icon configuration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "07693bfd0f8d6d48728e-389a3b4730eb712eda9a",
+              "file": "rag-chat-comprehensive.spec.ts",
+              "line": 273,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "simple-screenshots.spec.ts",
+      "file": "simple-screenshots.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Simple Screenshot Capture",
+          "file": "simple-screenshots.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "capture main pages",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0e835df0391d679346b8-fed428722abb9bc6e4d6",
+              "file": "simple-screenshots.spec.ts",
+              "line": 12,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "test-login-standalone.spec.ts",
+      "file": "test-login-standalone.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Standalone Login Test",
+          "file": "test-login-standalone.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should test login and capture error if any",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0dffd39bef08bce7d87f-d979da7ad2103a64eaa0",
+              "file": "test-login-standalone.spec.ts",
+              "line": 6,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "test-login.spec.ts",
+      "file": "test-login.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Login Test",
+          "file": "test-login.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should successfully login with valid credentials",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "f6ee8b3a8ea197e09fe3-6949314fa1c25d4fec7b",
+              "file": "test-login.spec.ts",
+              "line": 6,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "test-rag-chatkit.spec.js",
+      "file": "test-rag-chatkit.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "RAG ChatKit Page",
+          "file": "test-rag-chatkit.spec.js",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should load the RAG ChatKit page successfully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3323796dd10dbbd4f9c4-e28b38fbb2d0556f6391",
+              "file": "test-rag-chatkit.spec.js",
+              "line": 6,
+              "column": 3
+            },
+            {
+              "title": "should fetch bootstrap state from API route",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3323796dd10dbbd4f9c4-b7c9cafe256e55a87747",
+              "file": "test-rag-chatkit.spec.js",
+              "line": 33,
+              "column": 3
+            },
+            {
+              "title": "should verify ChatKit configuration uses correct API route",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3323796dd10dbbd4f9c4-b4b7b98da5c631cf8f5b",
+              "file": "test-rag-chatkit.spec.js",
+              "line": 86,
+              "column": 3
+            },
+            {
+              "title": "should handle no routing conflicts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3323796dd10dbbd4f9c4-4532104c1f81d43ee21d",
+              "file": "test-rag-chatkit.spec.js",
+              "line": 110,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-12-09T22:26:22.223Z",
+    "duration": 2763.588,
+    "expected": 0,
+    "skipped": 61,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

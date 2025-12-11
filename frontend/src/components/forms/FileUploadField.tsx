@@ -1,0 +1,193 @@
+"use client"
+
+import * as React from "react"
+import { Upload, X, FileText } from "lucide-react"
+import { FormField } from "./FormField"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+
+interface FileInfo {
+  name: string
+  size: number
+  type: string
+  url?: string
+}
+
+interface FileUploadFieldProps {
+  label: string
+  value?: FileInfo[]
+  onChange?: (files: FileInfo[]) => void
+  accept?: string
+  multiple?: boolean
+  maxFiles?: number
+  maxSize?: number // in bytes
+  error?: string
+  hint?: string
+  required?: boolean
+  fullWidth?: boolean
+  className?: string
+  disabled?: boolean
+}
+
+export function FileUploadField({
+  label,
+  value = [],
+  onChange,
+  accept,
+  multiple = false,
+  maxFiles = 10,
+  maxSize = 10 * 1024 * 1024, // 10MB
+  error,
+  hint,
+  required = false,
+  fullWidth = false,
+  className,
+  disabled = false,
+}: FileUploadFieldProps) {
+  const inputRef = React.useRef<HTMLInputElement>(null)
+  const [dragActive, setDragActive] = React.useState(false)
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true)
+    } else if (e.type === "dragleave") {
+      setDragActive(false)
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(false)
+
+    if (disabled) return
+
+    const files = Array.from(e.dataTransfer.files)
+    handleFiles(files)
+  }
+
+  const handleFiles = (files: File[]) => {
+    const validFiles = files.filter((file) => {
+      if (maxSize && file.size > maxSize) {
+        return false
+      }
+      return true
+    })
+
+    const newFiles: FileInfo[] = validFiles.map((file) => ({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    }))
+
+    if (multiple) {
+      const updatedFiles = [...value, ...newFiles].slice(0, maxFiles)
+      onChange?.(updatedFiles)
+    } else {
+      onChange?.(newFiles.slice(0, 1))
+    }
+  }
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files)
+      handleFiles(files)
+    }
+  }
+
+  const removeFile = (index: number) => {
+    const newFiles = value.filter((_, i) => i !== index)
+    onChange?.(newFiles)
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + " B"
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB"
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB"
+  }
+
+  return (
+    <FormField
+      label={label}
+      error={error}
+      hint={hint}
+      required={required}
+      fullWidth={fullWidth}
+    >
+      <div className="space-y-4">
+        <div
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+          className={cn(
+            "relative rounded-lg border-2 border-dashed p-6 text-center",
+            dragActive && "border-primary bg-primary/5",
+            error && "border-red-300",
+            disabled && "opacity-50 cursor-not-allowed",
+            className
+          )}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            accept={accept}
+            multiple={multiple}
+            onChange={handleFileInput}
+            disabled={disabled}
+            className="sr-only"
+          />
+          <Upload className="mx-auto h-12 w-12 text-gray-400" />
+          <p className="mt-2 text-sm text-gray-600">
+            Drag and drop files here, or{" "}
+            <Button
+              type="button"
+              variant="link"
+              className="p-0 h-auto font-semibold"
+              onClick={() => inputRef.current?.click()}
+              disabled={disabled}
+            >
+              browse
+            </Button>
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            {accept && `Accepted formats: ${accept}`}
+            {maxSize && ` • Max size: ${formatFileSize(maxSize)}`}
+          </p>
+        </div>
+
+        {value.length > 0 && (
+          <ul className="space-y-2">
+            {value.map((file, index) => (
+              <li
+                key={index}
+                className="flex items-center justify-between rounded-lg border p-3"
+              >
+                <div className="flex items-center gap-3">
+                  <FileText className="h-8 w-8 text-gray-400" />
+                  <div>
+                    <p className="text-sm font-medium">{file.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {formatFileSize(file.size)}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeFile(index)}
+                  disabled={disabled}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </FormField>
+  )
+}
