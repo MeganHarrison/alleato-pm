@@ -1,0 +1,20 @@
+export default {
+  index: 'Introduction',
+  'START_BACKEND': 'Start Backend',
+  'API_DOCUMENTATION': 'API Documentation',
+  'GOOGLE_AUTH_SETUP': 'Google Auth Setup',
+  'TESTING': 'Testing',
+  'PAGE-DEVELOPMENT': 'Page Development',
+  'creating-table-pages': 'Creating Table Pages',
+  'db-tables': 'Database Tables',
+  'entity-matrix': 'Entity Matrix',
+  'entity-relationship-diagram': 'ERD',
+  'Procore-Sitemap': 'Procore Sitemap',
+  'workflow-status-map': 'Workflow Status Map',
+  'table-columns-by-page': 'Table Columns by Page',
+  'permission-indicators': 'Permission Indicators',
+  'form-validation-inventory': 'Form Validation',
+  planning: 'Planning',
+  financial: 'Financial Modules',
+  docs: 'Documentation'
+}
