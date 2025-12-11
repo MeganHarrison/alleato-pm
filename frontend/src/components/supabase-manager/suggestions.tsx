@@ -1,13 +1,13 @@
 'use client'
 
-import { useGetSuggestions } from '@/hooks/use-suggestions'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { useGetSuggestions } from '@/registry/default/platform/platform-kit-nextjs/hooks/use-suggestions'
+import { Alert, AlertDescription, AlertTitle } from '@/registry/default/components/ui/alert'
 import { Terminal } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/registry/default/components/ui/badge'
 import { useMemo } from 'react'
 
 import ReactMarkdown from 'react-markdown'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/registry/default/components/ui/skeleton'
 
 export function SuggestionsManager({ projectRef }: { projectRef: string }) {
   const { data: suggestions, isLoading, error } = useGetSuggestions(projectRef)

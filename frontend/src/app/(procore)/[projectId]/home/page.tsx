@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { MoreVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
@@ -8,12 +8,14 @@ import { notFound } from 'next/navigation'
 import { format } from 'date-fns'
 import { Database } from '@/app/types/database.types'
 
-type Project = Database['public']['Tables']['projects']['Row']
-type Insight = Database['public']['Tables']['insights']['Row']
-type Task = Database['public']['Tables']['project_tasks']['Row']
-type Meeting = Database['public']['Tables']['document_metadata']['Row']
-type DailyLog = Database['public']['Tables']['daily_logs']['Row']
-type ChangeOrder = Database['public']['Tables']['change_orders']['Row']
+// Type definitions - kept for reference and type safety
+// type Project = Database['public']['Tables']['projects']['Row']
+// type Insight = Database['public']['Tables']['ai_insights']['Row']
+// type Task = Database['public']['Tables']['project_tasks']['Row']
+// type Meeting = Database['public']['Tables']['document_metadata']['Row']
+// type ChangeOrder = Database['public']['Tables']['change_orders']['Row']
+// type RFI = Database['public']['Tables']['rfis']['Row']
+// type DailyLog = Database['public']['Tables']['daily_logs']['Row']
 
 export default async function ProjectHomePage({ 
   params 
@@ -27,11 +29,11 @@ export default async function ProjectHomePage({
   const [
     projectResult,
     insightsResult,
-    rfisResult,
     tasksResult,
     meetingsResult,
-    reportsResult,
-    changeOrdersResult
+    changeOrdersResult,
+    rfisResult,
+    dailyLogsResult
   ] = await Promise.all([
     // Fetch main project data
     supabase
@@ -40,23 +42,13 @@ export default async function ProjectHomePage({
       .eq('id', projectId)
       .single(),
     
-    // Fetch project insights
+    // Fetch project insights from ai_insights table
     supabase
-      .from('insights')
+      .from('ai_insights')
       .select('*')
-      .contains('project_ids', [projectId])
+      .eq('project_id', projectId)
       .order('created_at', { ascending: false })
       .limit(3),
-    
-    // Fetch RFIs (using insights table with type filter if RFI table doesn't exist)
-    supabase
-      .from('insights')
-      .select('*')
-      .contains('project_ids', [projectId])
-      .eq('category', 'question')
-      .eq('status', 'open')
-      .order('created_at', { ascending: false })
-      .limit(5),
     
     // Fetch tasks
     supabase
@@ -75,23 +67,28 @@ export default async function ProjectHomePage({
       .order('date', { ascending: false })
       .limit(5),
     
-    // Fetch reports (daily recaps)
+    // Fetch change orders
+    supabase
+      .from('change_orders')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false })
+      .limit(5),
+    
+    // Fetch RFIs
+    supabase
+      .from('rfis')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false })
+      .limit(5),
+    
+    // Fetch daily logs/reports
     supabase
       .from('daily_logs')
       .select('*')
       .eq('project_id', projectId)
       .order('log_date', { ascending: false })
-      .limit(5),
-    
-    // Fetch change orders
-    supabase
-      .from('change_orders')
-      .select(`
-        *,
-        change_events!inner(project_id)
-      `)
-      .eq('change_events.project_id', projectId)
-      .order('created_at', { ascending: false })
       .limit(5)
   ])
 
@@ -101,11 +98,11 @@ export default async function ProjectHomePage({
 
   const project = projectResult.data
   const insights = insightsResult.data || []
-  const rfis = rfisResult.data || []
   const tasks = tasksResult.data || []
   const meetings = meetingsResult.data || []
-  const reports = reportsResult.data || []
   const changeOrders = changeOrdersResult.data || []
+  const rfis = rfisResult.data || []
+  const dailyLogs = dailyLogsResult.data || []
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -240,7 +237,7 @@ export default async function ProjectHomePage({
                     <p className="text-sm font-medium">
                       {insight.created_at ? format(new Date(insight.created_at), 'MMM d, yyyy') : 'No date'}
                     </p>
-                    <p className="text-sm text-gray-600">{insight.title || insight.content}</p>
+                    <p className="text-sm text-gray-600">{insight.description}</p>
                   </div>
                 ))}
               </div>
@@ -249,24 +246,33 @@ export default async function ProjectHomePage({
             )}
           </div>
 
-          {/* Open RFI's */}
+          {/* RFIs */}
           <div>
-            <h2 className="text-lg font-semibold text-orange-600 mb-3">Open RFI's</h2>
+            <h2 className="text-lg font-semibold text-orange-600 mb-3">RFIs</h2>
             {rfis.length > 0 ? (
               <div className="space-y-2">
                 {rfis.map((rfi) => (
-                  <div key={rfi.id}>
-                    <p className="text-sm font-medium">
-                      {rfi.created_at ? format(new Date(rfi.created_at), 'MMM d, yyyy') : 'No date'}
-                    </p>
-                    <p className="text-sm text-gray-600">{rfi.title || rfi.content}</p>
+                  <div key={rfi.id} className="bg-white p-3 rounded-lg shadow-sm">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">#{rfi.number} - {rfi.subject}</p>
+                        <p className="text-sm text-gray-600 mt-1">{rfi.question}</p>
+                        <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                          <span>Status: {rfi.status}</span>
+                          {rfi.due_date && (
+                            <span>Due: {format(new Date(rfi.due_date), 'MMM d')}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500">No open RFIs.</p>
+              <p className="text-sm text-gray-500">No RFIs submitted yet.</p>
             )}
           </div>
+
         </div>
 
         {/* Right Column - Tasks */}
@@ -372,31 +378,34 @@ export default async function ProjectHomePage({
             </TabsContent>
             
             <TabsContent value="reports" className="p-6">
-              {reports.length > 0 ? (
+              {/* Daily Logs Table */}
+              {dailyLogs.length > 0 ? (
                 <table className="w-full">
                   <thead>
                     <tr className="text-left border-b">
                       <th className="pb-3 font-medium text-sm">Date</th>
                       <th className="pb-3 font-medium text-sm">Weather</th>
-                      <th className="pb-3 font-medium text-sm">Workers</th>
-                      <th className="pb-3 font-medium text-sm">Summary</th>
+                      <th className="pb-3 font-medium text-sm">Created By</th>
+                      <th className="pb-3 font-medium text-sm">Created At</th>
                       <th className="pb-3 w-8"></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {reports.map((report) => (
-                      <tr key={report.id} className="border-b">
+                    {dailyLogs.map((log) => (
+                      <tr key={log.id} className="border-b">
                         <td className="py-3 text-sm">
-                          {report.log_date ? format(new Date(report.log_date), 'MMM d, yyyy') : 'N/A'}
+                          {format(new Date(log.log_date), 'MMM d, yyyy')}
                         </td>
                         <td className="py-3 text-sm text-gray-600">
-                          {report.weather_conditions || 'N/A'}
+                          {log.weather_conditions 
+                            ? (typeof log.weather_conditions === 'object' 
+                              ? (log.weather_conditions as { description?: string }).description || 'N/A'
+                              : 'N/A')
+                            : 'N/A'}
                         </td>
+                        <td className="py-3 text-sm text-gray-600">{log.created_by || 'N/A'}</td>
                         <td className="py-3 text-sm text-gray-600">
-                          {report.manpower || 'N/A'}
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">
-                          {report.notes ? report.notes.substring(0, 100) + '...' : 'No summary'}
+                          {log.created_at ? format(new Date(log.created_at), 'MMM d, yyyy') : 'N/A'}
                         </td>
                         <td className="py-3">
                           <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -408,7 +417,7 @@ export default async function ProjectHomePage({
                   </tbody>
                 </table>
               ) : (
-                <p className="text-sm text-gray-500">No reports available yet.</p>
+                <p className="text-sm text-gray-500">No daily reports yet.</p>
               )}
             </TabsContent>
             
@@ -440,10 +449,10 @@ export default async function ProjectHomePage({
                   <tbody>
                     {changeOrders.map((order) => (
                       <tr key={order.id} className="border-b">
-                        <td className="py-3 text-sm">{order.number}</td>
-                        <td className="py-3 text-sm">{order.title}</td>
-                        <td className="py-3 text-sm text-gray-600">{order.status}</td>
-                        <td className="py-3 text-sm">${order.amount?.toLocaleString() || '0'}</td>
+                        <td className="py-3 text-sm">{order.co_number || `CO-${order.id}`}</td>
+                        <td className="py-3 text-sm">{order.title || 'Untitled'}</td>
+                        <td className="py-3 text-sm text-gray-600">{order.status || 'Draft'}</td>
+                        <td className="py-3 text-sm">TBD</td>
                         <td className="py-3 text-sm text-gray-600">
                           {order.created_at ? format(new Date(order.created_at), 'MMM d, yyyy') : 'N/A'}
                         </td>

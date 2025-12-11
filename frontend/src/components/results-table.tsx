@@ -7,12 +7,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '@/registry/default/components/ui/table'
 import { cn } from '@/lib/utils'
 
 interface ResultsTableProps {
-  data: Record<string, unknown>[]
-  onRowClick?: (row: Record<string, unknown>) => void
+  data: any[]
+  onRowClick?: (row: any) => void
 }
 
 export function ResultsTable({ data, onRowClick }: ResultsTableProps) {

@@ -1,6 +1,6 @@
 'use client'
 
-import { client } from '@/lib/management-api'
+import { client } from '@/registry/default/platform/platform-kit-nextjs/lib/management-api'
 import { useMutation } from '@tanstack/react-query'
 import { type AxiosError } from 'axios'
 import { toast } from 'sonner'

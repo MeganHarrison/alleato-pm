@@ -133,7 +133,7 @@ def process_documents():
     print("="*50)
     
     # Check total chunks
-    result = client.table('document_chunks').select('count', count='exact').execute()
+    result = client.table('document_chunks').select('*', count='exact').execute()
     total_chunks = result.count if hasattr(result, 'count') else 0
     print(f"Total chunks in database: {total_chunks}")
     

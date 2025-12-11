@@ -100,19 +100,19 @@ try:
     try:
         if use_unified_agent:
             # Use unified agent (no classification)
-            from scripts.rag_chatkit_server_unified import RagChatKitServerUnified as RagChatKitServer
+            from src.workers.scripts.rag_chatkit_server_unified import RagChatKitServerUnified as RagChatKitServer
             print("✓ Using UNIFIED AGENT (no classification) - faster, simpler")
         else:
             # Use classified routing (default)
-            from scripts.rag_chatkit_server_streaming import RagChatKitServerStreaming as RagChatKitServer
+            from src.workers.scripts.rag_chatkit_server_streaming import RagChatKitServerStreaming as RagChatKitServer
             print("✓ Using CLASSIFIED ROUTING (classification + specialists) - legacy approach")
     except ImportError:
         try:
-            from rag_chatkit_server import RagChatKitServer
+            from src.workers.scripts.rag_chatkit_server import RagChatKitServer
             print("⚠ Using standard RAG server (no streaming)")
         except ImportError:
-            # The module was moved under scripts/, so load it directly via its path
-            rag_server_path = Path(__file__).parent / "scripts" / "rag_chatkit_server.py"
+            # The module was moved under workers/scripts/, so load it directly via its path
+            rag_server_path = Path(__file__).parent.parent / "workers" / "scripts" / "rag_chatkit_server.py"
             try:
                 spec = importlib.util.spec_from_file_location("rag_chatkit_server", rag_server_path)
                 if not spec or not spec.loader:

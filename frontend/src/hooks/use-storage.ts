@@ -1,6 +1,6 @@
 'use client'
 
-import { client } from '@/lib/management-api'
+import { client } from '@/registry/default/platform/platform-kit-nextjs/lib/management-api'
 import { useQuery } from '@tanstack/react-query'
 
 // GET Buckets

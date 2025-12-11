@@ -1,8 +1,7 @@
-import type { paths } from '@/lib/management-api-schema'
-import { listTablesSql } from '@/lib/pg-meta'
+import type { paths } from '@/registry/default/platform/platform-kit-nextjs/lib/management-api-schema'
+import { listTablesSql } from '@/registry/default/platform/platform-kit-nextjs/lib/pg-meta'
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
-import type { APIError, DatabaseTable, DatabaseColumn, DatabaseQueryResponse } from '@/app/api/types'
 import createClient from 'openapi-fetch'
 
 const openai = new OpenAI({
@@ -41,14 +40,14 @@ async function getDbSchema(projectRef: string) {
     throw error
   }
 
-  return (data || { result: [] }) as DatabaseQueryResponse
+  return data as any
 }
 
-function formatSchemaForPrompt(schema: DatabaseQueryResponse) {
+function formatSchemaForPrompt(schema: any) {
   let schemaString = ''
-  if (schema?.result && Array.isArray(schema.result)) {
-    schema.result.forEach((table: DatabaseTable) => {
-      const columnInfo = table.columns.map((c: DatabaseColumn) => `${c.name} (${c.data_type})`)
+  if (schema && Array.isArray(schema)) {
+    schema.forEach((table: any) => {
+      const columnInfo = table.columns.map((c: any) => `${c.name} (${c.data_type})`)
       schemaString += `Table "${table.name}" has columns: ${columnInfo.join(', ')}.\n`
     })
   }
@@ -102,14 +101,10 @@ export async function POST(request: Request) {
 
     // 4. Return the generated SQL
     return NextResponse.json({ sql })
-  } catch (error) {
+  } catch (error: any) {
     console.error('AI SQL generation error:', error)
-    if (error instanceof Error) {
-      const apiError = error as APIError
-      const errorMessage = apiError.message || 'An unexpected error occurred.'
-      const status = apiError.response?.status || 500
-      return NextResponse.json({ message: errorMessage }, { status })
-    }
-    return NextResponse.json({ message: 'An unexpected error occurred.' }, { status: 500 })
+    const errorMessage = error.message || 'An unexpected error occurred.'
+    const status = error.response?.status || 500
+    return NextResponse.json({ message: errorMessage }, { status })
   }
 }

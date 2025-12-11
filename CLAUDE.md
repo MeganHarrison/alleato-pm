@@ -17,9 +17,10 @@ Alleato-Procore is a modern alternative to Procore (construction project managem
 1. **ALWAYS test** with Playwright before completion
 2. **ALWAYS update** EXEC_PLAN.md after major tasks
 3. **ALWAYS log** rule violations to RULE-VIOLATION-LOG.md
-4. **Be proactive** - Look for ways to add value and improve code
-5. **Take ownership** - Create files and structure as needed to achieve results
-6. **Never commit** unless explicitly requested
+4. **ALWAYS run schema validation** before any database work: `cd backend && ./scripts/check_schema.sh`
+5. **Be proactive** - Look for ways to add value and improve code
+6. **Take ownership** - Create files and structure as needed to achieve results
+7. **Never commit** unless explicitly requested
 
 ## PLANS.md
 Always read .agents/PLANS.md and EXEC_PLAN.md
@@ -109,6 +110,47 @@ Always read .agents/PLANS.md and EXEC_PLAN.md
 - **INCLUDE all required fields**: date, time, rule, files, description, root cause, impact, prevention
 - **NO EXCEPTIONS** - All violations must be logged, even minor ones
 
+### 11. Supabase Database Requirements (MANDATORY)
+**CRITICAL**: Anytime you're working with the database, you MUST validate the schema and update the Supabase types FIRST before any database work.
+
+#### Step 1: Run Schema Validation (MANDATORY)
+**ALWAYS run the schema validation script BEFORE any database-related work:**
+```bash
+cd backend && ./scripts/check_schema.sh
+# OR
+cd backend && source venv/bin/activate && python scripts/validate_schema.py
+```
+
+This script:
+- Fetches the actual schema from Supabase
+- Scans Python files for `.table().select()` patterns
+- Reports any columns/tables that don't exist
+- Suggests similar column names for typos
+
+**If validation fails, FIX ALL ERRORS before proceeding.**
+
+#### Step 2: Generate/Read Types
+- **ALWAYS generate/update types BEFORE working with Supabase queries**
+- **READ the generated database.types.ts file to understand table structure**
+- **VERIFY table names, column names, and relationships from the types**
+- **NEVER assume table or column names - always check the types first**
+- **Follow the type generation instructions**: `/Users/meganharrison/Documents/github/alleato-procore/.agents/rules/supabase/generate-supabase-types.md`
+
+Type generation commands:
+```bash
+# For local development
+npx supabase gen types typescript --local > database.types.ts
+
+# For production (requires PROJECT_REF)
+npx supabase gen types typescript --project-id "$PROJECT_REF" --schema public > database.types.ts
+```
+
+This prevents errors like:
+- Using wrong table names (e.g., "insights" instead of "ai_insights")
+- Referencing non-existent tables
+- Incorrect column names or types (e.g., `status` vs `state`, `client_name` vs `client`)
+- Missing required fields
+
 ### Pre-Task Checklist
 Before starting any task:
 - [ ] Read CLAUDE.md (this file)
@@ -116,6 +158,8 @@ Before starting any task:
 - [ ] Check EXEC_PLAN.md for project context
 - [ ] Understand existing code conventions
 - [ ] Identify which rules apply to the current task
+- [ ] **If working with database**: Run `cd backend && ./scripts/check_schema.sh` FIRST
+- [ ] **If working with database**: Generate and read Supabase types
 
 ### Post-Task Checklist
 After completing any task:
@@ -134,6 +178,7 @@ After completing any task:
 5. **Taking the easy way out** - Don't be lazy; persist until achieving the desired result
 6. **Not being proactive enough** - Always look for ways to add value and improve
 7. **Ignoring existing patterns** - Always match the codebase's conventions
+8. **Skipping schema validation** - ALWAYS run `./scripts/check_schema.sh` before database work to catch column/table mismatches
 
 ## Enforcement
 - Violations will be tracked and analyzed
@@ -218,4 +263,4 @@ Remember: Excellence requires initiative. These guidelines empower you to make t
 ---
 
 **Last Updated**: 2025-12-11
-**Version**: 1.1
+**Version**: 1.3

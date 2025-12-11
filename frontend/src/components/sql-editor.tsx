@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Editor } from '@monaco-editor/react'
-import { Button } from '@/components/ui/button'
-import { ResultsTable } from '@/components/results-table'
-import { Label } from '@/components/ui/label'
-import { useRunQuery } from '@/hooks/use-run-query'
+import { Button } from '@/registry/default/components/ui/button'
+import { ResultsTable } from '@/registry/default/platform/platform-kit-nextjs/components/results-table'
+import { Label } from '@/registry/default/components/ui/label'
+import { useRunQuery } from '@/registry/default/platform/platform-kit-nextjs/hooks/use-run-query'
 import {
   ArrowUp,
   Loader2,
@@ -14,34 +14,34 @@ import {
   FileText,
   AlertTriangle,
 } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Input } from '@/registry/default/components/ui/input'
+import { Skeleton } from '@/registry/default/components/ui/skeleton'
+import { Popover, PopoverContent, PopoverTrigger } from '@/registry/default/components/ui/popover'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/registry/default/components/ui/select'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Switch } from '@/components/ui/switch'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+} from '@/registry/default/components/ui/chart'
+import { ToggleGroup, ToggleGroupItem } from '@/registry/default/components/ui/toggle-group'
+import { Switch } from '@/registry/default/components/ui/switch'
+import { Alert, AlertDescription, AlertTitle } from '@/registry/default/components/ui/alert'
 
 interface SqlEditorProps {
   projectRef: string
   initialSql?: string
-  queryKey?: unknown
+  queryKey?: any
   label?: string
-  onResults?: (data: Record<string, unknown>[] | undefined) => void
-  onRowClick?: (row: Record<string, unknown>, queryKey?: unknown) => void
+  onResults?: (data: any[] | undefined) => void
+  onRowClick?: (row: any, queryKey?: any) => void
   hideSql?: boolean
   readOnly?: boolean
   runAutomatically?: boolean
@@ -113,9 +113,9 @@ export function SqlEditor({
       const { sql: generatedSql } = await response.json()
       setSql(generatedSql)
       runQuery({ projectRef, query: generatedSql, readOnly: true })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
-      setAiError(error instanceof Error ? error.message : 'An error occurred')
+      setAiError(error.message)
     } finally {
       setIsGeneratingSql(false)
     }
@@ -154,9 +154,9 @@ export function SqlEditor({
     if (noResults && !isSqlVisible && !isNaturalLanguageMode && !readOnly && !isPending) {
       setIsSqlVisible(true)
     }
-  }, [data, isSqlVisible, isNaturalLanguageMode, readOnly, isPending])
+  }, [data, isSqlVisible, isNaturalLanguageMode])
 
-  const serverErrorMessage = (error as unknown as { response?: { data?: { message?: string } } })?.response?.data?.message || ''
+  const serverErrorMessage = (error as any)?.response?.data?.message || ''
   const isReadOnlyError =
     serverErrorMessage.includes('permission denied') || serverErrorMessage.includes('42501')
   const customReadOnlyError = "You can't directly alter your database schema, use chat instead"
@@ -384,7 +384,7 @@ export function SqlEditor({
   )
 }
 
-function QueryResultChart({ data, xAxis, yAxis }: { data: Record<string, unknown>[]; xAxis: string; yAxis: string }) {
+function QueryResultChart({ data, xAxis, yAxis }: { data: any[]; xAxis: string; yAxis: string }) {
   const chartConfig = {
     [yAxis]: {
       label: yAxis,

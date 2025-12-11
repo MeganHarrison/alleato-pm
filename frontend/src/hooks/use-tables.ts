@@ -1,7 +1,7 @@
 'use client'
 
-import { listTablesSql } from '@/lib/pg-meta'
-import { runQuery } from '@/hooks/use-run-query'
+import { listTablesSql } from '@/registry/default/platform/platform-kit-nextjs/lib/pg-meta'
+import { runQuery } from '@/registry/default/platform/platform-kit-nextjs/hooks/use-run-query'
 import { useQuery } from '@tanstack/react-query'
 
 // LIST Tables

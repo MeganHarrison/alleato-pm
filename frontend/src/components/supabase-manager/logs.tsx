@@ -1,7 +1,7 @@
 'use client'
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription, AlertTitle } from '@/registry/default/components/ui/alert'
+import { Button } from '@/registry/default/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -9,14 +9,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
+} from '@/registry/default/components/ui/command'
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from '@/components/ui/hover-card'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Skeleton } from '@/components/ui/skeleton'
+} from '@/registry/default/components/ui/hover-card'
+import { Popover, PopoverContent, PopoverTrigger } from '@/registry/default/components/ui/popover'
+import { Skeleton } from '@/registry/default/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -24,8 +24,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { useGetLogs } from '@/hooks/use-logs'
+} from '@/registry/default/components/ui/table'
+import { useGetLogs } from '@/registry/default/platform/platform-kit-nextjs/hooks/use-logs'
 import { LogsTableName, genDefaultQuery } from '../../lib/logs'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown, Logs, Terminal } from 'lucide-react'

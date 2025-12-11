@@ -36,8 +36,8 @@ export function RagChatKitPanel({
     },
     theme: {
       colorScheme: "light",
-      radius: "large",
-      density: "comfortable",
+      radius: "round",
+      density: "spacious",
       color: {
         accent: {
           primary: "#10a37f",
@@ -71,7 +71,6 @@ export function RagChatKitPanel({
     threadItemActions: {
       feedback: true,
       retry: true,
-      copy: true,
     },
     // Event handlers
     onThreadChange: ({ threadId }) => onThreadChange?.(threadId ?? null),

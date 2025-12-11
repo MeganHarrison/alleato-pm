@@ -1,30 +1,30 @@
 'use client'
 
 import { useState, ReactNode, useMemo } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/registry/default/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@/registry/default/components/ui/dialog'
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer'
-import { AuthManager } from '@/components/supabase-manager/auth'
-import { DatabaseManager } from '@/components/supabase-manager/database'
-import { StorageManager } from '@/components/supabase-manager/storage'
-import { LogsManager } from '@/components/supabase-manager/logs'
-import { SuggestionsManager } from '@/components/supabase-manager/suggestions'
-import { UsersManager } from '@/components/supabase-manager/users'
-import { SecretsManager } from '@/components/supabase-manager/secrets'
+} from '@/registry/default/components/ui/drawer'
+import { AuthManager } from '@/registry/default/platform/platform-kit-nextjs/components/supabase-manager/auth'
+import { DatabaseManager } from '@/registry/default/platform/platform-kit-nextjs/components/supabase-manager/database'
+import { StorageManager } from '@/registry/default/platform/platform-kit-nextjs/components/supabase-manager/storage'
+import { LogsManager } from '@/registry/default/platform/platform-kit-nextjs/components/supabase-manager/logs'
+import { SuggestionsManager } from '@/registry/default/platform/platform-kit-nextjs/components/supabase-manager/suggestions'
+import { UsersManager } from '@/registry/default/platform/platform-kit-nextjs/components/supabase-manager/users'
+import { SecretsManager } from '@/registry/default/platform/platform-kit-nextjs/components/supabase-manager/secrets'
 import {
   SheetNavigationProvider,
   useSheetNavigation,
-} from '@/contexts/SheetNavigationContext'
+} from '@/registry/default/platform/platform-kit-nextjs/contexts/SheetNavigationContext'
 import {
   ChevronLeft,
   ChevronRight,
@@ -41,9 +41,9 @@ import {
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
-} from '@/components/ui/hover-card'
+} from '@/registry/default/components/ui/hover-card'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { LogoSupabase } from '@/components/logo-supabase'
+import { LogoSupabase } from '@/registry/default/platform/platform-kit-nextjs/components/logo-supabase'
 import Link from 'next/link'
 
 const queryClient = new QueryClient()

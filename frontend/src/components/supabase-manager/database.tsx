@@ -2,32 +2,19 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { z, type ZodTypeAny } from 'zod'
-import { useListTables } from '@/hooks/use-tables'
-import { useRunQuery } from '@/hooks/use-run-query'
-import { SqlEditor } from '@/components/sql-editor'
-import { DynamicForm } from '@/components/dynamic-form'
+import { useListTables } from '@/registry/default/platform/platform-kit-nextjs/hooks/use-tables'
+import { useRunQuery } from '@/registry/default/platform/platform-kit-nextjs/hooks/use-run-query'
+import { SqlEditor } from '@/registry/default/platform/platform-kit-nextjs/components/sql-editor'
+import { DynamicForm } from '@/registry/default/platform/platform-kit-nextjs/components/dynamic-form'
 import { toast } from 'sonner'
-import { useSheetNavigation } from '@/contexts/SheetNavigationContext'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+import { useSheetNavigation } from '@/registry/default/platform/platform-kit-nextjs/contexts/SheetNavigationContext'
+import { Skeleton } from '@/registry/default/components/ui/skeleton'
+import { Button } from '@/registry/default/components/ui/button'
 import { AlertTriangle, Table, Wand } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/registry/default/components/ui/alert'
 
 // Helper to generate a Zod schema from the table's column definitions
-interface TableColumn {
-  is_updatable: boolean;
-  is_generated: boolean;
-  data_type: string;
-  is_nullable: boolean;
-  default_value?: unknown;
-  column_name: string;
-}
-
-interface Table {
-  columns?: TableColumn[];
-}
-
-function generateZodSchema(table: Table): z.ZodObject<z.ZodRawShape> {
+function generateZodSchema(table: any): z.ZodObject<any, any, any> {
   if (!table || !table.columns) {
     return z.object({})
   }
@@ -41,7 +28,7 @@ function generateZodSchema(table: Table): z.ZodObject<z.ZodRawShape> {
     const dataType = column.data_type.toLowerCase()
 
     if (dataType.includes('array')) {
-      fieldSchema = z.array(z.unknown())
+      fieldSchema = z.array(z.any())
     } else if (dataType.includes('int') || dataType.includes('numeric')) {
       fieldSchema = z.number()
     } else if (dataType.includes('bool')) {
@@ -68,7 +55,7 @@ function generateZodSchema(table: Table): z.ZodObject<z.ZodRawShape> {
   return z.object(shape)
 }
 
-const getPrimaryKeys = (table: Table & { primary_keys?: Array<{ name: string }> }): string[] => {
+const getPrimaryKeys = (table: any): string[] => {
   if (!table || !table.primary_keys) {
     return []
   }

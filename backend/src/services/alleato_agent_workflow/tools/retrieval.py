@@ -175,16 +175,16 @@ async def get_project_insights(project_id: int, limit: int = 10) -> str:
 
         # Get project info
         project_result = supabase.table('projects').select(
-            'id, name, status, client_name'
+            'id, name, state, client'
         ).eq('id', project_id).single().execute()
 
         if project_result.data:
             project = project_result.data
             output.append(f"# Project: {project.get('name', 'Unknown')}")
-            if project.get('client_name'):
-                output.append(f"Client: {project['client_name']}")
-            if project.get('status'):
-                output.append(f"Status: {project['status']}")
+            if project.get('client'):
+                output.append(f"Client: {project['client']}")
+            if project.get('state'):
+                output.append(f"Status: {project['state']}")
             output.append("")
 
         # Get recent risks
@@ -246,7 +246,7 @@ async def list_all_projects() -> str:
         supabase = get_supabase_client()
 
         result = supabase.table('projects').select(
-            'id, name, status, client_name, created_at'
+            'id, name, state, client, created_at'
         ).order('name').execute()
 
         if not result.data:
@@ -254,12 +254,12 @@ async def list_all_projects() -> str:
 
         output = ["# All Projects\n"]
         for project in result.data:
-            status = project.get('status', 'unknown')
+            state = project.get('state', 'unknown')
             name = project.get('name', 'Unnamed')
-            client = project.get('client_name', '')
+            client = project.get('client', '')
 
             output.append(f"**{name}** (ID: {project['id']})")
-            output.append(f"  Status: {status}")
+            output.append(f"  Status: {state}")
             if client:
                 output.append(f"  Client: {client}")
             output.append("")
@@ -294,10 +294,10 @@ async def get_project_details(project_id: int) -> str:
 
         output.append(f"# {project.get('name', 'Unknown Project')}")
         output.append(f"ID: {project_id}")
-        output.append(f"Status: {project.get('status', 'unknown')}")
+        output.append(f"Status: {project.get('state', 'unknown')}")
 
-        if project.get('client_name'):
-            output.append(f"Client: {project['client_name']}")
+        if project.get('client'):
+            output.append(f"Client: {project['client']}")
         if project.get('start_date'):
             output.append(f"Start Date: {project['start_date']}")
         if project.get('end_date'):

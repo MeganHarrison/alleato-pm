@@ -7,11 +7,11 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
-import { useGetUserCountsByDay } from '@/hooks/use-user-counts'
-import { Skeleton } from '@/components/ui/skeleton'
+} from '@/registry/default/components/ui/chart'
+import { useGetUserCountsByDay } from '@/registry/default/platform/platform-kit-nextjs/hooks/use-user-counts'
+import { Skeleton } from '@/registry/default/components/ui/skeleton'
 import { AlertTriangle } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/registry/default/components/ui/alert'
 
 const chartConfig = {
   users: {

@@ -1,10 +1,10 @@
 'use client'
 
-import { DynamicForm } from '@/components/dynamic-form'
+import { DynamicForm } from '@/registry/default/platform/platform-kit-nextjs/components/dynamic-form'
 import {
   useGetAuthConfig,
   useUpdateAuthConfig,
-} from '@/hooks/use-auth'
+} from '@/registry/default/platform/platform-kit-nextjs/hooks/use-auth'
 import {
   authEmailProviderSchema,
   authFieldLabels,
@@ -16,10 +16,10 @@ import {
 import { AlertTriangle, ChevronRight, Mail, Phone, User } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 import { z } from 'zod'
-import { useSheetNavigation } from '@/contexts/SheetNavigationContext'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { useSheetNavigation } from '@/registry/default/platform/platform-kit-nextjs/contexts/SheetNavigationContext'
+import { Skeleton } from '@/registry/default/components/ui/skeleton'
+import { Button } from '@/registry/default/components/ui/button'
+import { Alert, AlertDescription, AlertTitle } from '@/registry/default/components/ui/alert'
 
 function ProviderSettingsView({
   projectRef,
@@ -29,18 +29,18 @@ function ProviderSettingsView({
   onSuccess,
 }: {
   projectRef: string
-  schema: z.ZodObject<z.ZodRawShape> | z.ZodEffects<z.ZodObject<z.ZodRawShape>>
+  schema: z.ZodObject<any> | z.ZodEffects<z.ZodObject<any>>
   title: string
-  initialValues: z.infer<z.ZodObject<z.ZodRawShape>>
+  initialValues: any
   onSuccess: () => void
 }) {
   const { mutate: updateAuthConfig, isPending: isUpdatingConfig } = useUpdateAuthConfig()
 
-  const actualSchema = 'shape' in schema ? schema : (schema._def.schema as z.ZodObject<z.ZodRawShape>)
+  const actualSchema = 'shape' in schema ? schema : (schema._def.schema as z.ZodObject<any>)
 
   const handleUpdateAuthConfig = (formData: z.infer<typeof actualSchema>) => {
     const payload = Object.fromEntries(
-      Object.entries(formData).filter(([, value]) => value !== undefined)
+      Object.entries(formData).filter(([_, value]) => value !== undefined)
     )
 
     if (Object.keys(payload).length === 0) {
@@ -71,7 +71,7 @@ function ProviderSettingsView({
         }
         return acc
       },
-      {} as Record<string, unknown>
+      {} as Record<string, any>
     )
 
     return result
@@ -103,7 +103,7 @@ export function AuthManager({ projectRef }: { projectRef: string }) {
 
   const handleUpdateGeneralSettings = (formData: AuthGeneralSettingsSchema) => {
     const payload = Object.fromEntries(
-      Object.entries(formData).filter(([, value]) => value !== undefined)
+      Object.entries(formData).filter(([_, value]) => value !== undefined)
     )
 
     if (Object.keys(payload).length === 0) {
@@ -121,7 +121,7 @@ export function AuthManager({ projectRef }: { projectRef: string }) {
     name: string
     icon: React.ReactNode
     description: string
-    schema: z.ZodObject<z.ZodRawShape> | z.ZodEffects<z.ZodObject<z.ZodRawShape>>
+    schema: z.ZodObject<any> | z.ZodEffects<z.ZodObject<any>>
   }[] = [
     {
       icon: <Mail className="h-4 w-4 text-muted-foreground" />,
@@ -144,7 +144,7 @@ export function AuthManager({ projectRef }: { projectRef: string }) {
   ]
 
   const handleProviderClick = useCallback(
-    (provider: { name: string; schema: z.ZodObject<z.ZodRawShape> | z.ZodEffects<z.ZodObject<z.ZodRawShape>> }) => {
+    (provider: { name: string; schema: z.ZodObject<any> | z.ZodEffects<z.ZodObject<any>> }) => {
       push({
         title: `${provider.name} Provider Settings`,
         component: (
@@ -173,7 +173,7 @@ export function AuthManager({ projectRef }: { projectRef: string }) {
         }
         return acc
       },
-      {} as Record<string, unknown>
+      {} as Record<string, any>
     )
   }, [authConfigData])
 

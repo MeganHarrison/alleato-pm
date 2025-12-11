@@ -1,6 +1,6 @@
 'use client'
 
-import { SqlEditor } from '@/components/sql-editor'
+import { SqlEditor } from '@/registry/default/platform/platform-kit-nextjs/components/sql-editor'
 import { useState } from 'react'
 import {
   Select,
@@ -8,8 +8,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { UsersGrowthChart } from '@/components/users-growth-chart'
+} from '@/registry/default/components/ui/select'
+import { UsersGrowthChart } from '@/registry/default/platform/platform-kit-nextjs/components/users-growth-chart'
 
 export function UsersManager({ projectRef }: { projectRef: string }) {
   const [timeRange, setTimeRange] = useState(90)
