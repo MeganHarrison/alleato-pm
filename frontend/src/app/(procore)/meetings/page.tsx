@@ -12,16 +12,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { GenericEditableTable, type EditableColumn } from '@/components/tables/generic-editable-table';
+import { updateMeeting, deleteMeeting } from '@/app/actions/table-actions';
 
 interface Meeting {
   id: string
@@ -126,6 +120,113 @@ export default function MeetingsPage() {
     return `${mins}m`
   }
 
+  // Define editable columns
+  const columns: EditableColumn<Meeting>[] = [
+    {
+      key: 'title',
+      header: 'Title',
+      type: 'text',
+      width: 'w-[300px]',
+      render: (value, row) => (
+        <div className="flex items-start gap-2">
+          <Users className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <div className="line-clamp-2 font-medium">
+              {value || 'Untitled Meeting'}
+            </div>
+            {row.summary && (
+              <div className="text-xs text-muted-foreground line-clamp-1 mt-1">
+                {row.summary}
+              </div>
+            )}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'date',
+      header: 'Date',
+      type: 'datetime-local',
+      width: 'w-[180px]',
+      render: (value) => value ? (
+        <div className="flex items-center gap-2">
+          <Calendar className="h-3 w-3 text-muted-foreground" />
+          <div className="text-sm">
+            {format(new Date(value), 'MMM d, yyyy')}
+          </div>
+        </div>
+      ) : <span className="text-muted-foreground">-</span>,
+    },
+    {
+      key: 'duration_minutes',
+      header: 'Duration',
+      type: 'number',
+      width: 'w-[100px]',
+      render: (value) => (
+        <div className="flex items-center gap-2">
+          <Clock className="h-3 w-3 text-muted-foreground" />
+          <span className="text-sm">{formatDuration(value)}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'participants',
+      header: 'Participants',
+      type: 'text',
+      render: (value) => (
+        <div className="text-sm line-clamp-1">
+          {value || '-'}
+        </div>
+      ),
+    },
+    {
+      key: 'project',
+      header: 'Project',
+      type: 'text',
+      render: (value) => value ? (
+        <Badge variant="outline" className="text-xs">
+          {value}
+        </Badge>
+      ) : <span className="text-muted-foreground">-</span>,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      type: 'select',
+      selectOptions: [
+        { value: 'completed', label: 'Completed' },
+        { value: 'scheduled', label: 'Scheduled' },
+        { value: 'cancelled', label: 'Cancelled' },
+        { value: 'pending', label: 'Pending' },
+      ],
+      render: (value) => value ? (
+        <Badge
+          variant="secondary"
+          className={getStatusColor(value)}
+        >
+          {value}
+        </Badge>
+      ) : <span className="text-muted-foreground">-</span>,
+    },
+    {
+      key: 'url',
+      header: 'Links',
+      editable: false,
+      width: 'w-[100px]',
+      render: (value, row) => (row.url || row.fireflies_link) ? (
+        <a
+          href={row.url || row.fireflies_link || '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+        >
+          View
+          <ExternalLink className="h-3 w-3" />
+        </a>
+      ) : null,
+    },
+  ];
+
   if (error) {
     return (
       <div className="flex flex-col h-[calc(100vh-50px)] min-h-0 bg-gray-50 rounded-lg overflow-hidden">
@@ -203,149 +304,50 @@ export default function MeetingsPage() {
 
         {/* Table */}
         <div className="flex-1 overflow-auto bg-white">
-          <Table>
-            <TableHeader className="sticky top-0 bg-white z-10">
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Participants</TableHead>
-                <TableHead>Project</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading && !data.length ? (
-                // Loading skeleton rows
-                <>
-                  {[...Array(5)].map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                    </TableRow>
-                  ))}
-                </>
-              ) : data.length === 0 ? (
-                // No results
-                <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
-                    <div className="flex flex-col items-center justify-center py-8">
-                      <Users className="h-12 w-12 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">No meetings found</h3>
-                      <p className="text-muted-foreground">
-                        {searchQuery || statusFilter !== 'all' || projectFilter
-                          ? 'Try adjusting your filters or search query.'
-                          : 'No meetings have been added yet.'}
-                      </p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                // Data rows
-                <>
-                  {data.map((meeting: Meeting) => (
-                    <TableRow key={meeting.id} className="hover:bg-muted/50">
-                      <TableCell className="font-medium">
-                        <div className="flex items-start gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                          <div className="flex-1">
-                            <div className="line-clamp-2">
-                              {meeting.title || 'Untitled Meeting'}
-                            </div>
-                            {meeting.summary && (
-                              <div className="text-xs text-muted-foreground line-clamp-1 mt-1">
-                                {meeting.summary}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-3 w-3 text-muted-foreground" />
-                          {meeting.date ? (
-                            <div className="text-sm">
-                              {format(new Date(meeting.date), 'MMM d, yyyy')}
-                            </div>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-sm">{formatDuration(meeting.duration_minutes)}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm line-clamp-1">
-                          {meeting.participants || '-'}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {meeting.project ? (
-                          <Badge variant="outline" className="text-xs">
-                            {meeting.project}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {meeting.status ? (
-                          <Badge
-                            variant="secondary"
-                            className={getStatusColor(meeting.status)}
-                          >
-                            {meeting.status}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {(meeting.url || meeting.fireflies_link) && (
-                          <a
-                            href={meeting.url || meeting.fireflies_link || '#'}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                          >
-                            View
-                            <ExternalLink className="h-3 w-3" />
-                          </a>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+          {isLoading && !data.length ? (
+            // Loading skeleton
+            <div className="p-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex gap-4 mb-4">
+                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              ))}
+            </div>
+          ) : data.length === 0 ? (
+            // No results
+            <div className="flex flex-col items-center justify-center py-16">
+              <Users className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No meetings found</h3>
+              <p className="text-muted-foreground">
+                {searchQuery || statusFilter !== 'all' || projectFilter
+                  ? 'Try adjusting your filters or search query.'
+                  : 'No meetings have been added yet.'}
+              </p>
+            </div>
+          ) : (
+            <>
+              <GenericEditableTable
+                data={data}
+                columns={columns}
+                onUpdate={updateMeeting}
+                onDelete={deleteMeeting}
+                className="border-0"
+              />
 
-                  {/* Loading more rows */}
-                  {isFetching && (
-                    <>
-                      {[...Array(3)].map((_, i) => (
-                        <TableRow key={`loading-${i}`}>
-                          <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                          <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                          <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                          <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                          <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                          <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                          <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                        </TableRow>
-                      ))}
-                    </>
-                  )}
-                </>
+              {/* Loading more indicator */}
+              {isFetching && (
+                <div className="p-4 text-center">
+                  <Skeleton className="h-4 w-32 mx-auto" />
+                </div>
               )}
-            </TableBody>
-          </Table>
+            </>
+          )}
 
           {/* Load more button */}
           {isSuccess && data.length > 0 && hasMore && (

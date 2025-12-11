@@ -6,11 +6,8 @@ import {
   PortfolioFilters,
   ProjectsTable,
 } from '@/components/portfolio';
-import {
-  mockPortfolioViews,
-  mockFinancialViews,
-} from '@/data/mock-portfolio-data';
 import { PortfolioViewType, StatusFilter, Project } from '@/types/portfolio';
+import { portfolioViews, financialViews } from '@/config/portfolio';
 import { useRouter } from 'next/navigation';
 
 function PortfolioPageContent() {
@@ -122,6 +119,109 @@ function PortfolioPageContent() {
 
   const handleExport = (format: 'pdf' | 'csv') => {
     console.log('Export to', format);
+    
+    // Export to CSV
+    if (format === 'csv') {
+      const headers = ['Job Number', 'Project Name', 'Client', 'Phase', 'Category', 'State', 'Revenue', 'Profit', 'Status'];
+      const csvData = filteredProjects.map(project => [
+        project.jobNumber,
+        project.name,
+        project.client || '',
+        project.phase || '',
+        project.category || '',
+        project.state || '',
+        project.estRevenue || '',
+        project.estProfit || '',
+        project.status
+      ]);
+      
+      const csvContent = [
+        headers.join(','),
+        ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `portfolio-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } 
+    
+    // Export to PDF
+    else if (format === 'pdf') {
+      // For PDF, we'll open a print dialog as a simple solution
+      // In production, you might want to use a library like jsPDF
+      const printWindow = window.open('', '', 'width=800,height=600');
+      if (printWindow) {
+        const htmlContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Portfolio Report</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; }
+              h1 { color: #333; }
+              table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background-color: #f2f2f2; font-weight: bold; }
+              tr:nth-child(even) { background-color: #f9f9f9; }
+              .header { margin-bottom: 20px; }
+              .date { color: #666; font-size: 14px; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>Portfolio Report</h1>
+              <p class="date">Generated on: ${new Date().toLocaleDateString()}</p>
+              <p>Total Projects: ${filteredProjects.length}</p>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Job Number</th>
+                  <th>Project Name</th>
+                  <th>Client</th>
+                  <th>Phase</th>
+                  <th>Category</th>
+                  <th>State</th>
+                  <th>Revenue</th>
+                  <th>Profit</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filteredProjects.map(project => `
+                  <tr>
+                    <td>${project.jobNumber}</td>
+                    <td>${project.name}</td>
+                    <td>${project.client || '-'}</td>
+                    <td>${project.phase || '-'}</td>
+                    <td>${project.category || '-'}</td>
+                    <td>${project.state || '-'}</td>
+                    <td>${project.estRevenue ? '$' + project.estRevenue.toLocaleString() : '-'}</td>
+                    <td>${project.estProfit ? '$' + project.estProfit.toLocaleString() : '-'}</td>
+                    <td>${project.status}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </body>
+          </html>
+        `;
+        
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
+        
+        // Give it time to render then trigger print
+        setTimeout(() => {
+          printWindow.print();
+          printWindow.close();
+        }, 250);
+      }
+    }
   };
 
   const handleClearFilters = () => {
@@ -147,8 +247,8 @@ function PortfolioPageContent() {
 
       {/* Portfolio Header with tabs */}
       <PortfolioHeader
-        views={mockPortfolioViews}
-        financialViews={mockFinancialViews}
+        views={portfolioViews}
+        financialViews={financialViews}
         activeView={activeView}
         onViewChange={handleViewChange}
         onSettingsClick={handleSettingsClick}
@@ -177,7 +277,7 @@ function PortfolioPageContent() {
         />
 
         {/* Projects count */}
-        <div className="px-4 py-2 text-sm text-gray-600 bg-white border-b border-gray-200">
+        <div className="px-4 py-2 text-xs sm:text-sm text-gray-600 bg-white border-b border-gray-200">
           <span className="font-medium">{filteredProjects.length}</span> project{filteredProjects.length !== 1 ? 's' : ''} found
         </div>
 

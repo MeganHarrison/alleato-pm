@@ -22,7 +22,7 @@ const maxWidthClasses = {
 export function PageContainer({
   children,
   className,
-  maxWidth = "2xl",
+  maxWidth = "full",
   padding = true,
 }: PageContainerProps) {
   return (

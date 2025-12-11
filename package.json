@@ -12,7 +12,14 @@
     "dev:backend": "cd backend && ./start.sh",
     "build": "cd frontend && npm run build",
     "start": "cd frontend && npm start",
-    "install:all": "npm install && cd frontend && npm install"
+    "install:all": "npm install && cd frontend && npm install",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm run test:unit",
+    "test:backend": "cd backend && pytest",
+    "test:all": "./scripts/run-all-tests.sh",
+    "test:coverage": "npm run test:frontend:coverage && npm run test:backend:coverage",
+    "test:frontend:coverage": "cd frontend && npm run test:unit:coverage",
+    "test:backend:coverage": "cd backend && pytest --cov --cov-report=html"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

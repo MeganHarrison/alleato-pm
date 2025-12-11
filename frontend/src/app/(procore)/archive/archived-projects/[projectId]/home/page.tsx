@@ -12,11 +12,11 @@ import {
   SidebarProjectAddress,
 } from '@/components/project-home';
 import {
-  mockProjectInfo,
-  mockProjectTeam,
-  mockProjectOverview,
-  mockMyOpenItems,
-} from '@/data/mock-project-home-data';
+  defaultProjectInfo,
+  projectTeam,
+  projectOverview,
+  myOpenItems,
+} from '@/config/project-home';
 
 interface PageProps {
   params: Promise<{ projectId: string }>;
@@ -26,7 +26,7 @@ export default function ProjectHomePage({ params }: PageProps) {
   const { projectId } = use(params);
 
   // In a real app, you would fetch project data based on projectId
-  const projectInfo = mockProjectInfo;
+  const projectInfo = defaultProjectInfo;
 
   return (
     <AppShell
@@ -62,13 +62,13 @@ export default function ProjectHomePage({ params }: PageProps) {
           {/* Main Panel */}
           <div className="flex-1 p-6 space-y-6 overflow-y-auto">
             {/* Project Team */}
-            <ProjectTeam team={mockProjectTeam} projectId={projectId} />
+            <ProjectTeam team={projectTeam} projectId={projectId} />
 
             {/* Project Overview */}
-            <ProjectOverview items={mockProjectOverview} projectId={projectId} />
+            <ProjectOverview items={projectOverview} projectId={projectId} />
 
             {/* My Open Items */}
-            <MyOpenItems items={mockMyOpenItems} projectId={projectId} />
+            <MyOpenItems items={myOpenItems} projectId={projectId} />
 
             {/* Collapsible Sections */}
             <CollapsibleSection title="Recently Changed Items">

@@ -109,15 +109,7 @@ export default function RagHome() {
   }, [hydrateState, threadId]);
 
   return (
-    <div className="flex h-[calc(100vh-theme(spacing.16))] gap-2 bg-gray-100 -m-6 p-2">
-      
-      <AgentPanel
-        agents={agents}
-        currentAgent={currentAgent}
-        events={events}
-        guardrails={guardrails}
-        context={context}
-      />
+    <div className="flex h-screen w-full -m-6">
       <RagChatKitPanel
         initialThreadId={initialThreadId}
         onThreadChange={handleThreadChange}

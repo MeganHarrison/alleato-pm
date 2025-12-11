@@ -326,15 +326,15 @@ export function ProjectsTable({ data, onProjectClick }: ProjectsTableProps) {
     </div>
     
     {/* Pagination Controls */}
-    <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200">
-      <div className="flex items-center gap-2 text-sm text-gray-700">
-        <span>Showing</span>
+    <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 bg-white border-t border-gray-200 gap-3">
+      <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700">
+        <span className="hidden sm:inline">Showing</span>
         <select
           value={pagination.pageSize}
           onChange={e => {
             table.setPageSize(Number(e.target.value));
           }}
-          className="px-2 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--procore-orange))] focus:border-transparent"
+          className="px-2 py-1 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[hsl(var(--procore-orange))] focus:border-transparent"
         >
           {[10, 25, 50, 100].map(pageSize => (
             <option key={pageSize} value={pageSize}>
@@ -342,19 +342,21 @@ export function ProjectsTable({ data, onProjectClick }: ProjectsTableProps) {
             </option>
           ))}
         </select>
-        <span>
-          of {data.length} total rows
+        <span className="text-xs sm:text-sm">
+          <span className="hidden sm:inline">of </span>
+          <span className="sm:hidden">/ </span>
+          {data.length}<span className="hidden sm:inline"> total rows</span>
         </span>
       </div>
       
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
         <button
           type="button"
           className="p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => table.setPageIndex(0)}
           disabled={!table.getCanPreviousPage()}
         >
-          <ChevronsLeft className="w-4 h-4" />
+          <ChevronsLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
         <button
           type="button"
@@ -362,11 +364,10 @@ export function ProjectsTable({ data, onProjectClick }: ProjectsTableProps) {
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
-        <span className="text-sm text-gray-700">
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
+        <span className="text-xs sm:text-sm text-gray-700 px-2">
+          {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
         </span>
         <button
           type="button"
@@ -374,7 +375,7 @@ export function ProjectsTable({ data, onProjectClick }: ProjectsTableProps) {
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
         <button
           type="button"
@@ -382,7 +383,7 @@ export function ProjectsTable({ data, onProjectClick }: ProjectsTableProps) {
           onClick={() => table.setPageIndex(table.getPageCount() - 1)}
           disabled={!table.getCanNextPage()}
         >
-          <ChevronsRight className="w-4 h-4" />
+          <ChevronsRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
       </div>
     </div>

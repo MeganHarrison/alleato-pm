@@ -34,27 +34,27 @@ export function PortfolioHeader({
   return (
     <div className="bg-white border-b border-gray-200">
       {/* Title row */}
-      <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold text-gray-900">Portfolio</h1>
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Portfolio</h1>
           <button
             onClick={onSettingsClick}
             className="p-1.5 hover:bg-gray-100 rounded text-gray-500"
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
 
       {/* View tabs */}
-      <div className="px-6 flex items-center justify-between">
-        <nav className="flex items-center gap-1 -mb-px">
+      <div className="px-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-0 sm:pb-0">
+        <nav className="flex items-center gap-0 sm:gap-1 -mb-px overflow-x-auto">
           {views.map((view) => (
             <button
               key={view.id}
               onClick={() => onViewChange(view.id)}
               className={cn(
-                'px-4 py-3 text-sm font-medium border-b-2 transition-colors',
+                'px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                 activeView === view.id
                   ? 'border-[hsl(var(--procore-orange))] text-[hsl(var(--procore-orange))]'
                   : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
@@ -70,14 +70,15 @@ export function PortfolioHeader({
               <DropdownMenuTrigger asChild>
                 <button
                   className={cn(
-                    'px-4 py-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-1',
+                    'px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors flex items-center gap-1 whitespace-nowrap',
                     financialViews.some((v) => v.id === activeView)
                       ? 'border-[hsl(var(--procore-orange))] text-[hsl(var(--procore-orange))]'
                       : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                   )}
                 >
-                  Financial Views
-                  <ChevronDown className="w-4 h-4" />
+                  <span className="hidden sm:inline">Financial Views</span>
+                  <span className="sm:hidden">Financial</span>
+                  <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
@@ -96,14 +97,14 @@ export function PortfolioHeader({
         </nav>
 
         {/* Export and Create Project buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0 -mt-2 sm:mt-0">
           {/* Export dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-9">
-                <FileText className="w-4 h-4" />
-                Export
-                <ChevronDown className="w-4 h-4 ml-2" />
+              <Button variant="outline" className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-4">
+                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline ml-1">Export</span>
+                <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -119,10 +120,10 @@ export function PortfolioHeader({
           {/* Create Project button */}
           <Button
             onClick={onCreateProject}
-            className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange-hover))] text-white h-9"
+            className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange-hover))] text-white h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-4"
           >
-            <Plus className="w-4 h-4" />
-            Create Project
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline ml-1">Create Project</span>
           </Button>
         </div>
       </div>

@@ -83,31 +83,28 @@ export function PortfolioFilters({
     [phaseFilter, categoryFilter, clientFilter].filter((value) => value && value.length > 0).length;
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between px-4 py-3 bg-white border-b border-gray-200 gap-3">
       {/* Left side - Search and filters */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2 lg:gap-3">
         {/* Search */}
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="Search projects..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-9 w-64 h-9"
+            className="pl-9 w-full sm:w-64 h-9"
           />
         </div>
 
         {/* Client Filter Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="h-9">
-              Client
-              {clientFilter && (
-                <span className="ml-2 px-1.5 py-0.5 text-xs bg-[hsl(var(--procore-orange))] text-white rounded">
-                  1
-                </span>
-              )}
-              <ChevronDown className="w-4 h-4 ml-2" />
+            <Button variant="outline" className="h-9 text-sm">
+              <span className="truncate max-w-[100px] sm:max-w-none">
+                {clientFilter ? clientFilter : 'Client'}
+              </span>
+              <ChevronDown className="w-4 h-4 ml-1 sm:ml-2 shrink-0" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-[12rem]">
@@ -134,32 +131,25 @@ export function PortfolioFilters({
         {/* Phase Filter Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="h-9">
-              Phase
-              {phaseFilter && (
-                <span className="ml-2 px-1.5 py-0.5 text-xs bg-[hsl(var(--procore-orange))] text-white rounded">
-                  1
-                </span>
-              )}
-              <ChevronDown className="w-4 h-4 ml-2" />
+            <Button variant="outline" className="h-9 text-sm">
+              <span className="capitalize truncate max-w-[100px] sm:max-w-none">
+                {phaseFilter ? phaseFilter : 'All Phases'}
+              </span>
+              <ChevronDown className="w-4 h-4 ml-1 sm:ml-2 shrink-0" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-[12rem]">
-            {phaseOptions?.length ? (
-              phaseOptions.map((phase) => (
-                <DropdownMenuItem key={phase} onClick={() => onPhaseFilterChange(phase)}>
-                  {phase}
-                </DropdownMenuItem>
-              ))
-            ) : (
-              <DropdownMenuItem disabled>No phases found</DropdownMenuItem>
-            )}
-            {phaseFilter && (
+            <DropdownMenuItem onClick={() => onPhaseFilterChange(null)}>
+              All Phases
+            </DropdownMenuItem>
+            {phaseOptions?.length && (
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => onPhaseFilterChange(null)}>
-                  Clear filter
-                </DropdownMenuItem>
+                {phaseOptions.map((phase) => (
+                  <DropdownMenuItem key={phase} onClick={() => onPhaseFilterChange(phase)}>
+                    <span className="capitalize">{phase}</span>
+                  </DropdownMenuItem>
+                ))}
               </>
             )}
           </DropdownMenuContent>
@@ -168,14 +158,11 @@ export function PortfolioFilters({
         {/* Category Filter Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="h-9">
-              Category
-              {categoryFilter && (
-                <span className="ml-2 px-1.5 py-0.5 text-xs bg-[hsl(var(--procore-orange))] text-white rounded">
-                  1
-                </span>
-              )}
-              <ChevronDown className="w-4 h-4 ml-2" />
+            <Button variant="outline" className="h-9 text-sm">
+              <span className="truncate max-w-[100px] sm:max-w-none">
+                {categoryFilter ? categoryFilter : 'Category'}
+              </span>
+              <ChevronDown className="w-4 h-4 ml-1 sm:ml-2 shrink-0" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="min-w-[12rem]">
@@ -201,32 +188,32 @@ export function PortfolioFilters({
 
         {/* Active filter pills */}
         {(clientFilter || phaseFilter || categoryFilter) && (
-          <div className="flex flex-wrap items-center gap-2 border-l pl-3 ml-1">
+          <div className="flex flex-wrap items-center gap-2 sm:border-l sm:pl-3 sm:ml-1 w-full sm:w-auto">
             {clientFilter && (
               <button
                 onClick={() => onClientFilterChange(null)}
-                className="flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200"
+                className="flex items-center gap-1 rounded-full bg-gray-100 px-2.5 sm:px-3 py-1 text-xs sm:text-sm text-gray-700 hover:bg-gray-200"
               >
-                Client: {clientFilter}
-                <X className="w-3.5 h-3.5" />
+                <span className="truncate max-w-[80px] sm:max-w-none">Client: {clientFilter}</span>
+                <X className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
               </button>
             )}
             {phaseFilter && (
               <button
                 onClick={() => onPhaseFilterChange(null)}
-                className="flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200"
+                className="flex items-center gap-1 rounded-full bg-gray-100 px-2.5 sm:px-3 py-1 text-xs sm:text-sm text-gray-700 hover:bg-gray-200"
               >
-                Phase: {phaseFilter}
-                <X className="w-3.5 h-3.5" />
+                <span className="truncate max-w-[80px] sm:max-w-none">Phase: {phaseFilter}</span>
+                <X className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
               </button>
             )}
             {categoryFilter && (
               <button
                 onClick={() => onCategoryFilterChange(null)}
-                className="flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200"
+                className="flex items-center gap-1 rounded-full bg-gray-100 px-2.5 sm:px-3 py-1 text-xs sm:text-sm text-gray-700 hover:bg-gray-200"
               >
-                Category: {categoryFilter}
-                <X className="w-3.5 h-3.5" />
+                <span className="truncate max-w-[80px] sm:max-w-none">Category: {categoryFilter}</span>
+                <X className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
               </button>
             )}
           </div>
@@ -246,7 +233,7 @@ export function PortfolioFilters({
 
       {/* Right side - View type toggles */}
       {!hideViewToggle && (
-        <div className="flex items-center gap-1 border rounded-md p-0.5">
+        <div className="flex items-center gap-1 border rounded-md p-0.5 mt-2 lg:mt-0 self-start lg:self-center">
           {viewTypes.map((type) => {
             const Icon = type.icon;
             return (
@@ -254,14 +241,14 @@ export function PortfolioFilters({
                 key={type.value}
                 onClick={() => onViewTypeChange(type.value)}
                 className={cn(
-                  'p-2 rounded transition-colors',
+                  'p-1.5 sm:p-2 rounded transition-colors',
                   viewType === type.value
                     ? 'bg-gray-100 text-gray-900'
                     : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
                 )}
                 title={type.label}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             );
           })}

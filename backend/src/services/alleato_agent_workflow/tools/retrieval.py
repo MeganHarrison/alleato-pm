@@ -175,7 +175,7 @@ async def get_project_insights(project_id: int, limit: int = 10) -> str:
 
         # Get project info
         project_result = supabase.table('projects').select(
-            'id, name, description, status, client_name'
+            'id, name, status, client_name'
         ).eq('id', project_id).single().execute()
 
         if project_result.data:
@@ -185,8 +185,6 @@ async def get_project_insights(project_id: int, limit: int = 10) -> str:
                 output.append(f"Client: {project['client_name']}")
             if project.get('status'):
                 output.append(f"Status: {project['status']}")
-            if project.get('description'):
-                output.append(f"Description: {project['description']}")
             output.append("")
 
         # Get recent risks
@@ -248,7 +246,7 @@ async def list_all_projects() -> str:
         supabase = get_supabase_client()
 
         result = supabase.table('projects').select(
-            'id, name, description, status, client_name, created_at'
+            'id, name, status, client_name, created_at'
         ).order('name').execute()
 
         if not result.data:
@@ -264,9 +262,6 @@ async def list_all_projects() -> str:
             output.append(f"  Status: {status}")
             if client:
                 output.append(f"  Client: {client}")
-            if project.get('description'):
-                desc = project['description'][:100] + "..." if len(project['description']) > 100 else project['description']
-                output.append(f"  {desc}")
             output.append("")
 
         return "\n".join(output)
@@ -303,8 +298,6 @@ async def get_project_details(project_id: int) -> str:
 
         if project.get('client_name'):
             output.append(f"Client: {project['client_name']}")
-        if project.get('description'):
-            output.append(f"\n## Description\n{project['description']}")
         if project.get('start_date'):
             output.append(f"Start Date: {project['start_date']}")
         if project.get('end_date'):

@@ -1,218 +1,329 @@
 'use client';
 
 import * as React from 'react';
+import { useInfiniteQuery } from '@/hooks/use-infinite-query';
+import { GenericEditableTable, type EditableColumn } from '@/components/tables/generic-editable-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, MoreHorizontal, Eye, Edit, Trash2, GripVertical } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Plus, Calendar, User } from 'lucide-react';
+import { format } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton';
+import { createClient } from '@/lib/supabase/client';
+import { toast } from 'sonner';
 
 interface Task {
   id: string;
   title: string;
-  description: string;
-  assignee: string;
-  priority: 'low' | 'medium' | 'high';
-  dueDate: string | null;
-  status: 'todo' | 'in_progress' | 'review' | 'done';
+  description: string | null;
+  assignee: string | null;
+  status: string;
+  due_date: string | null;
+  project_id: number | null;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  metadata: any;
+  source_document_id: string | null;
 }
 
-const mockTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Review structural drawings',
-    description: 'Review and approve structural drawings for foundation',
-    assignee: 'John Smith',
-    priority: 'high',
-    dueDate: '2025-12-15',
-    status: 'todo',
-  },
-  {
-    id: '2',
-    title: 'Order concrete materials',
-    description: 'Place order for concrete delivery',
-    assignee: 'Jane Doe',
-    priority: 'high',
-    dueDate: '2025-12-12',
-    status: 'in_progress',
-  },
-  {
-    id: '3',
-    title: 'Schedule site inspection',
-    description: 'Coordinate with inspector for final walkthrough',
-    assignee: 'Mike Johnson',
-    priority: 'medium',
-    dueDate: '2025-12-20',
-    status: 'review',
-  },
-  {
-    id: '4',
-    title: 'Submit RFI response',
-    description: 'Response to RFI-001 regarding beam specification',
-    assignee: 'Sarah Wilson',
-    priority: 'high',
-    dueDate: '2025-12-11',
-    status: 'done',
-  },
-];
-
-const TaskCard = ({ task }: { task: Task }) => {
-  const initials = task.assignee.split(' ').map(n => n[0]).join('');
-  const priorityColors: Record<string, string> = {
-    low: 'bg-gray-100 text-gray-700',
-    medium: 'bg-yellow-100 text-yellow-700',
-    high: 'bg-red-100 text-red-700',
-  };
-
-  return (
-    <div className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between mb-2">
-        <h3 className="font-medium text-gray-900">{task.title}</h3>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-6 w-6 p-0">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Eye className="mr-2 h-4 w-4" />
-              View
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600">
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <p className="text-sm text-gray-600 mb-3">{task.description}</p>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Avatar className="h-6 w-6">
-            <AvatarFallback className="bg-blue-100 text-blue-700 text-xs">{initials}</AvatarFallback>
-          </Avatar>
-          <Badge className={priorityColors[task.priority]} size="sm">
-            {task.priority}
-          </Badge>
-        </div>
-        {task.dueDate && (
-          <span className="text-xs text-gray-500">
-            Due {new Date(task.dueDate).toLocaleDateString()}
-          </span>
-        )}
-      </div>
-    </div>
-  );
-};
-
 export default function TasksPage() {
-  const [tasks, setTasks] = React.useState<Task[]>(mockTasks);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [statusFilter, setStatusFilter] = React.useState<string>('all');
 
-  const tasksByStatus = {
-    todo: tasks.filter(t => t.status === 'todo'),
-    in_progress: tasks.filter(t => t.status === 'in_progress'),
-    review: tasks.filter(t => t.status === 'review'),
-    done: tasks.filter(t => t.status === 'done'),
+  const {
+    data,
+    count,
+    isSuccess,
+    isLoading,
+    isFetching,
+    error,
+    hasMore,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    tableName: 'ai_tasks',
+    columns: '*',
+    pageSize: 20,
+    trailingQuery: (query) => {
+      let filteredQuery = query.order('due_date', { ascending: true });
+
+      // Apply search filter
+      if (searchQuery && searchQuery.length > 0) {
+        filteredQuery = filteredQuery.ilike('title', `%${searchQuery}%`);
+      }
+
+      // Apply status filter
+      if (statusFilter !== 'all') {
+        filteredQuery = filteredQuery.eq('status', statusFilter);
+      }
+
+      return filteredQuery;
+    },
+  });
+
+  const updateTask = async (id: string | number, data: Partial<Task>) => {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('ai_tasks')
+        .update(data)
+        .eq('id', id);
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      toast.success('Task updated successfully');
+      window.location.reload(); // Simple reload to refresh data
+      return { success: true };
+    } catch (error) {
+      return { error: 'Failed to update task' };
+    }
   };
 
+  const deleteTask = async (id: string | number) => {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('ai_tasks')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      toast.success('Task deleted successfully');
+      window.location.reload(); // Simple reload to refresh data
+      return { success: true };
+    } catch (error) {
+      return { error: 'Failed to delete task' };
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    const statusColors: Record<string, string> = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      todo: 'bg-gray-100 text-gray-800',
+      in_progress: 'bg-blue-100 text-blue-800',
+      review: 'bg-purple-100 text-purple-800',
+      completed: 'bg-green-100 text-green-800',
+      done: 'bg-green-100 text-green-800',
+      cancelled: 'bg-red-100 text-red-800',
+    };
+    return statusColors[status.toLowerCase()] || 'bg-gray-100 text-gray-800';
+  };
+
+  const getPriorityFromDate = (dueDate: string | null) => {
+    if (!dueDate) return { level: 'low', color: 'bg-gray-100 text-gray-700' };
+    
+    const now = new Date();
+    const due = new Date(dueDate);
+    const daysUntil = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysUntil < 0) return { level: 'overdue', color: 'bg-red-100 text-red-700' };
+    if (daysUntil <= 3) return { level: 'high', color: 'bg-orange-100 text-orange-700' };
+    if (daysUntil <= 7) return { level: 'medium', color: 'bg-yellow-100 text-yellow-700' };
+    return { level: 'low', color: 'bg-green-100 text-green-700' };
+  };
+
+  const columns: EditableColumn<Task>[] = [
+    {
+      key: 'title',
+      header: 'Task Title',
+      type: 'text',
+      width: 'w-[300px]',
+      render: (value, row) => (
+        <div>
+          <div className="font-medium">{value}</div>
+          {row.description && (
+            <div className="text-xs text-muted-foreground mt-1">{row.description}</div>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      type: 'select',
+      selectOptions: [
+        { value: 'pending', label: 'Pending' },
+        { value: 'todo', label: 'To Do' },
+        { value: 'in_progress', label: 'In Progress' },
+        { value: 'review', label: 'Review' },
+        { value: 'completed', label: 'Completed' },
+        { value: 'cancelled', label: 'Cancelled' },
+      ],
+      render: (value) => (
+        <Badge className={getStatusColor(value)}>
+          {value.replace('_', ' ')}
+        </Badge>
+      ),
+    },
+    {
+      key: 'assignee',
+      header: 'Assignee',
+      type: 'text',
+      render: (value) => value ? (
+        <div className="flex items-center gap-2">
+          <User className="h-3 w-3 text-muted-foreground" />
+          <span className="text-sm">{value}</span>
+        </div>
+      ) : <span className="text-muted-foreground">Unassigned</span>,
+    },
+    {
+      key: 'due_date',
+      header: 'Due Date',
+      type: 'date',
+      width: 'w-[150px]',
+      render: (value) => {
+        if (!value) return <span className="text-muted-foreground">No due date</span>;
+        const priority = getPriorityFromDate(value);
+        return (
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-3 w-3 text-muted-foreground" />
+              <span className="text-sm">{format(new Date(value), 'MMM d, yyyy')}</span>
+            </div>
+            <Badge className={`${priority.color} text-xs`}>
+              {priority.level}
+            </Badge>
+          </div>
+        );
+      },
+    },
+    {
+      key: 'project_id',
+      header: 'Project',
+      type: 'number',
+      render: (value) => value ? (
+        <Badge variant="outline">Project {value}</Badge>
+      ) : <span className="text-muted-foreground">No project</span>,
+    },
+    {
+      key: 'created_at',
+      header: 'Created',
+      editable: false,
+      width: 'w-[150px]',
+      render: (value) => (
+        <span className="text-sm text-muted-foreground">
+          {format(new Date(value), 'MMM d, yyyy')}
+        </span>
+      ),
+    },
+  ];
+
+  // Extract unique statuses for filter
+  const statusOptions = React.useMemo(() => {
+    const statuses = new Set(data.map((t: Task) => t.status));
+    return ['all', ...Array.from(statuses).sort()];
+  }, [data]);
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Error Loading Tasks</h1>
+          <p className="text-red-600">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-full p-6 space-y-6">
+    <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage project tasks and assignments</p>
+          <h1 className="text-3xl font-bold">Tasks</h1>
+          <p className="text-gray-500">Manage and track your project tasks</p>
         </div>
         <Button className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90">
-          <Plus className="h-4 w-4 mr-2" />
-          Create Task
+          <Plus className="mr-2 h-4 w-4" />
+          Add Task
         </Button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border p-4">
-          <div className="text-sm font-medium text-gray-500">Total Tasks</div>
-          <div className="text-2xl font-bold text-gray-900 mt-1">{tasks.length}</div>
-        </div>
-        <div className="bg-white rounded-lg border p-4">
-          <div className="text-sm font-medium text-gray-500">To Do</div>
-          <div className="text-2xl font-bold text-gray-900 mt-1">{tasksByStatus.todo.length}</div>
-        </div>
-        <div className="bg-white rounded-lg border p-4">
-          <div className="text-sm font-medium text-gray-500">In Progress</div>
-          <div className="text-2xl font-bold text-gray-900 mt-1">{tasksByStatus.in_progress.length}</div>
-        </div>
-        <div className="bg-white rounded-lg border p-4">
-          <div className="text-sm font-medium text-gray-500">Done</div>
-          <div className="text-2xl font-bold text-gray-900 mt-1">{tasksByStatus.done.length}</div>
-        </div>
+      {/* Filters */}
+      <div className="flex gap-4">
+        <input
+          type="text"
+          placeholder="Search tasks..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="px-3 py-2 border rounded-md w-full max-w-xs"
+        />
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="px-3 py-2 border rounded-md"
+        >
+          {statusOptions.map(status => (
+            <option key={status} value={status}>
+              {status === 'all' ? 'All Statuses' : status.replace('_', ' ')}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* Kanban Board */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
-        {/* To Do Column */}
-        <div className="bg-gray-50 rounded-lg p-4">
-          <h2 className="font-semibold text-gray-900 mb-4 flex items-center justify-between">
-            To Do
-            <Badge className="bg-gray-200 text-gray-700">{tasksByStatus.todo.length}</Badge>
-          </h2>
-          <div className="space-y-3">
-            {tasksByStatus.todo.map(task => (
-              <TaskCard key={task.id} task={task} />
-            ))}
-          </div>
+      {/* Count */}
+      {isSuccess && (
+        <div className="text-sm text-gray-600">
+          <span className="font-medium">{data.length}</span> of <span className="font-medium">{count}</span> tasks loaded
         </div>
+      )}
 
-        {/* In Progress Column */}
-        <div className="bg-blue-50 rounded-lg p-4">
-          <h2 className="font-semibold text-gray-900 mb-4 flex items-center justify-between">
-            In Progress
-            <Badge className="bg-blue-200 text-blue-700">{tasksByStatus.in_progress.length}</Badge>
-          </h2>
-          <div className="space-y-3">
-            {tasksByStatus.in_progress.map(task => (
-              <TaskCard key={task.id} task={task} />
+      {/* Table */}
+      <div className="bg-white rounded-lg shadow">
+        {isLoading ? (
+          <div className="p-8 space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex gap-4">
+                <Skeleton className="h-8 flex-1" />
+                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-8 w-32" />
+                <Skeleton className="h-8 w-28" />
+                <Skeleton className="h-8 w-24" />
+              </div>
             ))}
           </div>
-        </div>
-
-        {/* Review Column */}
-        <div className="bg-purple-50 rounded-lg p-4">
-          <h2 className="font-semibold text-gray-900 mb-4 flex items-center justify-between">
-            Review
-            <Badge className="bg-purple-200 text-purple-700">{tasksByStatus.review.length}</Badge>
-          </h2>
-          <div className="space-y-3">
-            {tasksByStatus.review.map(task => (
-              <TaskCard key={task.id} task={task} />
-            ))}
+        ) : data.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className="mx-auto h-12 w-12 text-gray-400 mb-4">📋</div>
+            <h3 className="text-lg font-semibold mb-2">No tasks found</h3>
+            <p className="text-gray-500 mb-4">
+              {searchQuery || statusFilter !== 'all' 
+                ? 'Try adjusting your filters.'
+                : 'Get started by creating your first task.'}
+            </p>
+            <Button className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Task
+            </Button>
           </div>
-        </div>
-
-        {/* Done Column */}
-        <div className="bg-green-50 rounded-lg p-4">
-          <h2 className="font-semibold text-gray-900 mb-4 flex items-center justify-between">
-            Done
-            <Badge className="bg-green-200 text-green-700">{tasksByStatus.done.length}</Badge>
-          </h2>
-          <div className="space-y-3">
-            {tasksByStatus.done.map(task => (
-              <TaskCard key={task.id} task={task} />
-            ))}
-          </div>
-        </div>
+        ) : (
+          <GenericEditableTable
+            data={data}
+            columns={columns}
+            onUpdate={updateTask}
+            onDelete={deleteTask}
+            className="border-0"
+          />
+        )}
       </div>
+
+      {/* Load More */}
+      {isSuccess && hasMore && (
+        <div className="text-center">
+          <Button
+            onClick={fetchNextPage}
+            disabled={isFetching}
+            variant="outline"
+            size="lg"
+          >
+            {isFetching ? 'Loading...' : 'Load More Tasks'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

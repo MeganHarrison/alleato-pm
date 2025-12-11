@@ -10,11 +10,11 @@ import {
   QuickActions,
 } from '@/components/project-home';
 import {
-  mockRecentActivity,
-  mockProjectInfo,
-  mockQuickActions,
+  recentActivity,
+  defaultProjectInfo,
+  quickActions,
   getToolsByCategory,
-} from '@/data/mock-project-home-data';
+} from '@/config/project-home';
 
 interface PageProps {
   params: Promise<{ projectId: string }>;
@@ -30,7 +30,7 @@ export default function ProjectHomePage({ params }: PageProps) {
   return (
     <AppShell
       companyName="Alleato Group"
-      projectName={mockProjectInfo.name}
+      projectName={defaultProjectInfo.name}
       currentTool="Home"
       userInitials="BC"
     >
@@ -39,7 +39,7 @@ export default function ProjectHomePage({ params }: PageProps) {
         <div className="bg-white border-b border-gray-200 px-6 py-4">
           <h1 className="text-2xl font-semibold text-gray-900">Project Home</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Welcome to {mockProjectInfo.name}
+            Welcome to {defaultProjectInfo.name}
           </p>
         </div>
 
@@ -49,7 +49,7 @@ export default function ProjectHomePage({ params }: PageProps) {
             {/* Left Column - Project Info & Tools */}
             <div className="lg:col-span-2 space-y-6">
               {/* Project Info */}
-              <ProjectInfoCard project={mockProjectInfo} />
+              <ProjectInfoCard project={defaultProjectInfo} />
 
               {/* Financial Management Tools */}
               <ProjectToolsGrid
@@ -76,10 +76,10 @@ export default function ProjectHomePage({ params }: PageProps) {
             {/* Right Column - Activity & Quick Actions */}
             <div className="space-y-6">
               {/* Quick Actions */}
-              <QuickActions actions={mockQuickActions} projectId={projectId} />
+              <QuickActions actions={quickActions} projectId={projectId} />
 
               {/* Recent Activity */}
-              <RecentActivity activities={mockRecentActivity} projectId={projectId} />
+              <RecentActivity activities={recentActivity} projectId={projectId} />
             </div>
           </div>
         </div>

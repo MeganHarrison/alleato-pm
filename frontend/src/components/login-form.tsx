@@ -37,14 +37,18 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
       if (result?.error) {
         setError('Invalid email or password')
+        setIsLoading(false)
       } else if (result?.ok) {
-        router.push('/protected')
+        router.push('/')
         router.refresh()
+      } else {
+        // Handle unexpected response
+        setError('Login failed. Please try again.')
+        setIsLoading(false)
       }
     } catch (error: unknown) {
       console.error('Login error:', error)
       setError('An error occurred during login. Please try again.')
-    } finally {
       setIsLoading(false)
     }
   }
@@ -55,7 +59,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
     try {
       await signIn('google', {
-        callbackUrl: '/protected',
+        callbackUrl: '/',
       })
     } catch (error: unknown) {
       console.error('Google login error:', error)

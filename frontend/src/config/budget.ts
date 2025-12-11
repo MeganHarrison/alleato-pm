@@ -7,7 +7,7 @@ import {
   BudgetGrandTotals,
 } from '@/types/budget';
 
-export const mockBudgetLineItems: BudgetLineItem[] = [
+export const budgetLineItems: BudgetLineItem[] = [
   {
     id: 'none',
     description: 'None',
@@ -406,7 +406,7 @@ export const mockBudgetLineItems: BudgetLineItem[] = [
   },
 ];
 
-export const mockBudgetGrandTotals: BudgetGrandTotals = {
+export const budgetGrandTotals: BudgetGrandTotals = {
   originalBudgetAmount: 157706,
   budgetModifications: 0,
   approvedCOs: 1437486.89,
@@ -420,7 +420,7 @@ export const mockBudgetGrandTotals: BudgetGrandTotals = {
   projectedCosts: 1425548.70,
 };
 
-export const mockBudgetViews: BudgetView[] = [
+export const budgetViews: BudgetView[] = [
   {
     id: 'procore-standard',
     name: 'Procore Standard Budget',
@@ -436,7 +436,7 @@ export const mockBudgetViews: BudgetView[] = [
   },
 ];
 
-export const mockBudgetSnapshots: BudgetSnapshot[] = [
+export const budgetSnapshots: BudgetSnapshot[] = [
   {
     id: 'current',
     name: 'Current',
@@ -454,7 +454,7 @@ export const mockBudgetSnapshots: BudgetSnapshot[] = [
   },
 ];
 
-export const mockBudgetGroups: BudgetGroup[] = [
+export const budgetGroups: BudgetGroup[] = [
   {
     id: 'cost-code-tier-1',
     name: 'Cost Code Tier 1',
@@ -473,7 +473,7 @@ export const mockBudgetGroups: BudgetGroup[] = [
   },
 ];
 
-export const mockBudgetSyncStatus: BudgetSyncStatus = {
+export const budgetSyncStatus: BudgetSyncStatus = {
   isSynced: true,
   erpSystem: 'Procore Edge for Acumatica',
   lastJobCostUpdate: '5 minutes ago',

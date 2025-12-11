@@ -8,7 +8,7 @@ import {
   MyOpenItem,
 } from '@/types/project-home';
 
-export const mockProjectTools: ProjectTool[] = [
+export const projectTools: ProjectTool[] = [
   // Core Tools
   {
     id: 'home',
@@ -160,75 +160,7 @@ export const mockProjectTools: ProjectTool[] = [
   },
 ];
 
-export const mockRecentActivity: RecentActivity[] = [
-  {
-    id: '1',
-    type: 'rfi',
-    title: 'RFI #012 - Electrical Panel Location',
-    description: 'Submitted for review',
-    user: 'John Smith',
-    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-    link: '/projects/[projectId]/rfis/012',
-  },
-  {
-    id: '2',
-    type: 'daily-log',
-    title: 'Daily Log - Nov 30, 2024',
-    description: 'Completed by Site Manager',
-    user: 'Maria Garcia',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-    link: '/projects/[projectId]/daily-log',
-  },
-  {
-    id: '3',
-    type: 'submittal',
-    title: 'Submittal #045 - HVAC Equipment',
-    description: 'Approved with comments',
-    user: 'Bob Johnson',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
-    link: '/projects/[projectId]/submittals/045',
-  },
-  {
-    id: '4',
-    type: 'change-order',
-    title: 'PCO #003 - Foundation Modification',
-    description: 'Pending owner approval',
-    user: 'Sarah Williams',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-    link: '/projects/[projectId]/change-orders/003',
-  },
-  {
-    id: '5',
-    type: 'invoice',
-    title: 'Invoice #INV-2024-006',
-    description: 'Submitted for payment',
-    user: 'Mike Davis',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
-    link: '/projects/[projectId]/invoicing/006',
-  },
-];
-
-export const mockProjectInfo: ProjectInfo = {
-  id: '1',
-  name: '24-104 - Goodwill Bart',
-  projectNumber: '24-104',
-  address: '123 Bart',
-  city: 'San Leandro',
-  state: 'CA',
-  zip: '94577',
-  phone: '(510) 555-0100',
-  status: 'Active',
-  stage: 'Preconstruction',
-  type: 'Industrial',
-  startDate: new Date('2024-06-01'),
-  estimatedCompletionDate: new Date('2025-08-15'),
-  projectValue: 2500000,
-  owner: 'Goodwill Industries',
-  architect: 'Design Partners LLC',
-  generalContractor: 'Alleato Group',
-};
-
-export const mockQuickActions: QuickAction[] = [
+export const quickActions: QuickAction[] = [
   {
     id: 'create-rfi',
     label: 'Create RFI',
@@ -255,74 +187,87 @@ export const mockQuickActions: QuickAction[] = [
   },
 ];
 
-// Project Team based on Procore DOM
-export const mockProjectTeam: ProjectTeamMember[] = [
+// Sample recent activity (placeholder data for development)
+export const recentActivity: RecentActivity[] = [
   {
     id: '1',
-    role: 'Project Manager',
-    name: 'Nick Jepson',
-    company: 'Alleato Group',
-    email: 'njepson@alleatogroup.com',
-    office: '',
-    mobile: '(727) 603-1265',
+    type: 'rfi',
+    title: 'RFI #012 - Electrical Panel Location',
+    description: 'Submitted for review',
+    user: 'John Smith',
+    timestamp: new Date(Date.now() - 1000 * 60 * 30),
+    link: '/projects/[projectId]/rfis/012',
   },
   {
     id: '2',
-    role: 'Project Manager',
-    name: 'Brandon Clymer',
-    company: 'Alleato Group',
-    email: 'bclymer@alleatogroup.com',
-    office: '+1 3177600088',
-    mobile: '(317) 760-0088',
+    type: 'daily-log',
+    title: 'Daily Log - Nov 30, 2024',
+    description: 'Completed by Site Manager',
+    user: 'Maria Garcia',
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+    link: '/projects/[projectId]/daily-log',
   },
 ];
 
-// Project Overview based on Procore DOM
-export const mockProjectOverview: ProjectOverviewItem[] = [
+// Default project info (placeholder)
+export const defaultProjectInfo: ProjectInfo = {
+  id: '1',
+  name: 'Project Name',
+  projectNumber: '00-000',
+  address: '',
+  city: '',
+  state: '',
+  zip: '',
+  phone: '',
+  status: 'Active',
+  stage: 'In Progress',
+  type: 'General',
+  startDate: new Date(),
+  estimatedCompletionDate: new Date(),
+  projectValue: 0,
+  owner: '',
+  architect: '',
+  generalContractor: '',
+};
+
+// Project Team placeholder
+export const projectTeam: ProjectTeamMember[] = [];
+
+// Project Overview placeholder
+export const projectOverview: ProjectOverviewItem[] = [
   {
     id: 'schedule',
     name: 'Schedule',
-    overdue: 28,
+    overdue: 0,
     nextSevenDays: 0,
     moreThanSevenDays: 0,
-    totalOpen: 28,
+    totalOpen: 0,
     link: '/projects/[projectId]/schedule',
   },
   {
     id: 'punch-list',
     name: 'Punch List',
-    overdue: 5,
+    overdue: 0,
     nextSevenDays: 0,
     moreThanSevenDays: 0,
-    totalOpen: 5,
+    totalOpen: 0,
     link: '/projects/[projectId]/punch-list',
   },
   {
     id: 'meetings',
     name: 'Meetings',
-    overdue: 3,
+    overdue: 0,
     nextSevenDays: 0,
-    moreThanSevenDays: 20,
-    totalOpen: 23,
+    moreThanSevenDays: 0,
+    totalOpen: 0,
     link: '/projects/[projectId]/meetings',
   },
 ];
 
-// My Open Items based on Procore DOM
-export const mockMyOpenItems: MyOpenItem[] = [
-  {
-    id: '1',
-    type: 'meeting',
-    itemType: 'Meeting Item',
-    details: 'Goodwill Bart - Current Schedule',
-    status: 'Open',
-    dueDate: undefined,
-    link: '/projects/[projectId]/meetings/562949972597337',
-    icon: 'Calendar',
-  },
-];
+// My Open Items placeholder
+export const myOpenItems: MyOpenItem[] = [];
 
 // Helper to get tools by category
 export function getToolsByCategory(category: ProjectTool['category']): ProjectTool[] {
-  return mockProjectTools.filter((tool) => tool.category === category);
+  return projectTools.filter((tool) => tool.category === category);
 }

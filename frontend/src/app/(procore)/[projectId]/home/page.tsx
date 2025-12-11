@@ -1,294 +1,468 @@
-'use client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { MoreVertical } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/server'
+import { notFound } from 'next/navigation'
+import { format } from 'date-fns'
+import { Database } from '@/app/types/database.types'
 
-import * as React from 'react';
-import { use } from 'react';
-import { Settings } from 'lucide-react';
-import Link from 'next/link';
-import { AppShell } from '@/components/layout';
-import {
-  ProjectTeam,
-  ProjectOverview,
-  MyOpenItems,
-  SidebarProjectAddress,
-} from '@/components/project-home';
-import {
-  mockProjectTeam,
-  mockProjectOverview,
-  mockMyOpenItems,
-} from '@/data/mock-project-home-data';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ProjectInfo } from '@/types/project-home';
+type Project = Database['public']['Tables']['projects']['Row']
+type Insight = Database['public']['Tables']['insights']['Row']
+type Task = Database['public']['Tables']['project_tasks']['Row']
+type Meeting = Database['public']['Tables']['document_metadata']['Row']
+type DailyLog = Database['public']['Tables']['daily_logs']['Row']
+type ChangeOrder = Database['public']['Tables']['change_orders']['Row']
 
-interface PageProps {
-  params: Promise<{ projectId: string }>;
-}
+export default async function ProjectHomePage({ 
+  params 
+}: {
+  params: Promise<{ projectId: string }>
+}) {
+  const supabase = await createClient()
+  const { projectId } = await params
 
-export default function ProjectHomePage({ params }: PageProps) {
-  const { projectId } = use(params);
-  const [projectInfo, setProjectInfo] = React.useState<ProjectInfo | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
+  // Fetch project data with all related information in parallel
+  const [
+    projectResult,
+    insightsResult,
+    rfisResult,
+    tasksResult,
+    meetingsResult,
+    reportsResult,
+    changeOrdersResult
+  ] = await Promise.all([
+    // Fetch main project data
+    supabase
+      .from('projects')
+      .select('*')
+      .eq('id', projectId)
+      .single(),
+    
+    // Fetch project insights
+    supabase
+      .from('insights')
+      .select('*')
+      .contains('project_ids', [projectId])
+      .order('created_at', { ascending: false })
+      .limit(3),
+    
+    // Fetch RFIs (using insights table with type filter if RFI table doesn't exist)
+    supabase
+      .from('insights')
+      .select('*')
+      .contains('project_ids', [projectId])
+      .eq('category', 'question')
+      .eq('status', 'open')
+      .order('created_at', { ascending: false })
+      .limit(5),
+    
+    // Fetch tasks
+    supabase
+      .from('project_tasks')
+      .select('*')
+      .eq('project_id', projectId)
+      .neq('status', 'completed')
+      .order('due_date', { ascending: true })
+      .limit(4),
+    
+    // Fetch meetings from document_metadata
+    supabase
+      .from('document_metadata')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('date', { ascending: false })
+      .limit(5),
+    
+    // Fetch reports (daily recaps)
+    supabase
+      .from('daily_logs')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('log_date', { ascending: false })
+      .limit(5),
+    
+    // Fetch change orders
+    supabase
+      .from('change_orders')
+      .select(`
+        *,
+        change_events!inner(project_id)
+      `)
+      .eq('change_events.project_id', projectId)
+      .order('created_at', { ascending: false })
+      .limit(5)
+  ])
 
-  React.useEffect(() => {
-    const fetchProject = async () => {
-      try {
-        // Fetch project from API
-        const response = await fetch(`/api/projects/${projectId}`);
-        const p = await response.json();
-
-        if (!response.ok || p.error) {
-          throw new Error(p.error || 'Project not found');
-        }
-
-        // Transform API data to match ProjectInfo type
-        const projectInfo: ProjectInfo = {
-          id: p.id.toString(),
-          name: p.name || 'Untitled Project',
-          projectNumber: p['job number'] || p.id.toString(),
-          address: p.address || '',
-          city: p.address ? p.address.split(',')[0] || '' : '',
-          state: p.state || '',
-          zip: '',
-          phone: '',
-          status: p.archived ? 'Inactive' : 'Active',
-          stage: p.phase || 'Unknown',
-          projectType: p.category || 'General',
-        };
-
-        setProjectInfo(projectInfo);
-
-        // Update document title
-        document.title = `${projectInfo.projectNumber} - ${projectInfo.name} | Alleato OS`;
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load project');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProject();
-  }, [projectId]);
-
-  if (isLoading) {
-    return (
-      <AppShell
-        companyName="Alleato Group"
-        projectName="Loading..."
-        currentTool="Home"
-        userInitials="BC"
-      >
-        <div className="flex flex-col min-h-[calc(100vh-48px)] bg-gray-50 p-6">
-          <Skeleton className="h-8 w-64 mb-4" />
-          <Skeleton className="h-32 w-full mb-4" />
-          <Skeleton className="h-48 w-full" />
-        </div>
-      </AppShell>
-    );
+  if (projectResult.error || !projectResult.data) {
+    notFound()
   }
 
-  if (error || !projectInfo) {
-    return (
-      <AppShell
-        companyName="Alleato Group"
-        projectName="Error"
-        currentTool="Home"
-        userInitials="BC"
-      >
-        <div className="flex flex-col min-h-[calc(100vh-48px)] bg-gray-50 items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Project Not Found</h2>
-            <p className="text-gray-600">{error || 'The requested project could not be found.'}</p>
-            <Link
-              href="/company/home"
-              className="mt-4 inline-block text-blue-600 hover:underline"
-            >
-              Back to Projects
-            </Link>
-          </div>
-        </div>
-      </AppShell>
-    );
-  }
+  const project = projectResult.data
+  const insights = insightsResult.data || []
+  const rfis = rfisResult.data || []
+  const tasks = tasksResult.data || []
+  const meetings = meetingsResult.data || []
+  const reports = reportsResult.data || []
+  const changeOrders = changeOrdersResult.data || []
 
   return (
-    <AppShell
-      companyName="Alleato Group"
-      projectName={`${projectInfo.projectNumber} - ${projectInfo.name}`}
-      currentTool="Home"
-      userInitials="BC"
-    >
-      <div className="flex flex-col min-h-[calc(100vh-48px)] bg-gray-50">
-        {/* Page Header */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold text-gray-900">
-                {projectInfo.projectNumber} - {projectInfo.name}
-              </h1>
-              <span className="px-2 py-0.5 text-xs font-medium rounded bg-green-100 text-green-700">
-                Synced
+    <div className="min-h-screen bg-gray-50 p-6">
+      {/* Project Title */}
+      <h1 className="text-2xl font-semibold text-orange-600 mb-6">
+        {project.name || project.code}
+      </h1>
+
+      {/* Three Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {/* Overview Card */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-sm font-medium text-gray-600">OVERVIEW</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <span className="text-sm font-medium">Client:</span>
+              <span className="text-sm text-gray-700 ml-1">{project.client || 'N/A'}</span>
+            </div>
+            <div>
+              <span className="text-sm font-medium">Status:</span>
+              <span className="text-sm text-gray-700 ml-1">{project.phase || project.status || 'Active'}</span>
+            </div>
+            <div>
+              <span className="text-sm font-medium">Start Date:</span>
+              <span className="text-sm text-gray-700 ml-1">
+                {project.start_date ? format(new Date(project.start_date), 'MMM d, yyyy') : 'N/A'}
               </span>
             </div>
-            <Link
-              href={`/${projectId}/home/configure`}
-              className="text-gray-500 hover:text-orange-600 p-2 rounded-md hover:bg-gray-100"
-              title="Configure Settings"
-            >
-              <Settings className="w-5 h-5" />
-            </Link>
+            <div>
+              <span className="text-sm font-medium">Est Completion:</span>
+              <span className="text-sm text-gray-700 ml-1">
+                {project.end_date ? format(new Date(project.end_date), 'MMM d, yyyy') : 'N/A'}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Project Team Card */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-sm font-medium text-gray-600">PROJECT TEAM</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {/* Parse team members from JSON if available */}
+            {project.team_members ? (
+              Object.entries(project.team_members as Record<string, string>).slice(0, 4).map(([role, name]) => (
+                <div key={role}>
+                  <span className="text-sm font-medium">{role}:</span>
+                  <span className="text-sm text-gray-700 ml-1">{name}</span>
+                </div>
+              ))
+            ) : (
+              <>
+                <div>
+                  <span className="text-sm font-medium">Owner:</span>
+                  <span className="text-sm text-gray-700 ml-1">Not assigned</span>
+                </div>
+                <div>
+                  <span className="text-sm font-medium">PM:</span>
+                  <span className="text-sm text-gray-700 ml-1">Not assigned</span>
+                </div>
+                <div>
+                  <span className="text-sm font-medium">Estimator:</span>
+                  <span className="text-sm text-gray-700 ml-1">Not assigned</span>
+                </div>
+                <div>
+                  <span className="text-sm font-medium">Superintendent:</span>
+                  <span className="text-sm text-gray-700 ml-1">Not assigned</span>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Financials Card */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-sm font-medium text-gray-600">FINANCIALS</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <span className="text-sm font-medium">Est Revenue:</span>
+              <span className="text-sm text-gray-700 ml-1">
+                {project.budget_total ? `$${(project.budget_total / 1000000).toFixed(1)} million` : 'N/A'}
+              </span>
+            </div>
+            <div>
+              <span className="text-sm font-medium">Est Profit:</span>
+              <span className="text-sm text-gray-700 ml-1">
+                {project.budget_total ? `$${(project.budget_total * 0.2 / 1000000).toFixed(1)} million` : 'N/A'}
+              </span>
+            </div>
+            <div>
+              <span className="text-sm font-medium">Budget Used:</span>
+              <span className="text-sm text-gray-700 ml-1">
+                {project.budget_used ? `$${(project.budget_used / 1000000).toFixed(1)} million` : '$0'}
+              </span>
+            </div>
+            <div>
+              <span className="text-sm font-medium">Balance:</span>
+              <span className="text-sm text-gray-700 ml-1">
+                {project.budget_total && project.budget_used 
+                  ? `$${((project.budget_total - project.budget_used) / 1000000).toFixed(1)} million` 
+                  : 'N/A'}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Left Column - Summary, Insights, RFIs */}
+        <div className="space-y-6">
+          {/* Summary */}
+          <div>
+            <h2 className="text-lg font-semibold text-orange-600 mb-3">Summary</h2>
+            <p className="text-sm text-gray-600">
+              {project.summary || project.description || 'No project summary available.'}
+            </p>
+          </div>
+
+          {/* Project Insights */}
+          <div>
+            <h2 className="text-lg font-semibold text-orange-600 mb-3">Project Insights:</h2>
+            {insights.length > 0 ? (
+              <div className="space-y-2">
+                {insights.map((insight) => (
+                  <div key={insight.id}>
+                    <p className="text-sm font-medium">
+                      {insight.created_at ? format(new Date(insight.created_at), 'MMM d, yyyy') : 'No date'}
+                    </p>
+                    <p className="text-sm text-gray-600">{insight.title || insight.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">No insights available yet.</p>
+            )}
+          </div>
+
+          {/* Open RFI's */}
+          <div>
+            <h2 className="text-lg font-semibold text-orange-600 mb-3">Open RFI's</h2>
+            {rfis.length > 0 ? (
+              <div className="space-y-2">
+                {rfis.map((rfi) => (
+                  <div key={rfi.id}>
+                    <p className="text-sm font-medium">
+                      {rfi.created_at ? format(new Date(rfi.created_at), 'MMM d, yyyy') : 'No date'}
+                    </p>
+                    <p className="text-sm text-gray-600">{rfi.title || rfi.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">No open RFIs.</p>
+            )}
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex">
-          {/* Main Panel */}
-          <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-            {/* Project Team */}
-            <ProjectTeam team={mockProjectTeam} projectId={projectId} />
-
-            {/* Project Overview */}
-            <ProjectOverview items={mockProjectOverview} projectId={projectId} />
-
-            {/* My Open Items */}
-            <MyOpenItems items={mockMyOpenItems} projectId={projectId} />
-
-            {/* Collapsible Sections */}
-            <CollapsibleSection title="Recently Changed Items">
-              <p className="text-sm text-gray-500 py-4 text-center">
-                No recently changed items
-              </p>
-            </CollapsibleSection>
-
-            <CollapsibleSection title="Today's Schedule">
-              <p className="text-sm text-gray-500 py-4 text-center">
-                No scheduled items for today
-              </p>
-            </CollapsibleSection>
-
-            <CollapsibleSection title="Project Milestones">
-              <p className="text-sm text-gray-500 py-4 text-center">
-                No milestones configured
-              </p>
-            </CollapsibleSection>
-          </div>
-
-          {/* Sidebar */}
-          <div className="w-80 border-l border-gray-200 bg-gray-50 p-4 space-y-4">
-            <SidebarProjectAddress
-              address={projectInfo.address}
-              city={projectInfo.city}
-              state={projectInfo.state}
-              zip={projectInfo.zip}
-            />
-
-            <CollapsibleSidebarSection title="Project Weather" defaultOpen>
-              <p className="text-sm text-gray-500 text-center py-2">
-                Weather data unavailable
-              </p>
-              <Link
-                href={`/${projectId}/weather`}
-                className="text-sm text-blue-600 hover:underline block text-center"
-              >
-                Click for forecast
-              </Link>
-            </CollapsibleSidebarSection>
-
-            <div className="bg-white rounded-md border border-gray-200 p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold text-gray-900">Project Links</h3>
-                <button className="text-sm text-blue-600 hover:underline">
-                  + New
-                </button>
-              </div>
-              <p className="text-sm text-gray-500">No links to display.</p>
+        {/* Right Column - Tasks */}
+        <div>
+          <h2 className="text-lg font-semibold text-orange-600 mb-3">Tasks</h2>
+          {tasks.length > 0 ? (
+            <div className="space-y-3">
+              {tasks.map((task) => (
+                <div key={task.id} className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
+                  <div className="flex-1">
+                    <span className="text-sm">{task.task_description}</span>
+                    {task.due_date && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Due: {format(new Date(task.due_date), 'MMM d, yyyy')}
+                      </p>
+                    )}
+                  </div>
+                  {task.assigned_to && (
+                    <Avatar className="w-8 h-8">
+                      <AvatarFallback>
+                        {task.assigned_to.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                </div>
+              ))}
             </div>
-          </div>
+          ) : (
+            <p className="text-sm text-gray-500">No active tasks.</p>
+          )}
         </div>
       </div>
-    </AppShell>
-  );
-}
 
-// Collapsible Section Component
-function CollapsibleSection({
-  title,
-  children,
-  defaultOpen = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}) {
-  const [isOpen, setIsOpen] = React.useState(defaultOpen);
-
-  return (
-    <div className="bg-white rounded-md border border-gray-200">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-6 py-4 flex items-center gap-2 text-left hover:bg-gray-50"
-      >
-        <span
-          className={`transition-transform ${isOpen ? 'rotate-90' : ''}`}
-        >
-          <svg
-            className="w-4 h-4 text-gray-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </span>
-        <h2 className="text-base font-semibold text-gray-900">{title}</h2>
-      </button>
-      {isOpen && <div className="px-6 pb-4">{children}</div>}
+      {/* Tabbed Section */}
+      <Card className="shadow-sm">
+        <CardContent className="p-0">
+          <Tabs defaultValue="meetings" className="w-full">
+            <TabsList className="w-full justify-start rounded-none border-b h-auto p-0">
+              <TabsTrigger value="meetings" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Meetings</TabsTrigger>
+              <TabsTrigger value="insights" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Insights</TabsTrigger>
+              <TabsTrigger value="files" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Files</TabsTrigger>
+              <TabsTrigger value="reports" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Reports</TabsTrigger>
+              <TabsTrigger value="schedule" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Schedule</TabsTrigger>
+              <TabsTrigger value="expenses" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Expenses</TabsTrigger>
+              <TabsTrigger value="subs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Subs</TabsTrigger>
+              <TabsTrigger value="change-orders" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Change Orders</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="meetings" className="p-6">
+              {/* Meetings Table */}
+              {meetings.length > 0 ? (
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left border-b">
+                      <th className="pb-3 font-medium text-sm">Title</th>
+                      <th className="pb-3 font-medium text-sm">Summary</th>
+                      <th className="pb-3 font-medium text-sm">Date</th>
+                      <th className="pb-3 font-medium text-sm">Duration</th>
+                      <th className="pb-3 w-8"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {meetings.map((meeting) => (
+                      <tr key={meeting.id} className="border-b">
+                        <td className="py-3">
+                          <div className="flex items-center">
+                            <input type="checkbox" className="mr-3" />
+                            <span className="text-sm">{meeting.title}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 text-sm text-gray-600">
+                          {meeting.transcript_summary 
+                            ? meeting.transcript_summary.substring(0, 100) + '...'
+                            : 'No summary available'}
+                        </td>
+                        <td className="py-3 text-sm text-gray-600">
+                          {meeting.date ? format(new Date(meeting.date), 'MMM d, yyyy') : 'N/A'}
+                        </td>
+                        <td className="py-3 text-sm text-gray-600">
+                          {meeting.duration_minutes ? `${meeting.duration_minutes} min` : 'N/A'}
+                        </td>
+                        <td className="py-3">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="text-sm text-gray-500">No meetings recorded yet.</p>
+              )}
+            </TabsContent>
+            
+            {/* Other tab contents would go here */}
+            <TabsContent value="insights" className="p-6">
+              <p className="text-sm text-gray-600">Insights content goes here</p>
+            </TabsContent>
+            
+            <TabsContent value="files" className="p-6">
+              <p className="text-sm text-gray-600">Files content goes here</p>
+            </TabsContent>
+            
+            <TabsContent value="reports" className="p-6">
+              {reports.length > 0 ? (
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left border-b">
+                      <th className="pb-3 font-medium text-sm">Date</th>
+                      <th className="pb-3 font-medium text-sm">Weather</th>
+                      <th className="pb-3 font-medium text-sm">Workers</th>
+                      <th className="pb-3 font-medium text-sm">Summary</th>
+                      <th className="pb-3 w-8"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reports.map((report) => (
+                      <tr key={report.id} className="border-b">
+                        <td className="py-3 text-sm">
+                          {report.log_date ? format(new Date(report.log_date), 'MMM d, yyyy') : 'N/A'}
+                        </td>
+                        <td className="py-3 text-sm text-gray-600">
+                          {report.weather_conditions || 'N/A'}
+                        </td>
+                        <td className="py-3 text-sm text-gray-600">
+                          {report.manpower || 'N/A'}
+                        </td>
+                        <td className="py-3 text-sm text-gray-600">
+                          {report.notes ? report.notes.substring(0, 100) + '...' : 'No summary'}
+                        </td>
+                        <td className="py-3">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="text-sm text-gray-500">No reports available yet.</p>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="schedule" className="p-6">
+              <p className="text-sm text-gray-600">Schedule content goes here</p>
+            </TabsContent>
+            
+            <TabsContent value="expenses" className="p-6">
+              <p className="text-sm text-gray-600">Expenses content goes here</p>
+            </TabsContent>
+            
+            <TabsContent value="subs" className="p-6">
+              <p className="text-sm text-gray-600">Subs content goes here</p>
+            </TabsContent>
+            
+            <TabsContent value="change-orders" className="p-6">
+              {changeOrders.length > 0 ? (
+                <table className="w-full">
+                  <thead>
+                    <tr className="text-left border-b">
+                      <th className="pb-3 font-medium text-sm">Number</th>
+                      <th className="pb-3 font-medium text-sm">Title</th>
+                      <th className="pb-3 font-medium text-sm">Status</th>
+                      <th className="pb-3 font-medium text-sm">Amount</th>
+                      <th className="pb-3 font-medium text-sm">Created</th>
+                      <th className="pb-3 w-8"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {changeOrders.map((order) => (
+                      <tr key={order.id} className="border-b">
+                        <td className="py-3 text-sm">{order.number}</td>
+                        <td className="py-3 text-sm">{order.title}</td>
+                        <td className="py-3 text-sm text-gray-600">{order.status}</td>
+                        <td className="py-3 text-sm">${order.amount?.toLocaleString() || '0'}</td>
+                        <td className="py-3 text-sm text-gray-600">
+                          {order.created_at ? format(new Date(order.created_at), 'MMM d, yyyy') : 'N/A'}
+                        </td>
+                        <td className="py-3">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="text-sm text-gray-500">No change orders yet.</p>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
-  );
-}
-
-// Collapsible Sidebar Section
-function CollapsibleSidebarSection({
-  title,
-  children,
-  defaultOpen = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}) {
-  const [isOpen, setIsOpen] = React.useState(defaultOpen);
-
-  return (
-    <div className="bg-white rounded-md border border-gray-200 p-4">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center gap-2 text-left"
-      >
-        <span
-          className={`transition-transform ${isOpen ? 'rotate-90' : ''}`}
-        >
-          <svg
-            className="w-3 h-3 text-gray-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </span>
-        <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-      </button>
-      {isOpen && <div className="mt-2">{children}</div>}
-    </div>
-  );
+  )
 }

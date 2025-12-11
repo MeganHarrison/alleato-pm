@@ -2,24 +2,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
-  // Check if we're using mock authentication
-  const useMockAuth = request.cookies.get('use-mock-auth')?.value === 'true';
-  const mockSession = request.cookies.get('mock-auth-session')?.value;
-  
-  // Allow access to dev routes without authentication
-  if (request.nextUrl.pathname.startsWith('/dev') || 
-      request.nextUrl.pathname === '/dev-login' || 
-      request.nextUrl.pathname === '/mock-login') {
-    return NextResponse.next({ request });
-  }
-  
-  // If mock auth is enabled and we have a session, allow access
-  if (useMockAuth && mockSession) {
-    return NextResponse.next({ request });
-  }
-  
-  // TEMPORARY: Auth disabled while Supabase is experiencing issues
-  // Just pass through all requests without authentication checks
+  // Pass through all requests - authentication is handled by NextAuth middleware
   return NextResponse.next({
     request,
   })

@@ -42,6 +42,10 @@ if [ ! -f "../.env" ]; then
   echo -e "${YELLOW}Make sure OPENAI_API_KEY and SUPABASE credentials are set${NC}\n"
 fi
 
+# Set PYTHONPATH to include service and worker modules
+export PYTHONPATH="src/services:src/workers:${PYTHONPATH}"
+echo -e "${GREEN}✓ PYTHONPATH configured${NC}\n"
+
 # Start the server with detailed logging
 echo -e "${GREEN}================================${NC}"
 echo -e "${GREEN}Starting FastAPI server on http://localhost:8000${NC}"

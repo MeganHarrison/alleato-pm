@@ -22,51 +22,48 @@ export function RagChatKitPanel({
       domainKey: CHATKIT_DOMAIN_KEY,
     },
     composer: {
-      placeholder: "Ask about meetings, decisions, or projects...",
+      placeholder: "Message Alleato AI...",
     },
-    // Enable history panel
+    // Enable history panel with ChatGPT-like styling
     history: {
       enabled: true,
       showDelete: true,
       showRename: true,
     },
-    // Enable header
+    // Minimal header like ChatGPT
     header: {
-      enabled: true,
-      title: {
-        enabled: true,
-      },
+      enabled: false,
     },
     theme: {
       colorScheme: "light",
-      radius: "round",
-      density: "normal",
+      radius: "large",
+      density: "comfortable",
       color: {
         accent: {
-          primary: "#ea580c",
+          primary: "#10a37f",
           level: 1,
         },
       },
     },
     initialThread: initialThreadId ?? null,
     startScreen: {
-      greeting: "Hi! I'm Alleato's AI Chief of Staff. I can help you understand patterns across meetings, track decisions and risks, and provide strategic insights. What would you like to know?",
+      greeting: "",
       prompts: [
         {
-          label: "Recent decisions",
-          prompt: "What were the key decisions from last week's meetings?",
+          label: "📋 Create Budget Report",
+          prompt: "I want you to create a detailed budget summary report for the current quarter, including variance analysis and forecasts.",
         },
         {
-          label: "Project risks",
-          prompt: "Show me risks identified in ASRS projects",
+          label: "🔍 Analyze Project Delays",
+          prompt: "Analyze patterns in project delays across all active construction projects and identify common bottlenecks.",
         },
         {
-          label: "Pending tasks",
-          prompt: "What tasks are pending for our current projects?",
+          label: "✅ Review RFI Status",
+          prompt: "Show me all open RFIs across my projects, prioritized by age and criticality to project timeline.",
         },
         {
-          label: "Pattern analysis",
-          prompt: "What patterns do you see in our project delays?",
+          label: "📊 Executive Summary",
+          prompt: "Generate an executive dashboard summary showing key metrics across all projects including budget health, schedule status, and risk indicators.",
         },
       ],
     },
@@ -74,6 +71,7 @@ export function RagChatKitPanel({
     threadItemActions: {
       feedback: true,
       retry: true,
+      copy: true,
     },
     // Event handlers
     onThreadChange: ({ threadId }) => onThreadChange?.(threadId ?? null),
@@ -85,7 +83,7 @@ export function RagChatKitPanel({
 
   return (
     <div
-      className="flex flex-col h-full flex-1 bg-white shadow-sm border border-gray-200 rounded-xl overflow-hidden"
+      className="flex flex-col h-full flex-1 w-full bg-white overflow-hidden"
       data-testid="rag-chatkit-panel"
     >
       <ChatKit

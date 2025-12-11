@@ -11,9 +11,6 @@ export async function middleware(request: NextRequest) {
     '/auth/forgot-password',
     '/auth/error',
     '/api/auth',
-    '/dev',
-    '/dev-login',
-    '/mock-login',
     '/api/health',
   ]
 

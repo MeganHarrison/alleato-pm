@@ -547,7 +547,7 @@ export default function CreateProjectPage() {
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-6 py-6">
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
               <Link
-                href="/company/home"
+                href="/"
                 className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary"
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -647,9 +647,9 @@ function CreateProjectForm() {
       form.reset(defaultValues);
       setFileResetKey((key) => key + 1);
       if (project?.id) {
-        router.push(`/company/home/${project.id}/home`);
+        router.push(`/${project.id}/home`);
       } else {
-        router.push('/company/home');
+        router.push('/');
       }
     } catch (error) {
       toast.error('Failed to create project', {
@@ -856,7 +856,7 @@ function CreateProjectForm() {
               Reset Form
             </Button>
             <Button type="button" variant="outline" asChild>
-              <Link href="/company/home">Cancel</Link>
+              <Link href="/">Cancel</Link>
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

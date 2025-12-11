@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search")
     const state = searchParams.get("state")
     const excludeState = searchParams.get("excludeState")
+    const archived = searchParams.get("archived")
 
     let query = supabase
       .from("projects")
@@ -35,6 +36,11 @@ export async function GET(request: NextRequest) {
     // Add search filter if provided
     if (search) {
       query = query.or(`name.ilike.%${search}%,"job number".ilike.%${search}%`)
+    }
+    
+    // Add archived filter if provided
+    if (archived !== null) {
+      query = query.eq("archived", archived === "true")
     }
 
     const { data, error, count } = await query

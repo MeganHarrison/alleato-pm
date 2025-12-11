@@ -1,202 +1,205 @@
 'use client';
 
 import * as React from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import { DataTable } from '@/components/tables/DataTable';
+import { useInfiniteQuery } from '@/hooks/use-infinite-query';
+import { GenericEditableTable, type EditableColumn } from '@/components/tables/generic-editable-table';
+import { updateCompany, deleteCompany } from '@/app/actions/table-actions';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, MoreHorizontal, Eye, Edit, Trash2, Building2 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Plus, Building2, ExternalLink } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Company {
   id: string;
   name: string;
-  type: 'general_contractor' | 'subcontractor' | 'supplier' | 'architect' | 'engineer' | 'owner';
-  contact: string;
-  email: string;
-  phone: string;
-  address: string;
-  status: 'active' | 'inactive';
+  title: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  website: string | null;
+  currency_code: string | null;
+  currency_symbol: string | null;
+  notes: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
-const mockCompanies: Company[] = [
-  {
-    id: '1',
-    name: 'ABC Construction',
-    type: 'general_contractor',
-    contact: 'John Smith',
-    email: 'john@abcconstruction.com',
-    phone: '(555) 123-4567',
-    address: '123 Main St, City, ST 12345',
-    status: 'active',
-  },
-  {
-    id: '2',
-    name: 'Johnson Painting Co',
-    type: 'subcontractor',
-    contact: 'Mike Johnson',
-    email: 'mike@johnsonpainting.com',
-    phone: '(555) 234-5678',
-    address: '456 Oak Ave, City, ST 12345',
-    status: 'active',
-  },
-  {
-    id: '3',
-    name: 'Steel Supply Inc',
-    type: 'supplier',
-    contact: 'Sarah Williams',
-    email: 'sarah@steelsupply.com',
-    phone: '(555) 345-6789',
-    address: '789 Industrial Blvd, City, ST 12345',
-    status: 'active',
-  },
-];
-
 export default function CompanyDirectoryPage() {
-  const [data, setData] = React.useState<Company[]>(mockCompanies);
+  const {
+    data,
+    count,
+    isSuccess,
+    isLoading,
+    isFetching,
+    error,
+    hasMore,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    tableName: 'companies',
+    columns: '*',
+    pageSize: 20,
+    trailingQuery: (query) => {
+      return query.order('name', { ascending: true });
+    },
+  });
 
-  const columns: ColumnDef<Company>[] = [
+  const columns: EditableColumn<Company>[] = [
     {
-      accessorKey: 'name',
+      key: 'name',
       header: 'Company Name',
-      cell: ({ row }) => (
+      type: 'text',
+      width: 'w-[250px]',
+      render: (value) => (
         <div className="flex items-center gap-2">
           <Building2 className="h-4 w-4 text-gray-400" />
-          <button
-            type="button"
-            className="font-medium text-[hsl(var(--procore-orange))] hover:underline"
-          >
-            {row.getValue('name')}
-          </button>
+          <span className="font-medium">{value || 'Unnamed Company'}</span>
         </div>
       ),
     },
     {
-      accessorKey: 'type',
-      header: 'Type',
-      cell: ({ row }) => {
-        const type = row.getValue('type') as string;
-        const typeColors: Record<string, string> = {
-          general_contractor: 'bg-blue-100 text-blue-700',
-          subcontractor: 'bg-green-100 text-green-700',
-          supplier: 'bg-purple-100 text-purple-700',
-          architect: 'bg-orange-100 text-orange-700',
-          engineer: 'bg-cyan-100 text-cyan-700',
-          owner: 'bg-pink-100 text-pink-700',
-        };
-        return (
-          <Badge className={typeColors[type] || 'bg-gray-100 text-gray-700'}>
-            {type.replace('_', ' ')}
-          </Badge>
-        );
+      key: 'title',
+      header: 'Title/Type',
+      type: 'text',
+      render: (value) => value ? (
+        <Badge variant="outline">{value}</Badge>
+      ) : <span className="text-muted-foreground">-</span>,
+    },
+    {
+      key: 'address',
+      header: 'Address',
+      type: 'text',
+      render: (value, row) => {
+        if (!value && !row.city && !row.state) return <span className="text-muted-foreground">-</span>;
+        const parts = [value, row.city, row.state].filter(Boolean);
+        return <span className="text-sm">{parts.join(', ')}</span>;
       },
     },
     {
-      accessorKey: 'contact',
-      header: 'Primary Contact',
+      key: 'city',
+      header: 'City',
+      type: 'text',
     },
     {
-      accessorKey: 'email',
-      header: 'Email',
+      key: 'state',
+      header: 'State',
+      type: 'text',
+      width: 'w-[100px]',
     },
     {
-      accessorKey: 'phone',
-      header: 'Phone',
+      key: 'website',
+      header: 'Website',
+      type: 'text',
+      render: (value) => value ? (
+        <a
+          href={value.startsWith('http') ? value : `https://${value}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+        >
+          {new URL(value.startsWith('http') ? value : `https://${value}`).hostname}
+          <ExternalLink className="h-3 w-3" />
+        </a>
+      ) : <span className="text-muted-foreground">-</span>,
     },
     {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        return (
-          <Badge className={status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
-            {status}
-          </Badge>
-        );
-      },
+      key: 'currency_code',
+      header: 'Currency',
+      type: 'text',
+      width: 'w-[100px]',
+      render: (value, row) => value ? (
+        <span className="text-sm">{row.currency_symbol || ''}{value}</span>
+      ) : <span className="text-muted-foreground">-</span>,
     },
     {
-      id: 'actions',
-      cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Eye className="mr-2 h-4 w-4" />
-              View
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600">
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
+      key: 'notes',
+      header: 'Notes',
+      type: 'textarea',
+      render: (value) => value ? (
+        <span className="text-sm text-muted-foreground line-clamp-2">{value}</span>
+      ) : <span className="text-muted-foreground">-</span>,
     },
   ];
 
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Error Loading Companies</h1>
+          <p className="text-red-600">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-full p-6 space-y-6">
+    <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Company Directory</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage project companies and vendors</p>
+          <h1 className="text-3xl font-bold">Company Directory</h1>
+          <p className="text-gray-500">Manage your companies and contractors</p>
         </div>
         <Button className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90">
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           Add Company
         </Button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border p-4">
-          <div className="text-sm font-medium text-gray-500">Total Companies</div>
-          <div className="text-2xl font-bold text-gray-900 mt-1">{data.length}</div>
+      {/* Count */}
+      {isSuccess && (
+        <div className="text-sm text-gray-600">
+          <span className="font-medium">{data.length}</span> of <span className="font-medium">{count}</span> companies loaded
         </div>
-        <div className="bg-white rounded-lg border p-4">
-          <div className="text-sm font-medium text-gray-500">Active</div>
-          <div className="text-2xl font-bold text-gray-900 mt-1">
-            {data.filter(c => c.status === 'active').length}
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border p-4">
-          <div className="text-sm font-medium text-gray-500">Subcontractors</div>
-          <div className="text-2xl font-bold text-gray-900 mt-1">
-            {data.filter(c => c.type === 'subcontractor').length}
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border p-4">
-          <div className="text-sm font-medium text-gray-500">Suppliers</div>
-          <div className="text-2xl font-bold text-gray-900 mt-1">
-            {data.filter(c => c.type === 'supplier').length}
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Table */}
-      <div className="flex-1 bg-white rounded-lg border overflow-hidden">
-        <DataTable
-          columns={columns}
-          data={data}
-          searchKey="name"
-          searchPlaceholder="Search companies..."
-        />
+      <div className="bg-white rounded-lg shadow">
+        {isLoading ? (
+          <div className="p-8 space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex gap-4">
+                <Skeleton className="h-8 w-8" />
+                <Skeleton className="h-8 flex-1" />
+                <Skeleton className="h-8 w-32" />
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-8 w-24" />
+              </div>
+            ))}
+          </div>
+        ) : data.length === 0 ? (
+          <div className="p-12 text-center">
+            <Building2 className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No companies found</h3>
+            <p className="text-gray-500 mb-4">Get started by adding your first company.</p>
+            <Button className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Company
+            </Button>
+          </div>
+        ) : (
+          <GenericEditableTable
+            data={data}
+            columns={columns}
+            onUpdate={updateCompany}
+            onDelete={deleteCompany}
+            className="border-0"
+          />
+        )}
       </div>
+
+      {/* Load More */}
+      {isSuccess && hasMore && (
+        <div className="text-center">
+          <Button
+            onClick={fetchNextPage}
+            disabled={isFetching}
+            variant="outline"
+            size="lg"
+          >
+            {isFetching ? 'Loading...' : 'Load More Companies'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

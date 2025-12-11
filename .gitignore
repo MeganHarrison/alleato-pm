@@ -22,8 +22,16 @@ build/
 
 # Testing
 coverage/
+.coverage
+htmlcov/
+*.coverage
+.pytest_cache/
+frontend/coverage/
 frontend/tests/.auth/
 frontend/supabase/.temp/
+backend/htmlcov/
+backend/.coverage
+backend/coverage.xml
 
 # Python
 __pycache__/

@@ -11,13 +11,13 @@ import {
   BudgetTable,
 } from '@/components/budget';
 import {
-  mockBudgetLineItems,
-  mockBudgetGrandTotals,
-  mockBudgetViews,
-  mockBudgetSnapshots,
-  mockBudgetGroups,
-  mockBudgetSyncStatus,
-} from '@/data/mock-budget-data';
+  budgetLineItems,
+  budgetGrandTotals,
+  budgetViews,
+  budgetSnapshots,
+  budgetGroups,
+  budgetSyncStatus,
+} from '@/config/budget';
 
 function BudgetPageContent() {
   const [activeTab, setActiveTab] = React.useState('budget');
@@ -71,7 +71,7 @@ function BudgetPageContent() {
         <div className="bg-white">
           <BudgetPageHeader
             title="Budget"
-            isSynced={mockBudgetSyncStatus.isSynced}
+            isSynced={budgetSyncStatus.isSynced}
             onCreateClick={handleCreateClick}
             onResendToERP={handleResendToERP}
             onUnlockBudget={handleUnlockBudget}
@@ -84,15 +84,15 @@ function BudgetPageContent() {
 
         {/* Status Banner */}
         <div className="mx-6 mt-4">
-          <BudgetStatusBanner syncStatus={mockBudgetSyncStatus} />
+          <BudgetStatusBanner syncStatus={budgetSyncStatus} />
         </div>
 
         {/* Filter Controls */}
         <div className="mx-6 mt-4 bg-white rounded-md">
           <BudgetFilters
-            views={mockBudgetViews}
-            snapshots={mockBudgetSnapshots}
-            groups={mockBudgetGroups}
+            views={budgetViews}
+            snapshots={budgetSnapshots}
+            groups={budgetGroups}
             selectedView={selectedView}
             selectedSnapshot={selectedSnapshot}
             selectedGroup={selectedGroup}
@@ -109,8 +109,8 @@ function BudgetPageContent() {
         <div className="flex-1 overflow-hidden mx-6 mt-4 mb-6 bg-white rounded-md border border-gray-200">
           <Suspense fallback={<div className="flex items-center justify-center h-full">Loading...</div>}>
             <BudgetTable
-              data={mockBudgetLineItems}
-              grandTotals={mockBudgetGrandTotals}
+              data={budgetLineItems}
+              grandTotals={budgetGrandTotals}
             />
           </Suspense>
         </div>

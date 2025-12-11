@@ -4,18 +4,24 @@ import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
-  IconApi,
+  IconArchive,
+  IconBriefcase,
+  IconBuildingBank,
+  IconCalendar,
   IconCamera,
-  IconChartBar,
-  IconDashboard,
-  IconDatabase,
-  IconFileAi,
+  IconChartLine,
+  IconCheckbox,
+  IconCoin,
   IconFileDescription,
-  IconFolder,
-  IconListDetails,
-  IconReport,
-  IconSearch,
+  IconFileInvoice,
+  IconFileText,
+  IconLayoutGrid,
+  IconMessageChatbot,
+  IconPencil,
+  IconPhoto,
+  IconReportMoney,
   IconSettings,
+  IconUsers,
 } from "@tabler/icons-react"
 
 import { NavDocuments } from "@/components/nav-documents"
@@ -33,148 +39,111 @@ import {
 } from "@/components/ui/sidebar"
 
 const data = {
-  user: {
-    name: "User",
-    email: "user@alleato.com",
-    avatar: "",
-  },
+  // Primary navigation - most frequently used features
   navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: IconDashboard,
-    },
     {
       title: "Projects",
       url: "/",
-      icon: IconFolder,
+      icon: IconLayoutGrid,
+    },
+    {
+      title: "Tasks",
+      url: "/tasks",
+      icon: IconCheckbox,
     },
     {
       title: "Meetings",
       url: "/meetings",
-      icon: IconListDetails,
+      icon: IconCalendar,
     },
     {
-      title: "Chat",
+      title: "Directory",
+      url: "/directory/companies",
+      icon: IconUsers,
+    },
+    {
+      title: "AI Chat",
       url: "/chat-rag",
-      icon: IconChartBar,
+      icon: IconMessageChatbot,
     },
   ],
-  navClouds: [
+  // Project-specific tools
+  projectTools: [
     {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      name: "Drawings",
+      url: "/drawings",
+      icon: IconPencil,
     },
     {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      name: "Photos",
+      url: "/photos",
+      icon: IconPhoto,
     },
     {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      name: "Submittals",
+      url: "/submittals",
+      icon: IconFileText,
+    },
+    {
+      name: "Punch List",
+      url: "/punch-list",
+      icon: IconCheckbox,
     },
   ],
-  navSecondary: [
-    {
-      title: "API Docs",
-      url: "/api-docs",
-      icon: IconApi,
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Sitemap",
-      url: "/sitemap-view",
-      icon: IconListDetails,
-    },
-    {
-      title: "Doc Viewer",
-      url: "http://localhost:3333",
-      icon: IconReport,
-    },
-    {
-      title: "Docs Infinite",
-      url: "/documents-infinite",
-      icon: IconDatabase,
-    },
-    {
-      title: "Docs Query",
-      url: "/infinite-query",
-      icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: "Contracts",
-      url: "/contracts",
-      icon: IconChartBar,
-    },
+  // Financial section - grouped by function
+  financial: [
     {
       name: "Budget",
       url: "/budget",
-      icon: IconDatabase,
+      icon: IconReportMoney,
+    },
+    {
+      name: "Contracts",
+      url: "/contracts",
+      icon: IconFileDescription,
     },
     {
       name: "Commitments",
       url: "/commitments",
-      icon: IconReport,
+      icon: IconBriefcase,
     },
     {
-      name: "Change Orders - Create",
-      url: "/#",
-      icon: IconFileAi,
+      name: "Change Orders",
+      url: "/change-orders",
+      icon: IconFileInvoice,
     },
     {
-      name: "Change Events - Create",
-      url: "/#",
-      icon: IconCamera,
+      name: "Change Events",
+      url: "/change-events",
+      icon: IconCoin,
     },
     {
-      name: "Direct Costs - Create",
-      url: "/#",
-      icon: IconReport,
+      name: "Invoices",
+      url: "/invoices",
+      icon: IconBuildingBank,
     },
     {
-      name: "Invoicing - Create",
-      url: "/#",
-      icon: IconFolder,
+      name: "Billing Periods",
+      url: "/billing-periods",
+      icon: IconCalendar,
+    },
+  ],
+  // Secondary navigation - admin and settings
+  navSecondary: [
+    {
+      title: "Executive",
+      url: "/executive",
+      icon: IconChartLine,
+    },
+    {
+      title: "Archive",
+      url: "/archive/archived-projects",
+      icon: IconArchive,
+    },
+    {
+      title: "Settings",
+      url: "/settings",
+      icon: IconSettings,
     },
   ],
 }
@@ -209,11 +178,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        <NavDocuments items={data.projectTools} label="Project Tools" />
+        <NavDocuments items={data.financial} label="Financial" />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

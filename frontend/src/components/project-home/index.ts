@@ -7,3 +7,6 @@ export { ProjectOverview } from './project-overview';
 export { MyOpenItems } from './my-open-items';
 export { SidebarProjectAddress } from './sidebar-project-address';
 export { DocumentMetadataModal } from './document-metadata-modal';
+export { ProgressReports } from './progress-reports';
+export { RecentPhotos } from './recent-photos';
+export { ProjectStatsCards } from './project-stats-cards';
