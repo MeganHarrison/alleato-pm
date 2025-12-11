@@ -1,14 +1,15 @@
 # CLAUDE.md
 
-## Rules
+## 1. Purpose
 
-### NEVER use git worktrees
-- Do NOT create git worktrees under any circumstances
-- Always work directly in the main repository at `/Users/meganharrison/Documents/github/alleato-procore`
-- If asked to work in parallel or isolate changes, use git branches instead
-- Worktrees cause confusion and errors - they are strictly forbidden
+This file defines the **single source of truth** for how AI coding agents (Codex, Claude, etc.) will:
+- Edit code
+- Use Git
+- Name files
+- Handle TypeScript
+- Interact with this repo’s structure
 
-### Always test with playwright in the browser before stating a task is complete
+All other instruction files (e.g. `AGENTS.md`, tool prompts) must **defer to and obey this document**.
 
 ## Project Overview
 
@@ -18,14 +19,112 @@ Alleato-Procore is a modern alternative to Procore (construction project managem
 - **AI System**: Multi-agent workflow using OpenAI Agents SDK and Codex MCP
 - **Analysis Tools**: Playwright-based screenshot capture and AI analysis
 
-### Edit in-place, don’t clone files
-- When modifying code, you edit the original file.
-- You do not create new files with suffixes like _fixed, _backup, _final, _copy, etc.
-- If you need safety, you use Git (branches/commits), not duplicate files.
+## PLANS.md
 
-Backup = git commit or git branch
-NOT myComponent_final.tsx
+Always read .agents/PLANS.md and Exec_Plan.md
 
+## Rules
+
+### Always test with playwright in the browser before stating a task is complete
+
+### Edit in place; do NOT create duplicate versions of the same file.
+   - Do NOT create files with names like:
+     - `*_fixed.*`, `*_final.*`, `*_backup.*`, `*_copy.*`
+   - When modifying behavior, update the **original file** unless explicitly told otherwise.
+
+### One canonical implementation per module/component.
+   - For any function, component, or module there must be exactly **one** authoritative definition.
+   - If you refactor into multiple files, you must:
+     - Update all imports to use the new structure.
+     - Delete or empty the old files as part of the same change.
+
+### No “safety copies” via filenames.
+   - Versioning and safety are handled by **Git branches and commits**, not by creating `file_v2.ts`, `file_old.ts`, etc.
+
+### Experiments go in `/experiments` only (optional if you want this)
+   - Experimental code goes under `./experiments/` with clear names.
+   - Production code paths (`app/`, `components/`, `lib/`, `python-backend/`, etc.) must contain only real, used code.
+   - Do not import from `experiments/` in production code.
+
+### Git & Worktree Rules
+
+1. **Use a single working directory by default.**
+   - Assume work happens directly in the main repo folder.
+   - Do NOT create Git worktrees unless explicitly instructed.
+
+2. **If using branches:**
+   - Create feature branches with clear names, e.g. `feature/budget-report-ui`.
+   - Keep changes scoped and coherent (UI change, backend change, etc.).
+
+3. **Never create or rely on local file clones instead of branches.**
+   - Do not duplicate folders or create “new-copy” directories inside the repo.
+
+### TypeScript & Project Constraints
+
+1. **Types are centralized.**
+   - Prefer types from the `/types` directory, Supabase typegen, and shared schemas.
+   - Do not define ad-hoc duplicate types if a shared type already exists.
+
+2. **No lazy `any` unless explicitly justified.**
+   - Prefer `unknown`, proper interfaces, or inferred types from Zod/schema.
+   - If you use `any`, document why in a comment and keep the scope as small as possible.
+
+3. **Respect Next.js / app router conventions.**
+   - Follow existing patterns in `app/` for layouts, routes, and server/client components.
+   - Don’t introduce a competing pattern unless explicitly instructed.
+
+### File & Folder Conventions
+
+1. **File naming:**
+   - Use descriptive names aligned with responsibility (e.g. `useBudgetSummary.ts`, `ProjectList.tsx`).
+   - Do not use vague or process-oriented names (`script.ts`, `test-code.ts`, `temp.ts`).
+
+2. **When refactoring:**
+   - Update all imports.
+   - Remove dead code and obsolete files.
+   - Run lint/build to confirm no references are broken.
+
+### Playwright Test Location Rules
+
+1. All Playwright E2E tests MUST live under:
+
+   `frontend/tests/e2e/`
+
+2. Do NOT create additional root-level test folders such as `e2e/`, `playwright-tests/`, or `tests/` outside of `frontend/`.
+
+3. Visual regression tests that use Playwright belong in:
+
+   `frontend/tests/visual-regression/`
+
+4. Screenshots, videos, and other Playwright artifacts must remain scoped to the frontend project, e.g.:
+
+   - `frontend/tests/screenshots/`
+   - or the default Playwright output directory configured in `frontend/playwright.config.ts`.
+
+5. Backend tests MUST NOT use Playwright. They live under:
+
+   `backend/tests/unit/` and `backend/tests/integration/` using Python testing tools.
+
+## Agent Behavior
+
+1. **Before making changes:**
+   - Read relevant files fully (not just the function you’re changing).
+   - Understand how the component/module fits into the bigger system.
+
+2. **When asked to “fix” or “improve” code:**
+   - Modify the existing implementation.
+   - Do not create alternative files.
+   - Prefer small, well-scoped changes over rewriting entire modules unless necessary.
+
+3. **After changes:**
+   - Ensure the project compiles:
+     - For frontend: `npm run lint`, `npm run build` (or as specified in README).
+     - For backend: ensure Python backend still imports and runs.
+
+4. **If the repo already contains duplicate variants (`*_final`, etc.):**
+   - Identify which version is actually imported/used.
+   - Consolidate logic into the canonical file.
+   - Remove the obsolete variant files in the same change.
 
 ## Key Commands
 
@@ -47,56 +146,6 @@ npm run db:modules         # Query module data from Supabase
 npm run organize           # Organize screenshots for Figma
 ```
 
-### Multi-Agent Workflow (from root directory)
-```bash
-python3 -m venv .venv && source .venv/bin/activate  # Create/activate virtual env
-pip install --upgrade openai openai-agents python-dotenv
-python codex_mcp.py                                  # Test MCP server
-python multi_agent_workflow.py                       # Run full agent workflow
-```
-
-## Architecture
-
-### Database Schema
-The project uses Supabase with comprehensive PostgreSQL schema for construction management:
-- **Core**: companies, users, projects with multi-tenant RLS policies
-- **Financial**: commitments, change_orders, invoices, budget_items with full audit trails
-- **Roles**: admin, project_manager, accountant, viewer with row-level security
-
-### Frontend Structure
-```
-frontend/app/
-├── api/            # API routes for commitments, companies
-├── auth/           # Login, signup, password reset
-├── financial/      # Budget, commitments, invoicing modules
-└── protected/      # Routes requiring authentication
-
-frontend/components/
-├── financial/      # Module-specific components (CommitmentsTable, etc.)
-└── ui/            # ShadCN UI components library
-
-frontend/lib/
-├── schemas/        # Zod validation schemas for forms
-├── stores/         # Zustand state management
-└── supabase/       # Client configuration and types
-```
-
-### Multi-Agent System
-The workflow orchestrates five specialized agents:
-1. **Project Manager**: Creates requirements from task_list
-2. **Designer**: Generates design specifications
-3. **Frontend Developer**: Builds UI components
-4. **Backend Developer**: Creates server code
-5. **Tester**: Develops test plans
-
-Each agent uses Codex MCP for file operations and maintains full audit trails.
-
-## Current Status
-
-- **Phase 1 (Analysis)**: 70% complete - Screenshot tools built, sitemap created
-- **Phase 2 (MVP)**: In progress - Financial modules being implemented
-- **Infrastructure**: Supabase integration complete, UI library configured
-
 ## Important Patterns
 
 ### Supabase Client Usage
@@ -113,23 +162,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { commitmentsSchema } from '@/lib/schemas/commitments'
 ```
 
-### Component Structure
-Financial modules follow this pattern:
-```typescript
-// Page component (app/financial/[module]/page.tsx)
-// Table component (components/financial/[Module]Table.tsx)
-// Form schemas (lib/schemas/[module].ts)
-// API routes (app/api/[module]/route.ts)
-```
-
-### Authentication Pattern
-Protected routes check authentication:
-```typescript
-const { data: { user } } = await supabase.auth.getUser()
-if (!user) redirect('/auth/login')
-```
-
-## Environment Variables
+## Centralized Environment Variables
 
 **IMPORTANT**: This project uses a **single, centralized `.env` file** in the root directory to avoid confusion.
 
@@ -144,15 +177,3 @@ All Python scripts use the centralized loader:
 from env_loader import load_env
 load_env()  # Automatically loads from root .env
 ```
-
-### Required Variables (in root `.env`)
-Frontend (Next.js):
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-Backend (Python/FastAPI):
-- `OPENAI_API_KEY` - Required for AI agents and embeddings
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_KEY`
-
-See `/python-backend/ENV_SETUP.md` for detailed documentation.
