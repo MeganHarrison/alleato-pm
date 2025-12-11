@@ -40,3 +40,4 @@ backend/.venv/
 frontend/.next/
 frontend/tests/test-results/
 frontend/tests/playwright-report/
+test-results/
