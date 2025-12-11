@@ -1,14 +1,14 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './frontend/tests',
+  testDir: './tests',
   testMatch: '**/*.spec.{ts,js}',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1,
   reporter: [
-    ['html', { outputFolder: 'frontend/tests/playwright-report' }],
+    ['html', { outputFolder: 'tests/playwright-report' }],
     ['list'],
   ],
   use: {
@@ -33,10 +33,10 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         // Use saved auth state
-        storageState: 'frontend/tests/.auth/user.json',
+        storageState: 'tests/.auth/user.json',
       },
       dependencies: ['setup'],
     },
   ],
-  outputDir: 'frontend/tests/test-results',
+  outputDir: 'tests/test-results',
 });
