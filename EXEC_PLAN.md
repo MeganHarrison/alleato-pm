@@ -27,6 +27,92 @@ This plan assumes **Option A (UI First)**: build the component system first, the
 
 ---
 
+## Recent Updates (2025-12-12)
+
+### Project Tools Dropdown - Three-Column Layout with Navigation
+
+Successfully updated the Project Tools dropdown in the site header to match the Procore design with functional navigation:
+
+**What was done:**
+1. Redesigned dropdown to display a three-column layout (800px wide)
+2. Organized tools into three categories with proper routing:
+   - **Core Tools**: Home (/), 360 Reporting (/reporting), Documents (/documents), Directory (/directory), Tasks (/tasks), Admin (/admin), Connection Manager (/connection-manager) with "New" badge
+   - **Project Management**: Emails (/emails), RFIs (/rfis), Submittals (/submittals), Transmittals (/transmittals), Punch List (/punch-list), Meetings (/meetings), Schedule (/schedule), Daily Log (/daily-log), Photos (/photos) with star, Drawings (/drawings), Specifications (/specifications)
+   - **Financial Management**: Prime Contracts (/contracts), Budget (/budget), Commitments (/commitments), Change Orders (/change-orders), Change Events (/change-events), Direct Costs (/direct-costs), Invoicing (/invoices)
+3. Added visual indicators:
+   - Orange + icons on items with create actions (RFIs, Submittals, Punch List, Change Events)
+   - Green "New" badge on Connection Manager
+   - Star icon on Photos (favorite)
+4. Implemented proper navigation using Next.js Link components
+5. Each item now navigates to its respective page when clicked
+
+**Files modified:**
+- `frontend/src/components/site-header.tsx` - Updated dropdown structure, styling, and added navigation links
+- `frontend/tests/e2e/project-tools-dropdown.spec.ts` - Added E2E test with navigation verification
+- `frontend/tests/manual-test-project-tools-dropdown.md` - Created manual test checklist
+- `frontend/config/playwright/playwright.config.ts` - Updated test configuration
+
+**Screenshots:**
+- `frontend/tests/screenshots/project-tools-dropdown-full.png`
+- `frontend/tests/screenshots/project-tools-dropdown-with-links.png`
+
+### Realtime Chat Implementation
+
+Implemented Supabase Realtime Chat functionality following the [Supabase UI documentation](https://supabase.com/ui/docs/nextjs/realtime-chat):
+
+**What was done:**
+1. Created a team chat page (`/team-chat`) demonstrating realtime communication
+2. Utilized existing realtime chat components already in the codebase:
+   - `RealtimeChat` component for the main chat interface
+   - `useRealtimeChat` hook for Supabase Realtime Broadcast integration
+   - `ChatMessageItem` component for message display
+   - `useChatScroll` hook for auto-scrolling functionality
+3. Implemented multi-channel chat with tabs (#general, #project-updates, #support)
+4. Added username customization
+5. Demonstrated optional message persistence through callbacks
+6. Created comprehensive documentation in `/src/components/chat/README.md`
+7. Added Playwright tests for chat functionality
+
+**Key Features:**
+- Real-time message broadcasting using Supabase Realtime
+- Room-based channel isolation
+- Optimistic UI updates for instant feedback
+- Flexible architecture allowing optional database persistence
+- Connection status indicators
+
+**Technical Notes:**
+- Messages are ephemeral by default (not stored in database)
+- Uses Supabase Broadcast for low-latency communication
+- Each `roomName` creates an isolated chat channel
+- Perfect for team collaboration, support chat, or any real-time communication needs
+
+### Playwright Configuration Reorganization
+
+Cleaned up the frontend directory structure by organizing all Playwright configuration files:
+
+**What was done:**
+1. Created `frontend/config/playwright/` directory
+2. Moved all 10 playwright.config.*.ts files from frontend root to the new directory
+3. Updated all relative paths in config files to work from new location
+4. Updated package.json scripts to use new config paths
+5. Created documentation in `config/playwright/README.md`
+6. Maintained backward compatibility with a re-export file at root
+
+**New Structure:**
+```
+frontend/
+├── config/
+│   └── playwright/
+│       ├── README.md
+│       ├── playwright.config.ts (main)
+│       ├── playwright.config.chat-rag.ts
+│       ├── playwright.config.team-chat.ts
+│       └── ... (other configs)
+└── playwright.config.ts (re-export for compatibility)
+```
+
+This organization keeps the frontend root clean while maintaining all functionality.
+
 ## Recent Updates (2025-12-11)
 
 ### Project Home Page - Real Supabase Data Integration
@@ -234,7 +320,9 @@ alleato-procore/
 - [x] Click the "Create Project" button And fill out the form to submit a new project. Verify that the project was created in Superbase by checking to see if the table updates to display the newly added project.
 
 ### Project Home
-- [ ] Add section for meetings
+- [x] Add section for meetings
+- [ ] Must be mobile responsive
+- [ ] Meetings must open to the individual meeting table when clicked. Display all meeting metadata beautifully along with the full transcript. Make sure dynamic fields are formatted in an aesthetically pleasing way.
 - [ ] Must be mobile responsive
 
 ### Top Header

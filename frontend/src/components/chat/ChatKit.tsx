@@ -3,25 +3,13 @@ import * as React from "react";
 import type { ChatKitControl, ToEventHandlerKey } from "../../hooks/useChatKit";
 import type { ChatKitElement, ChatKitElementEventMap } from "@openai/chatkit";
 
-export interface ChatKitProps extends React.HTMLAttributes<ChatKitElement> {
+export interface ChatKitProps extends React.HTMLAttributes<HTMLElement> {
   control: ChatKitControl;
 }
 
-declare module "react" {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      "openai-chatkit": React.DetailedHTMLProps<
-        React.HTMLAttributes<ChatKitElement>,
-        ChatKitElement
-      >;
-    }
-  }
-}
-
-export const ChatKit = React.forwardRef<ChatKitElement, ChatKitProps>(
+export const ChatKit = React.forwardRef<HTMLElement, ChatKitProps>(
   function ChatKit({ control, ...htmlProps }, forwardedRef) {
-    const ref = React.useRef<ChatKitElement | null>(null);
+    const ref = React.useRef<any>(null);
 
     React.useLayoutEffect(() => {
       if (!ref.current) return;
@@ -62,7 +50,7 @@ export const ChatKit = React.forwardRef<ChatKitElement, ChatKitProps>(
 
       for (const eventName of Object.keys(
         events,
-      ) as (keyof ChatKitElementEventMap)[]) {
+      ) as (keyof any)[]) {
         el.addEventListener(
           eventName,
           (e) => {

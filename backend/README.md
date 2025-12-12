@@ -2,6 +2,8 @@
 
 This document describes the retrieval-augmented generation (RAG) strategy implemented for the AI Chief of Staff system, focusing on the retrieval layer and supporting code.
 
+curl http://localhost:8000/health
+
 
 ## File Structure
 

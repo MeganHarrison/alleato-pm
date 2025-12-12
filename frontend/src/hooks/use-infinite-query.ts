@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { PostgrestQueryBuilder, type PostgrestClientOptions } from '@supabase/postgrest-js'
 import { type SupabaseClient } from '@supabase/supabase-js'
-import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react'
 
 const supabase = createClient()
 
@@ -111,8 +111,18 @@ function createStore<TData extends SupabaseTableData<T>, T extends SupabaseTable
   }
 
   const fetchPage = async (skip: number) => {
-    if (state.hasInitialFetch && (state.isFetching || state.count <= state.data.length)) return
+    // Early return if already fetching or no more data
+    if (state.isFetching) {
+      console.log('fetchPage: already fetching, skipping')
+      return
+    }
 
+    if (state.hasInitialFetch && state.count <= state.data.length) {
+      console.log('fetchPage: no more data to fetch', { count: state.count, dataLength: state.data.length })
+      return
+    }
+
+    console.log('fetchPage: starting fetch', { skip, currentDataLength: state.data.length })
     setState({ isFetching: true })
 
     let query = supabase
@@ -126,20 +136,26 @@ function createStore<TData extends SupabaseTableData<T>, T extends SupabaseTable
 
     if (error) {
       console.error('An unexpected error occurred:', error)
-      setState({ error })
+      setState({ error, isFetching: false })
     } else {
+      console.log('fetchPage: received data', {
+        newDataLength: newData?.length,
+        totalCount: count,
+        firstItem: newData?.[0],
+        lastItem: newData?.[newData.length - 1]
+      })
       setState({
         data: [...state.data, ...(newData as TData[])],
         count: count || 0,
         isSuccess: true,
         error: null,
+        isFetching: false,
       })
     }
-    setState({ isFetching: false })
   }
 
   const fetchNextPage = async () => {
-    if (state.isFetching) return
+    console.log('fetchNextPage called', { dataLength: state.data.length, isFetching: state.isFetching })
     await fetchPage(state.data.length)
   }
 
@@ -175,6 +191,7 @@ function useInfiniteQuery<
   TData extends SupabaseTableData<T>,
   T extends SupabaseTableName = SupabaseTableName,
 >(props: UseInfiniteQueryProps<T>) {
+  const { tableName, columns, pageSize, trailingQuery } = props
   const storeRef = useRef(createStore<TData, T>(props))
 
   const state = useSyncExternalStore(
@@ -183,21 +200,35 @@ function useInfiniteQuery<
     () => initialState as StoreState<TData>
   )
 
+  // Initial fetch on mount
   useEffect(() => {
-    // Recreate store if props change
-    if (
-      storeRef.current.getState().hasInitialFetch &&
-      (props.tableName !== props.tableName ||
-        props.columns !== props.columns ||
-        props.pageSize !== props.pageSize)
-    ) {
-      storeRef.current = createStore<TData, T>(props)
-    }
-
     if (!state.hasInitialFetch && typeof window !== 'undefined') {
       storeRef.current.initialize()
     }
-  }, [props.tableName, props.columns, props.pageSize, state.hasInitialFetch])
+  }, [state.hasInitialFetch])
+
+  // Recreate store when actual dependencies change
+  // This runs when filters change (trailingQuery is memoized with useCallback in parent)
+  useEffect(() => {
+    // Skip if we haven't done initial fetch yet (let the init effect handle it)
+    if (!storeRef.current.getState().hasInitialFetch) return
+
+    console.log('useInfiniteQuery: recreating store due to dependency change')
+    // Reconstruct props from current values to satisfy ESLint
+    const currentProps: UseInfiniteQueryProps<T> = {
+      tableName,
+      columns,
+      pageSize,
+      trailingQuery,
+    }
+    storeRef.current = createStore<TData, T>(currentProps)
+    storeRef.current.initialize()
+  }, [tableName, columns, pageSize, trailingQuery])
+
+  // Create a stable fetchNextPage callback that always references the current store
+  const fetchNextPage = useCallback(() => {
+    storeRef.current.fetchNextPage()
+  }, [])
 
   return {
     data: state.data,
@@ -207,7 +238,7 @@ function useInfiniteQuery<
     isFetching: state.isFetching,
     error: state.error,
     hasMore: state.count > state.data.length,
-    fetchNextPage: storeRef.current.fetchNextPage,
+    fetchNextPage,
   }
 }
 

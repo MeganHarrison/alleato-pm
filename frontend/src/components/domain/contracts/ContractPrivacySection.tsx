@@ -5,6 +5,7 @@ import { FormSection } from "@/components/forms/FormSection"
 import { ToggleField } from "@/components/forms/ToggleField"
 import { MultiSelectField } from "@/components/forms/MultiSelectField"
 import { CheckboxField } from "@/components/forms/CheckboxField"
+import { useUsers } from "@/hooks/use-users"
 import type { ContractFormData } from "./ContractForm"
 
 interface ContractPrivacySectionProps {
@@ -16,14 +17,10 @@ export function ContractPrivacySection({
   data,
   onChange,
 }: ContractPrivacySectionProps) {
-  // Mock data - in real app would come from API
-  const users = [
-    { value: "1", label: "John Smith (Project Manager)" },
-    { value: "2", label: "Jane Doe (Superintendent)" },
-    { value: "3", label: "Bob Johnson (Accountant)" },
-    { value: "4", label: "Sarah Williams (Executive)" },
-  ]
+  // Fetch users from Supabase
+  const { options: userOptions, isLoading: usersLoading } = useUsers()
 
+  // Standard role options (keep hardcoded - these are system-defined roles)
   const roles = [
     { value: "admin", label: "Administrators" },
     { value: "pm", label: "Project Managers" },
@@ -42,17 +39,16 @@ export function ContractPrivacySection({
           checked={data.isPrivate || false}
           onCheckedChange={(checked) => onChange({ isPrivate: checked })}
           hint="Only selected users and roles will have access"
-          fullWidth
         />
 
         {data.isPrivate && (
           <>
             <MultiSelectField
               label="Allowed Users"
-              options={users}
+              options={userOptions}
               value={data.allowedUsers || []}
               onChange={(values) => onChange({ allowedUsers: values })}
-              placeholder="Select users with access"
+              placeholder={usersLoading ? "Loading users..." : "Select users with access"}
               fullWidth
             />
 

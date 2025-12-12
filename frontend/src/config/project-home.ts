@@ -187,27 +187,10 @@ export const quickActions: QuickAction[] = [
   },
 ];
 
-// Sample recent activity (placeholder data for development)
-export const recentActivity: RecentActivity[] = [
-  {
-    id: '1',
-    type: 'rfi',
-    title: 'RFI #012 - Electrical Panel Location',
-    description: 'Submitted for review',
-    user: 'John Smith',
-    timestamp: new Date(Date.now() - 1000 * 60 * 30),
-    link: '/projects/[projectId]/rfis/012',
-  },
-  {
-    id: '2',
-    type: 'daily-log',
-    title: 'Daily Log - Nov 30, 2024',
-    description: 'Completed by Site Manager',
-    user: 'Maria Garcia',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-    link: '/projects/[projectId]/daily-log',
-  },
-];
+// Recent activity - empty placeholder, will be populated from database
+// Note: Previously contained demo data with names "John Smith" and "Maria Garcia"
+// Should be fetched from activity/audit log in production
+export const recentActivity: RecentActivity[] = [];
 
 // Default project info (placeholder)
 export const defaultProjectInfo: ProjectInfo = {

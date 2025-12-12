@@ -110,7 +110,7 @@ export function GenericEditableTable<T extends { id: string | number }>({
 
     switch (column.type) {
       case 'textarea':
-        return <Textarea {...commonProps} className="min-h-[60px]" />;
+        return <Textarea value={String(editData[column.key] ?? '')} onChange={commonProps.onChange} className="min-h-[60px]" />;
       case 'select':
         return (
           <select
@@ -128,7 +128,7 @@ export function GenericEditableTable<T extends { id: string | number }>({
           </select>
         );
       default:
-        return <Input type={column.type || 'text'} {...commonProps} />;
+        return <Input type={column.type || 'text'} value={String(editData[column.key] ?? '')} onChange={commonProps.onChange} />;
     }
   };
 

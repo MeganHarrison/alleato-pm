@@ -60,6 +60,7 @@ from chatkit.types import (
 )
 
 from agents import Runner, RunConfig
+from src.services.memory_store import MemoryStore
 
 # Import unified agent and guardrails
 from alleato_agent_workflow.guardrails import (
@@ -81,11 +82,12 @@ class ConversationState:
     agent_name: str = "unified"  # Always unified agent
 
 
-class RagChatKitServerUnified(ChatKitServer):
+class RagChatKitServerUnified(ChatKitServer[dict[str, Any]]):
     """ChatKit server using unified agent (no classification)."""
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self) -> None:
+        self.store = MemoryStore()
+        super().__init__(self.store)
         # Store conversation state per thread
         self._states: Dict[str, ConversationState] = {}
 
@@ -159,10 +161,16 @@ class RagChatKitServerUnified(ChatKitServer):
 
         # Extract user text
         user_text = ""
-        if input_user_message and hasattr(input_user_message, 'content'):
-            for content in input_user_message.content:
-                if isinstance(content, UserMessageContent):
-                    user_text = content.text
+        if input_user_message is not None:
+            for content_item in input_user_message.content:
+                if hasattr(content_item, 'text'):
+                    user_text = content_item.text
+                    break
+                elif hasattr(content_item, 'type') and content_item.type == 'input_text':
+                    user_text = getattr(content_item, 'text', '')
+                    break
+                elif isinstance(content_item, dict):
+                    user_text = content_item.get('text', '')
                     break
 
         if user_text:
@@ -363,8 +371,27 @@ class RagChatKitServerUnified(ChatKitServer):
                 )
                 yield ThreadItemDoneEvent(item=error_msg)
 
-    async def snapshot(self, thread_id: str, context: dict[str, Any]) -> dict[str, Any]:
+    async def bootstrap(
+        self,
+        thread: ThreadMetadata,
+        context: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Bootstrap the conversation with initial state."""
+        thread_id = thread.id if thread else None
+        return await self.snapshot(thread_id, context)
+
+    async def snapshot(self, thread_id: str | None, context: dict[str, Any]) -> dict[str, Any]:
         """Return current conversation state."""
+        if thread_id is None:
+            # Return default state for new conversations
+            return {
+                "thread_id": None,
+                "current_agent": "unified",
+                "sources": [],
+                "events": [],
+                "input_count": 0,
+            }
+
         state = self._get_or_create_state(thread_id)
 
         return {

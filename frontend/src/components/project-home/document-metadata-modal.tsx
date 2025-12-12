@@ -18,7 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { createClient } from '@/lib/supabase/client';
-import { Database } from '@/app/types/database.types';
+import { Database } from '@/types/database.types';
 
 type DocumentMetadata = Database['public']['Tables']['document_metadata']['Row'];
 

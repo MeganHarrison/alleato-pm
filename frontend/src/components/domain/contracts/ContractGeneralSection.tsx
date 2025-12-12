@@ -6,6 +6,20 @@ import { TextField } from "@/components/forms/TextField"
 import { SelectField } from "@/components/forms/SelectField"
 import { TextareaField } from "@/components/forms/TextareaField"
 import { NumberField } from "@/components/forms/NumberField"
+import { useCompanies } from "@/hooks/use-companies"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Plus } from "lucide-react"
 import type { ContractFormData } from "./ContractForm"
 
 interface ContractGeneralSectionProps {
@@ -17,19 +31,48 @@ export function ContractGeneralSection({
   data,
   onChange,
 }: ContractGeneralSectionProps) {
-  // Mock data - in real app would come from API
-  const contractCompanies = [
-    { value: "1", label: "ABC Construction Co." },
-    { value: "2", label: "XYZ Builders Inc." },
-    { value: "3", label: "Premier Contractors LLC" },
-  ]
+  // Fetch companies from Supabase
+  const { options: companyOptions, isLoading: companiesLoading, createCompany } = useCompanies()
 
+  // State for "Add New Company" dialog
+  const [showAddCompany, setShowAddCompany] = React.useState(false)
+  const [newCompanyName, setNewCompanyName] = React.useState("")
+  const [newCompanyAddress, setNewCompanyAddress] = React.useState("")
+  const [newCompanyCity, setNewCompanyCity] = React.useState("")
+  const [newCompanyState, setNewCompanyState] = React.useState("")
+  const [isCreating, setIsCreating] = React.useState(false)
+
+  // Standard status options (keep hardcoded - these are enums)
   const statuses = [
     { value: "draft", label: "Draft" },
     { value: "out_for_signature", label: "Out for Signature" },
     { value: "executed", label: "Executed" },
     { value: "closed", label: "Closed" },
   ]
+
+  const handleCreateCompany = async () => {
+    if (!newCompanyName.trim()) return
+
+    setIsCreating(true)
+    const newCompany = await createCompany({
+      name: newCompanyName.trim(),
+      address: newCompanyAddress.trim() || null,
+      city: newCompanyCity.trim() || null,
+      state: newCompanyState.trim() || null,
+    })
+
+    if (newCompany) {
+      // Select the newly created company
+      onChange({ contractCompanyId: newCompany.id })
+      // Reset form and close dialog
+      setNewCompanyName("")
+      setNewCompanyAddress("")
+      setNewCompanyCity("")
+      setNewCompanyState("")
+      setShowAddCompany(false)
+    }
+    setIsCreating(false)
+  }
 
   return (
     <>
@@ -44,7 +87,7 @@ export function ContractGeneralSection({
           required
           placeholder="PC-001"
         />
-        
+
         <TextField
           label="Contract Title"
           value={data.title || ""}
@@ -54,14 +97,84 @@ export function ContractGeneralSection({
           placeholder="Main Building Construction"
         />
 
-        <SelectField
-          label="Contract Company"
-          options={contractCompanies}
-          value={data.contractCompanyId}
-          onValueChange={(value) => onChange({ contractCompanyId: value })}
-          required
-          placeholder="Select a company"
-        />
+        <div className="space-y-2">
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <SelectField
+                label="Contract Company"
+                options={companyOptions}
+                value={data.contractCompanyId}
+                onValueChange={(value) => onChange({ contractCompanyId: value })}
+                required
+                placeholder={companiesLoading ? "Loading companies..." : "Select a company"}
+                disabled={companiesLoading}
+              />
+            </div>
+            <Dialog open={showAddCompany} onOpenChange={setShowAddCompany}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon" className="shrink-0" title="Add new company">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Add New Company</DialogTitle>
+                  <DialogDescription>
+                    Create a new company to use in contracts.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="company-name">Company Name *</Label>
+                    <Input
+                      id="company-name"
+                      value={newCompanyName}
+                      onChange={(e) => setNewCompanyName(e.target.value)}
+                      placeholder="Enter company name"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="company-address">Address</Label>
+                    <Input
+                      id="company-address"
+                      value={newCompanyAddress}
+                      onChange={(e) => setNewCompanyAddress(e.target.value)}
+                      placeholder="Street address"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="company-city">City</Label>
+                      <Input
+                        id="company-city"
+                        value={newCompanyCity}
+                        onChange={(e) => setNewCompanyCity(e.target.value)}
+                        placeholder="City"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="company-state">State</Label>
+                      <Input
+                        id="company-state"
+                        value={newCompanyState}
+                        onChange={(e) => setNewCompanyState(e.target.value)}
+                        placeholder="State"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowAddCompany(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCreateCompany} disabled={!newCompanyName.trim() || isCreating}>
+                    {isCreating ? "Creating..." : "Create Company"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
 
         <SelectField
           label="Status"

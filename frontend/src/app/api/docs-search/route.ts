@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   const hits = (data ?? []).map((record) => ({
     id: record.id,
     title: record.title ?? "Untitled document",
-    summary: record.summary ?? record.overview ?? record.description ?? "",
+    summary: record.summary ?? "",
     project: record.project,
     date: record.date,
     source: record.source ?? record.url ?? "",

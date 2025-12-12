@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/registry/default/components/ui/table'
+} from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 
 interface ResultsTableProps {

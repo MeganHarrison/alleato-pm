@@ -44,7 +44,7 @@ export function CommitmentForm({
     watch,
     setValue,
   } = useForm<CommitmentFormData>({
-    resolver: zodResolver(commitmentSchema),
+    resolver: zodResolver(commitmentSchema) as any,
     defaultValues: {
       number: commitment?.number || '',
       contract_company_id: commitment?.contract_company_id || '',

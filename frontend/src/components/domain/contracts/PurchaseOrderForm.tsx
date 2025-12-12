@@ -12,6 +12,8 @@ import { FileUploadField } from "@/components/forms/FileUploadField"
 import { ScheduleOfValuesGrid } from "./ScheduleOfValuesGrid"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useCompanies } from "@/hooks/use-companies"
+import { useProjects } from "@/hooks/use-projects"
 
 interface PurchaseOrderFormData {
   number: string
@@ -55,17 +57,25 @@ export function PurchaseOrderForm({
     initialData || {}
   )
 
-  const vendors = [
-    { value: "1", label: "ABC Supply Co." },
-    { value: "2", label: "Building Materials Inc." },
-    { value: "3", label: "Industrial Equipment LLC" },
-  ]
+  // Fetch vendors (companies) and projects from Supabase
+  const { companies, isLoading: companiesLoading } = useCompanies()
+  const { projects: projectData, isLoading: projectsLoading } = useProjects()
 
-  const projects = [
-    { value: "1", label: "Downtown Office Building" },
-    { value: "2", label: "Riverside Apartments" },
-    { value: "3", label: "Shopping Center Renovation" },
-  ]
+  // Transform companies to vendor options for dropdown
+  const vendors = React.useMemo(() => {
+    return companies.map((company) => ({
+      value: company.id,
+      label: company.name || 'Unnamed Company',
+    }))
+  }, [companies])
+
+  // Transform projects to options for dropdown
+  const projects = React.useMemo(() => {
+    return projectData.map((project) => ({
+      value: project.id.toString(),
+      label: project.name || project.project_number || `Project #${project.id}`,
+    }))
+  }, [projectData])
 
   const statuses = [
     { value: "draft", label: "Draft" },
@@ -108,6 +118,7 @@ export function PurchaseOrderForm({
               options={vendors}
               value={formData.vendorId}
               onValueChange={(value) => setFormData({ ...formData, vendorId: value })}
+              placeholder={companiesLoading ? "Loading vendors..." : "Select vendor"}
               required
             />
 
@@ -116,6 +127,7 @@ export function PurchaseOrderForm({
               options={projects}
               value={formData.projectId}
               onValueChange={(value) => setFormData({ ...formData, projectId: value })}
+              placeholder={projectsLoading ? "Loading projects..." : "Select project"}
               required
             />
 

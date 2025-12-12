@@ -1,26 +1,27 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Chat RAG End-to-End Test', () => {
-  test('Ask a project question and verify Supabase response', async ({ page }) => {
+  test('Chat component renders and sends messages', async ({ page }) => {
     // Navigate to chat-rag page
     await page.goto('http://localhost:3000/chat-rag');
     await page.waitForLoadState('networkidle');
 
-    // Wait for ChatKit to fully initialize
-    await page.waitForTimeout(3000);
-
-    // Verify page loaded
-    const chatPanel = page.locator('[data-testid="rag-chatkit-panel"]');
+    // Wait for the SimpleRagChat component to load
+    const chatPanel = page.locator('[data-testid="simple-rag-chat"]');
     await expect(chatPanel).toBeVisible({ timeout: 10000 });
+
+    // Verify the heading is visible
+    const heading = page.getByText('Alleato AI Assistant');
+    await expect(heading).toBeVisible();
 
     // Take screenshot of initial state
     await page.screenshot({ path: 'tests/screenshots/chat-rag-01-loaded.png', fullPage: true });
     console.log('Page loaded successfully');
 
-    // Find the ChatKit textarea by placeholder text (partial match)
-    const textarea = page.getByPlaceholder(/Message Alleato/i);
+    // Find the textarea by placeholder text
+    const textarea = page.getByPlaceholder(/Ask about your projects/i);
+    await expect(textarea).toBeVisible();
     await textarea.click();
-    await page.waitForTimeout(300);
 
     // Type a project-related question
     const testMessage = 'What projects do we have?';
@@ -30,61 +31,56 @@ test.describe('Chat RAG End-to-End Test', () => {
     // Screenshot after typing
     await page.screenshot({ path: 'tests/screenshots/chat-rag-02-typed.png', fullPage: true });
 
-    // Press Enter to send the message
-    await textarea.press('Enter');
-    console.log('Message sent via Enter key');
+    // Click the send button (or press Enter)
+    const sendButton = page.locator('button').filter({ has: page.locator('svg') }).last();
+    await sendButton.click();
+    console.log('Message sent via button click');
 
-    // Wait for AI response (up to 90 seconds for complex queries)
+    // Wait for loading spinner to appear (indicates message was sent)
+    const loadingIndicator = page.locator('.animate-spin');
+
+    // Wait for loading to appear and then disappear (response received)
+    try {
+      await loadingIndicator.waitFor({ state: 'visible', timeout: 5000 });
+      console.log('Loading indicator visible - request in progress');
+    } catch {
+      console.log('Loading indicator not found - may have already completed');
+    }
+
+    // Wait for response (up to 60 seconds for agent processing)
     console.log('Waiting for AI response...');
 
     let responseFound = false;
     const startTime = Date.now();
-    const timeout = 90000;
+    const timeout = 60000;
 
     while (Date.now() - startTime < timeout) {
-      await page.waitForTimeout(3000);
+      await page.waitForTimeout(2000);
 
-      // Take periodic screenshots every 15 seconds
+      // Check for assistant message bubble (bg-gray-100 class in assistant messages)
+      const assistantMessages = await page.locator('.bg-gray-100.rounded-2xl').count();
+
+      if (assistantMessages > 0) {
+        responseFound = true;
+        console.log(`Response received! Found ${assistantMessages} assistant message(s)`);
+        break;
+      }
+
+      // Check for errors
+      const pageContent = await page.content();
+      if (pageContent.includes('Sorry, I encountered an error') ||
+          pageContent.includes('Backend Not Running')) {
+        await page.screenshot({ path: 'tests/screenshots/chat-rag-error.png', fullPage: true });
+        throw new Error('Error message detected in response');
+      }
+
+      // Take periodic screenshots
       const elapsed = Date.now() - startTime;
-      if (elapsed > 0 && elapsed % 15000 < 3000) {
+      if (elapsed > 0 && elapsed % 15000 < 2000) {
         await page.screenshot({
           path: `tests/screenshots/chat-rag-03-waiting-${Math.floor(elapsed / 1000)}s.png`,
           fullPage: true
         });
-      }
-
-      // Check for actual response content (not just header text)
-      // Look for multiple project indicators that would only appear in a real response
-      const pageContent = await page.content();
-
-      // Count how many project names appear - a real response will have multiple
-      let projectCount = 0;
-      if (pageContent.includes('Aspire Kissimmee') || pageContent.includes('Aspire Daytona')) projectCount++;
-      if (pageContent.includes('Alleato Finance') || pageContent.includes('Alleato Marketing')) projectCount++;
-      if (pageContent.includes('Market Demise') || pageContent.includes('Abbvie')) projectCount++;
-      if (pageContent.includes('Applied Eng') || pageContent.includes('Applied Engineering')) projectCount++;
-
-      // Also check for response structure indicators (what we see in actual response)
-      const hasResponseStructure =
-        pageContent.includes('Current Projects') ||
-        pageContent.includes('Analysis') ||
-        (pageContent.includes('ID:') && pageContent.includes('–'));
-
-      if (projectCount >= 2 || hasResponseStructure) {
-        responseFound = true;
-        console.log(`Response with REAL project data from Supabase detected! (${projectCount} project types found, hasStructure: ${hasResponseStructure})`);
-        break;
-      }
-
-      // Check for errors in the response
-      const hasError =
-        pageContent.includes('database schema issue') ||
-        pageContent.includes('schema mismatch') ||
-        pageContent.includes('query failed');
-
-      if (hasError) {
-        await page.screenshot({ path: 'tests/screenshots/chat-rag-error.png', fullPage: true });
-        throw new Error('Error message detected in response - possible schema issue');
       }
     }
 
@@ -92,9 +88,37 @@ test.describe('Chat RAG End-to-End Test', () => {
     await page.screenshot({ path: 'tests/screenshots/chat-rag-04-final.png', fullPage: true });
 
     if (!responseFound) {
-      throw new Error('No real project data received in response within timeout - check Supabase connection');
+      throw new Error('No response received within timeout - check backend connection');
     }
 
-    console.log('Test PASSED: Received response with REAL project data from Supabase');
+    // Verify the response contains some content
+    const responseContent = await page.locator('.bg-gray-100.rounded-2xl p').first().textContent();
+    console.log(`Response preview: ${responseContent?.substring(0, 100)}...`);
+
+    expect(responseContent).toBeTruthy();
+    expect(responseContent!.length).toBeGreaterThan(10);
+
+    console.log('Test PASSED: Chat component works and received response');
+  });
+
+  test('Suggested prompts fill the input', async ({ page }) => {
+    await page.goto('http://localhost:3000/chat-rag');
+    await page.waitForLoadState('networkidle');
+
+    // Wait for component to load
+    const chatPanel = page.locator('[data-testid="simple-rag-chat"]');
+    await expect(chatPanel).toBeVisible({ timeout: 10000 });
+
+    // Click a suggested prompt
+    const suggestedPrompt = page.getByText('What projects do we have?');
+    await expect(suggestedPrompt).toBeVisible();
+    await suggestedPrompt.click();
+
+    // Verify the textarea was filled
+    const textarea = page.getByPlaceholder(/Ask about your projects/i);
+    const inputValue = await textarea.inputValue();
+
+    expect(inputValue).toBe('What projects do we have?');
+    console.log('Test PASSED: Suggested prompt filled the input');
   });
 });

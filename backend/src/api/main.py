@@ -843,14 +843,15 @@ class SimpleChatRequest(BaseModel):
 async def rag_chat_simple(payload: SimpleChatRequest) -> Dict[str, Any]:
     """
     Simple RAG chat endpoint that uses agents but returns JSON (not streaming).
-    
+
     This endpoint is suitable for applications that don't support Server-Sent Events.
-    It processes the chat message through the agent workflow and returns the complete response.
-    
+    It processes the chat message through the full agent workflow (classification + routing)
+    and returns the complete response.
+
     Request body:
         - message: The user's chat message
         - history: Optional conversation history
-        
+
     Returns:
         - response: The assistant's response
         - retrieved: List of retrieved documents (if any)
@@ -862,47 +863,16 @@ async def rag_chat_simple(payload: SimpleChatRequest) -> Dict[str, Any]:
         raise HTTPException(status_code=422, detail="Message cannot be empty")
 
     try:
-        # Import the classification agent to run the RAG workflow
-        from alleato_agent_workflow.agents import classification_agent
-        from agents import Runner
+        # Use the full workflow which handles classification + routing to specialist agents
+        workflow_result = await run_workflow(WorkflowInput(input_as_text=payload.message))
 
-        # Build input items from history
-        input_items = []
-        if payload.history:
-            for msg in payload.history:
-                input_items.append({
-                    "role": msg.get("role", "user"),
-                    "content": msg.get("text", "")
-                })
+        # Extract response text from workflow result
+        response_text = workflow_result.get("output_text", "")
 
-        # Add current message
-        input_items.append({
-            "role": "user",
-            "content": payload.message
-        })
+        # If guardrails triggered, we get a different structure
+        if not response_text and "message" in workflow_result:
+            response_text = workflow_result.get("message", "")
 
-        # Run the agent workflow (using async runner to avoid event loop conflict)
-        # Runner.run_sync automatically follows handoffs until completion
-        import asyncio
-        result = await asyncio.get_event_loop().run_in_executor(
-            None,
-            lambda: Runner.run_sync(classification_agent, input_items, context={})
-        )
-
-        # Extract ALL response text from new_items (includes handoffs and final response)
-        # Get the LAST assistant message which should be the final response
-        response_text = ""
-        assistant_messages = []
-        for item in result.new_items:
-            if isinstance(item, MessageOutputItem):
-                text = ItemHelpers.text_message_output(item)
-                assistant_messages.append(text)
-
-        # Return the last non-empty message (the final response)
-        if assistant_messages:
-            response_text = assistant_messages[-1]
-
-        # For now, return empty retrieved docs (can enhance later to extract from context)
         return {
             "response": response_text.strip() or "I received your message but couldn't generate a response.",
             "retrieved": []

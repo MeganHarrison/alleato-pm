@@ -51,6 +51,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import type { Database } from "@/types/database.types"
+import { cn } from "@/lib/utils"
 
 type ProjectTask = Database["public"]["Tables"]["project_tasks"]["Row"]
 type Project = Database["public"]["Tables"]["projects"]["Row"]
@@ -70,8 +71,11 @@ const columns: ColumnDef<ProjectTaskWithProject>[] = [
       <div className="flex items-center justify-center">
         <Checkbox
           checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
+            table.getIsAllPageRowsSelected()
+              ? true
+              : table.getIsSomePageRowsSelected()
+              ? "indeterminate"
+              : false
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
@@ -91,15 +95,15 @@ const columns: ColumnDef<ProjectTaskWithProject>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "title",
-    header: "Task Title",
+    accessorKey: "task_description",
+    header: "Task Description",
     cell: ({ row }) => {
       const task = row.original
       
       return (
         <div className="flex items-center">
           <ListTodoIcon className="mr-2 size-4" />
-          <span className="font-medium">{task.title || "Untitled Task"}</span>
+          <span className="font-medium">{task.task_description || "Untitled Task"}</span>
         </div>
       )
     },

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -16,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useCostCodes } from "@/hooks/use-cost-codes"
 
 interface CostCodeSelectorProps {
   value: string
@@ -23,26 +24,6 @@ interface CostCodeSelectorProps {
   placeholder?: string
   className?: string
 }
-
-// Mock data - in real app would come from API
-const costCodes = [
-  { code: "01-000", description: "General Conditions" },
-  { code: "02-000", description: "Site Work" },
-  { code: "03-000", description: "Concrete" },
-  { code: "04-000", description: "Masonry" },
-  { code: "05-000", description: "Metals" },
-  { code: "06-000", description: "Wood & Plastics" },
-  { code: "07-000", description: "Thermal & Moisture Protection" },
-  { code: "08-000", description: "Doors & Windows" },
-  { code: "09-000", description: "Finishes" },
-  { code: "10-000", description: "Specialties" },
-  { code: "11-000", description: "Equipment" },
-  { code: "12-000", description: "Furnishings" },
-  { code: "13-000", description: "Special Construction" },
-  { code: "14-000", description: "Conveying Systems" },
-  { code: "15-000", description: "Mechanical" },
-  { code: "16-000", description: "Electrical" },
-]
 
 export function CostCodeSelector({
   value,
@@ -52,7 +33,10 @@ export function CostCodeSelector({
 }: CostCodeSelectorProps) {
   const [open, setOpen] = React.useState(false)
 
-  const selectedCode = costCodes.find((cc) => cc.code === value)
+  // Fetch cost codes from Supabase (with CSI fallback if database is empty)
+  const { costCodes, isLoading } = useCostCodes()
+
+  const selectedCode = costCodes.find((cc) => cc.id === value)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -62,10 +46,15 @@ export function CostCodeSelector({
           role="combobox"
           aria-expanded={open}
           className={cn("w-[150px] justify-between", className)}
+          disabled={isLoading}
         >
-          <span className="truncate">
-            {selectedCode ? selectedCode.code : placeholder}
-          </span>
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <span className="truncate">
+              {selectedCode ? selectedCode.id : placeholder}
+            </span>
+          )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -76,23 +65,23 @@ export function CostCodeSelector({
           <CommandGroup className="max-h-[300px] overflow-auto">
             {costCodes.map((costCode) => (
               <CommandItem
-                key={costCode.code}
-                value={`${costCode.code} ${costCode.description}`}
+                key={costCode.id}
+                value={`${costCode.id} ${costCode.description || ''}`}
                 onSelect={() => {
-                  onChange(costCode.code)
+                  onChange(costCode.id)
                   setOpen(false)
                 }}
               >
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    value === costCode.code ? "opacity-100" : "opacity-0"
+                    value === costCode.id ? "opacity-100" : "opacity-0"
                   )}
                 />
                 <div className="flex-1">
-                  <div className="font-medium">{costCode.code}</div>
+                  <div className="font-medium">{costCode.id}</div>
                   <div className="text-sm text-muted-foreground">
-                    {costCode.description}
+                    {costCode.description || 'No description'}
                   </div>
                 </div>
               </CommandItem>

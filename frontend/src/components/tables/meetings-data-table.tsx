@@ -49,7 +49,7 @@ import {
   ArrowUpDown,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { Database } from '@/app/types/database.types'
+import { Database } from '@/types/database.types'
 import { createClient } from '@/lib/supabase/client'
 
 export type Meeting = Database['public']['Tables']['document_metadata']['Row']

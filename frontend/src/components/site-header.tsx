@@ -1,7 +1,7 @@
  "use client"
 
 import { useMemo, useState } from "react"
-import { Bell, ChevronDown, ChevronRight, MessageSquare, Search } from "lucide-react"
+import { Bell, ChevronDown, ChevronRight, MessageSquare, Search, Star, Plus } from "lucide-react"
 import {
   IconLogout,
   IconSettings,
@@ -26,9 +26,40 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useHeader } from "@/components/layout/header-context"
 
-const primaryTools = ["Home", "Directory"]
-const budgetTools = ["Budget", "Commitments", "Prime Contracts", "Invoicing"]
-const projectOpsTools = ["RFIs", "Submittals", "Daily Log"]
+const coreTools = [
+  { name: "Home", href: "/" },
+  { name: "360 Reporting", href: "/reporting" },
+  { name: "Documents", href: "/documents" },
+  { name: "Directory", href: "/directory" },
+  { name: "Tasks", href: "/tasks" },
+  { name: "Admin", href: "/admin" },
+  { name: "Connection Manager", href: "/connection-manager", badge: "New" }
+]
+
+const projectManagementTools = [
+  { name: "Emails", href: "/emails" },
+  { name: "RFIs", href: "/rfis", hasCreateAction: true },
+  { name: "Submittals", href: "/submittals", hasCreateAction: true },
+  { name: "Transmittals", href: "/transmittals" },
+  { name: "Punch List", href: "/punch-list", hasCreateAction: true },
+  { name: "Meetings", href: "/meetings" },
+  { name: "Schedule", href: "/schedule" },
+  { name: "Daily Log", href: "/daily-log" },
+  { name: "Photos", href: "/photos", isFavorite: true },
+  { name: "Drawings", href: "/drawings" },
+  { name: "Specifications", href: "/specifications" }
+]
+
+const financialManagementTools = [
+  { name: "Prime Contracts", href: "/contracts" },
+  { name: "Budget", href: "/budget" },
+  { name: "Commitments", href: "/commitments" },
+  { name: "Change Orders", href: "/change-orders" },
+  { name: "Change Events", href: "/change-events", hasCreateAction: true },
+  { name: "Direct Costs", href: "/direct-costs" },
+  { name: "Invoicing", href: "/invoices" }
+]
+
 const defaultAvatar = "/favicon-light.png"
 
 export function SiteHeader({
@@ -76,7 +107,7 @@ export function SiteHeader({
               {index === breadcrumbs.length - 1 ? (
                 <span className="text-white">{crumb.label}</span>
               ) : (
-                <Link href={crumb.href} className="text-white/70 hover:text-white">
+                <Link href={crumb.href} className="text-white/70 hover:text-brand transition-colors">
                   {crumb.label}
                 </Link>
               )}
@@ -111,48 +142,89 @@ export function SiteHeader({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex h-8 items-center gap-2 rounded px-2 text-[hsl(var(--procore-header-text))] hover:bg-white/10"
+                className="flex h-8 items-center gap-2 rounded px-2 text-[hsl(var(--procore-header-text))] hover:bg-brand transition-colors"
               >
                 <span className="text-xs text-gray-400">Project Tools</span>
                 <span className="ml-2 text-sm font-medium">{currentTool}</span>
                 <ChevronDown className="ml-1 h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              {primaryTools.map((tool) => (
-                <DropdownMenuItem
-                  key={tool}
-                  onClick={() => setCurrentTool(tool)}
-                >
-                  {tool}
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              {budgetTools.map((tool, index) => (
-                <DropdownMenuItem
-                  key={tool}
-                  className={index === 0 ? "font-semibold" : undefined}
-                  onClick={() => setCurrentTool(tool)}
-                >
-                  {tool}
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              {projectOpsTools.map((tool) => (
-                <DropdownMenuItem
-                  key={tool}
-                  onClick={() => setCurrentTool(tool)}
-                >
-                  {tool}
-                </DropdownMenuItem>
-              ))}
+            <DropdownMenuContent align="start" className="w-screen p-6 rounded-none border-x-0">
+              <div className="container mx-auto">
+                <div className="grid grid-cols-3 gap-8">
+                {/* Core Tools Column */}
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold text-gray-900">Core Tools</h3>
+                  <div className="space-y-1">
+                    {coreTools.map((tool) => (
+                      <Link
+                        key={tool.name}
+                        href={tool.href}
+                        onClick={() => setCurrentTool(tool.name)}
+                        className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
+                      >
+                        <span>{tool.name}</span>
+                        {tool.badge && (
+                          <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                            {tool.badge}
+                          </span>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Project Management Column */}
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold text-gray-900">Project Management</h3>
+                  <div className="space-y-1">
+                    {projectManagementTools.map((tool) => (
+                      <Link
+                        key={tool.name}
+                        href={tool.href}
+                        onClick={() => setCurrentTool(tool.name)}
+                        className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
+                      >
+                        <span className="flex items-center gap-2">
+                          {tool.isFavorite && <Star className="h-3.5 w-3.5 text-gray-400" />}
+                          {tool.name}
+                        </span>
+                        {tool.hasCreateAction && (
+                          <Plus className="h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white" />
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Financial Management Column */}
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold text-gray-900">Financial Management</h3>
+                  <div className="space-y-1">
+                    {financialManagementTools.map((tool) => (
+                      <Link
+                        key={tool.name}
+                        href={tool.href}
+                        onClick={() => setCurrentTool(tool.name)}
+                        className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
+                      >
+                        <span>{tool.name}</span>
+                        {tool.hasCreateAction && (
+                          <Plus className="h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white" />
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                </div>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
           <Button
             variant="ghost"
             size="icon"
             asChild
-            className="h-8 w-8 text-[hsl(var(--procore-header-text))] hover:bg-white/10"
+            className="h-8 w-8 text-[hsl(var(--procore-header-text))] hover:bg-brand transition-colors"
           >
             <Link href="/team-chat" aria-label="Team chat">
               <MessageSquare className="h-4 w-4" />
@@ -163,7 +235,7 @@ export function SiteHeader({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-[hsl(var(--procore-header-text))] hover:bg-white/10"
+                className="h-8 w-8 text-[hsl(var(--procore-header-text))] hover:bg-brand transition-colors"
                 aria-label="Open search"
               >
                 <Search className="h-4 w-4" />
@@ -183,7 +255,7 @@ export function SiteHeader({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-[hsl(var(--procore-header-text))] hover:bg-white/10"
+            className="h-8 w-8 text-[hsl(var(--procore-header-text))] hover:bg-brand transition-colors"
             onClick={() => setNotificationsOpen((prev) => !prev)}
             aria-label="Toggle notifications sidebar"
           >
@@ -194,7 +266,7 @@ export function SiteHeader({
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="flex items-center rounded-full border border-white/10 bg-white/5 p-0.5 transition hover:border-white/30"
+                className="flex items-center rounded-full border border-white/10 bg-white/5 p-0.5 transition-colors hover:border-brand hover:bg-brand/10"
                 aria-label="Open user menu"
               >
                 <Avatar className="h-9 w-9">

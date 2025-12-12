@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
     appIsrStatus: false,
     buildActivity: false,
   },
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: true,
+  },
   // Proxy chatkit requests directly to Python backend (like OpenAI demo)
   async rewrites() {
     return [

@@ -34,16 +34,16 @@ Before generating types, ensure you initialize your Supabase project:
 npx supabase init
 ```
 
-Generate types for your project to produce the `database.types.ts` file:
+Generate types for your project to produce the `database.types.ts` file in the types folder:
 
 ```bash
-npx supabase gen types typescript --project-id "$PROJECT_REF" --schema public > database.types.ts
+npx supabase gen types typescript --project-id "$PROJECT_REF" --schema public > src/types/database.types.ts
 ```
 
 or in case of local development:
 
 ```bash
-npx supabase gen types typescript --local > database.types.ts
+npx supabase gen types typescript --local > src/types/database.types.ts
 ```
 
 These types are generated from your database schema. Given a table `public.movies`, the generated types will look like:
@@ -93,7 +93,7 @@ You can supply the type definitions to `supabase-js` like so:
 
 ```ts ./index.tsx
 import { createClient } from '@supabase/supabase-js'
-import { Database } from './database.types'
+import { Database } from '@/types/database.types'
 
 const supabase = createClient<Database>(
   process.env.SUPABASE_URL,
@@ -241,7 +241,7 @@ const { data } = await supabase.from('countries').select().single().overrideType
 The generated types provide shorthands for accessing tables and enums.
 
 ```ts ./index.ts
-import { Database, Tables, Enums } from "./database.types.ts";
+import { Database, Tables, Enums } from "@/types/database.types";
 
 // Before 😕
 let movie: Database['public']['Tables']['movies']['Row'] = // ...
@@ -298,7 +298,7 @@ One way to keep your type definitions in sync with your database is to set up a 
 Add the following script to your `package.json` to run it using `npm run update-types`
 
 ```json
-"update-types": "npx supabase gen types --lang=typescript --project-id \"$PROJECT_REF\" > database.types.ts"
+"update-types": "npx supabase gen types --lang=typescript --project-id \"$PROJECT_REF\" > src/types/database.types.ts"
 ```
 
 Create a file `.github/workflows/update-types.yml` with the following snippet to define the action along with the environment variables. This script will commit new type changes to your repo every night.
@@ -335,7 +335,7 @@ jobs:
       - name: Commit files
         if: ${{contains(steps.git_status.outputs.status, ' ')}}
         run: |
-          git add database.types.ts
+          git add src/types/database.types.ts
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git commit -m "Update database types" -a
