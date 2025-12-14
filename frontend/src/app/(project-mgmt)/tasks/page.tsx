@@ -10,6 +10,24 @@ import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface Task {
   id: string;
@@ -29,6 +47,16 @@ interface Task {
 export default function TasksPage() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState<string>('all');
+  const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
+  const [isCreating, setIsCreating] = React.useState(false);
+  const [newTask, setNewTask] = React.useState({
+    title: '',
+    description: '',
+    assignee: '',
+    status: 'todo',
+    due_date: '',
+    project_id: '',
+  });
 
   const {
     data,
@@ -97,6 +125,56 @@ export default function TasksPage() {
       return { success: true };
     } catch (error) {
       return { error: 'Failed to delete task' };
+    }
+  };
+
+  const createTask = async () => {
+    if (!newTask.title.trim()) {
+      toast.error('Task title is required');
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      const supabase = createClient();
+
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const taskData: any = {
+        title: newTask.title,
+        description: newTask.description || null,
+        assignee: newTask.assignee || null,
+        status: newTask.status,
+        due_date: newTask.due_date || null,
+        project_id: newTask.project_id ? parseInt(newTask.project_id) : null,
+        created_by: user?.id || 'system',
+      };
+
+      const { error } = await supabase
+        .from('ai_tasks')
+        .insert([taskData]);
+
+      if (error) {
+        toast.error(`Failed to create task: ${error.message}`);
+        return;
+      }
+
+      toast.success('Task created successfully');
+      setIsAddDialogOpen(false);
+      setNewTask({
+        title: '',
+        description: '',
+        assignee: '',
+        status: 'todo',
+        due_date: '',
+        project_id: '',
+      });
+      window.location.reload(); // Simple reload to refresh data
+    } catch (error) {
+      toast.error('Failed to create task');
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -237,7 +315,10 @@ export default function TasksPage() {
           <h1 className="text-3xl font-bold">Tasks</h1>
           <p className="text-gray-500">Manage and track your project tasks</p>
         </div>
-        <Button className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90">
+        <Button
+          onClick={() => setIsAddDialogOpen(true)}
+          className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Add Task
         </Button>
@@ -295,7 +376,10 @@ export default function TasksPage() {
                 ? 'Try adjusting your filters.'
                 : 'Get started by creating your first task.'}
             </p>
-            <Button className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90">
+            <Button
+              onClick={() => setIsAddDialogOpen(true)}
+              className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add Task
             </Button>
@@ -324,6 +408,105 @@ export default function TasksPage() {
           </Button>
         </div>
       )}
+
+      {/* Add Task Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Create New Task</DialogTitle>
+            <DialogDescription>
+              Add a new task to track work and deadlines.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">Title *</Label>
+              <Input
+                id="title"
+                value={newTask.title}
+                onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                placeholder="Enter task title"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={newTask.description}
+                onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                placeholder="Enter task description"
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={newTask.status}
+                  onValueChange={(value) => setNewTask({ ...newTask, status: value })}
+                >
+                  <SelectTrigger id="status">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="todo">To Do</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
+                    <SelectItem value="review">Review</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="due_date">Due Date</Label>
+                <Input
+                  id="due_date"
+                  type="date"
+                  value={newTask.due_date}
+                  onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="assignee">Assignee</Label>
+                <Input
+                  id="assignee"
+                  value={newTask.assignee}
+                  onChange={(e) => setNewTask({ ...newTask, assignee: e.target.value })}
+                  placeholder="Enter assignee name"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="project_id">Project ID</Label>
+                <Input
+                  id="project_id"
+                  type="number"
+                  value={newTask.project_id}
+                  onChange={(e) => setNewTask({ ...newTask, project_id: e.target.value })}
+                  placeholder="Enter project ID"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsAddDialogOpen(false)}
+              disabled={isCreating}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={createTask}
+              disabled={isCreating || !newTask.title.trim()}
+              className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90"
+            >
+              {isCreating ? 'Creating...' : 'Create Task'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

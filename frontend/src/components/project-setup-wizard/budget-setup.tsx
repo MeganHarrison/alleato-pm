@@ -1,0 +1,448 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Card } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { 
+  AlertCircle, 
+  Calculator, 
+  DollarSign,
+  FileSpreadsheet,
+  Upload,
+  Download,
+  Plus,
+  X,
+} from "lucide-react"
+import { StepComponentProps } from "./project-setup-wizard"
+import type { Database } from "../../../../database.types"
+
+type BudgetItem = Database["public"]["Tables"]["budget_items"]["Row"]
+type CostCode = Database["public"]["Tables"]["cost_codes"]["Row"]
+type ProjectCostCode = Database["public"]["Tables"]["project_cost_codes"]["Row"]
+type CostCodeType = Database["public"]["Tables"]["cost_code_types"]["Row"]
+
+interface SimpleBudgetItem {
+  project_id: number
+  cost_code_id: string | null
+  cost_code?: CostCode
+  cost_code_type?: CostCodeType
+  description: string
+  amount: number
+  quantity: number | null
+  unit_price: number | null
+  unit_of_measure: string | null
+  status: string
+}
+
+interface BudgetSummary {
+  totalBudget: number
+  totalByType: Record<string, number>
+  itemCount: number
+}
+
+export function BudgetSetup({ projectId, onNext, onSkip }: StepComponentProps) {
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  
+  const [projectCostCodes, setProjectCostCodes] = useState<any[]>([])
+  const [budgetItems, setBudgetItems] = useState<SimpleBudgetItem[]>([])
+  const [activeTab, setActiveTab] = useState("manual")
+  
+  const supabase = createClient()
+
+  useEffect(() => {
+    loadData()
+  }, [projectId])
+
+  const loadData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // Load project cost codes with details
+      const { data: costCodes, error: codesError } = await supabase
+        .from("project_cost_codes")
+        .select(`
+          *,
+          cost_code:cost_codes(*),
+          cost_type:cost_code_types(*)
+        `)
+        .eq("project_id", projectId)
+        .eq("is_active", true)
+        .order("cost_code_id")
+
+      if (codesError) throw codesError
+
+      setProjectCostCodes(costCodes || [])
+
+      // For initial setup, we'll always start with empty budget items based on cost codes
+      // Initialize budget items from project cost codes
+      const initialItems: SimpleBudgetItem[] = (costCodes || []).map(pcc => ({
+        project_id: parseInt(projectId),
+        cost_code_id: pcc.cost_code_id,
+        cost_code: pcc.cost_code,
+        cost_code_type: pcc.cost_type,
+        description: pcc.cost_code?.description || "",
+        amount: 0,
+        quantity: null,
+        unit_price: null,
+        unit_of_measure: null,
+        status: "draft",
+      }))
+      setBudgetItems(initialItems)
+
+    } catch (err) {
+      console.error("Error loading data:", err)
+      setError(err instanceof Error ? err.message : "Failed to load data")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateBudgetItem = (index: number, field: string, value: any) => {
+    const updatedItems = [...budgetItems]
+    updatedItems[index] = {
+      ...updatedItems[index],
+      [field]: value,
+    }
+    
+    // Calculate amount if quantity and unit_price are provided
+    if (field === "quantity" || field === "unit_price") {
+      const quantity = field === "quantity" ? value : updatedItems[index].quantity
+      const unitPrice = field === "unit_price" ? value : updatedItems[index].unit_price
+      
+      if (quantity && unitPrice) {
+        updatedItems[index].amount = quantity * unitPrice
+      }
+    }
+    
+    setBudgetItems(updatedItems)
+  }
+
+  const addCustomBudgetItem = () => {
+    const newItem: SimpleBudgetItem = {
+      project_id: parseInt(projectId),
+      cost_code_id: null,
+      description: "",
+      amount: 0,
+      quantity: null,
+      unit_price: null,
+      unit_of_measure: null,
+      status: "draft",
+    }
+    setBudgetItems([...budgetItems, newItem])
+  }
+
+  const removeBudgetItem = (index: number) => {
+    setBudgetItems(budgetItems.filter((_, i) => i !== index))
+  }
+
+  const calculateSummary = (): BudgetSummary => {
+    const totalBudget = budgetItems.reduce((sum, item) => sum + (item.amount || 0), 0)
+    const totalByType: Record<string, number> = {}
+    
+    budgetItems.forEach(item => {
+      const typeCode = item.cost_code_type?.code || "Other"
+      totalByType[typeCode] = (totalByType[typeCode] || 0) + (item.amount || 0)
+    })
+    
+    return {
+      totalBudget,
+      totalByType,
+      itemCount: budgetItems.filter(item => item.amount > 0).length,
+    }
+  }
+
+  const saveBudget = async () => {
+    try {
+      setSaving(true)
+      setError(null)
+
+      // Filter out items with no amount
+      const itemsToSave = budgetItems.filter(item => item.amount > 0)
+
+      if (itemsToSave.length === 0) {
+        setError("Please enter at least one budget item with an amount")
+        return
+      }
+
+      // Insert new budget items with the correct fields for the database
+      const { error: insertError } = await supabase
+        .from("budget_items")
+        .insert(
+          itemsToSave.map(item => ({
+            project_id: item.project_id,
+            cost_code_id: item.cost_code_id || "",
+            original_budget_amount: item.amount,
+            original_amount: item.amount,
+            unit_qty: item.quantity,
+            unit_cost: item.unit_price,
+            uom: item.unit_of_measure,
+            cost_type: item.cost_code_type?.code || null,
+          }))
+        )
+
+      if (insertError) throw insertError
+
+      // Update project budget total
+      const summary = calculateSummary()
+      const { error: updateError } = await supabase
+        .from("projects")
+        .update({
+          original_budget: summary.totalBudget,
+          current_budget: summary.totalBudget,
+        })
+        .eq("id", projectId)
+
+      if (updateError) throw updateError
+
+      onNext()
+
+    } catch (err) {
+      console.error("Error saving budget:", err)
+      setError(err instanceof Error ? err.message : "Failed to save budget")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const exportBudgetTemplate = () => {
+    // Create CSV content
+    const headers = ["Cost Code", "Description", "Quantity", "Unit", "Unit Price", "Total Amount"]
+    const rows = budgetItems.map(item => [
+      item.cost_code?.id || "",
+      item.description || "",
+      item.quantity || "",
+      item.unit_of_measure || "",
+      item.unit_price || "",
+      item.amount || "",
+    ])
+    
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.join(","))
+    ].join("\n")
+    
+    // Download file
+    const blob = new Blob([csvContent], { type: "text/csv" })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `budget-template-project-${projectId}.csv`
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="text-muted-foreground">Loading budget data...</div>
+      </div>
+    )
+  }
+
+  const summary = calculateSummary()
+
+  return (
+    <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      <div className="space-y-4">
+        <p className="text-muted-foreground">
+          Set up your initial project budget. You can enter amounts manually or
+          import from a spreadsheet.
+        </p>
+
+        {/* Budget Summary */}
+        <Card className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-medium flex items-center gap-2">
+              <Calculator className="h-4 w-4" />
+              Budget Summary
+            </h4>
+            <div className="text-2xl font-bold">
+              ${summary.totalBudget.toLocaleString()}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {Object.entries(summary.totalByType).map(([type, amount]) => (
+              <div key={type} className="flex items-center justify-between">
+                <span className="text-muted-foreground">{type}:</span>
+                <span className="font-medium">${amount.toLocaleString()}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid grid-cols-2 w-[400px]">
+            <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+            <TabsTrigger value="import" disabled>Import CSV</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="manual" className="space-y-4">
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={exportBudgetTemplate}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export Template
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={addCustomBudgetItem}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Line Item
+              </Button>
+            </div>
+
+            <div className="border rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-32">Cost Code</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="w-24">Quantity</TableHead>
+                    <TableHead className="w-20">Unit</TableHead>
+                    <TableHead className="w-32">Unit Price</TableHead>
+                    <TableHead className="w-32">Total</TableHead>
+                    <TableHead className="w-16"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {budgetItems.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {item.cost_code_type && (
+                            <Badge variant="secondary" className="text-xs">
+                              {item.cost_code_type.code}
+                            </Badge>
+                          )}
+                          <span className="text-sm font-medium">
+                            {item.cost_code?.id || "-"}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          value={item.description || ""}
+                          onChange={(e) => updateBudgetItem(index, "description", e.target.value)}
+                          placeholder="Enter description"
+                          className="h-8"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          value={item.quantity || ""}
+                          onChange={(e) => updateBudgetItem(index, "quantity", parseFloat(e.target.value) || null)}
+                          placeholder="0"
+                          className="h-8"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          value={item.unit_of_measure || ""}
+                          onChange={(e) => updateBudgetItem(index, "unit_of_measure", e.target.value)}
+                          placeholder="EA"
+                          className="h-8"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div className="relative">
+                          <DollarSign className="absolute left-2 top-2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="number"
+                            value={item.unit_price || ""}
+                            onChange={(e) => updateBudgetItem(index, "unit_price", parseFloat(e.target.value) || null)}
+                            placeholder="0.00"
+                            className="h-8 pl-7"
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="relative">
+                          <DollarSign className="absolute left-2 top-2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="number"
+                            value={item.amount || ""}
+                            onChange={(e) => updateBudgetItem(index, "amount", parseFloat(e.target.value) || 0)}
+                            placeholder="0.00"
+                            className="h-8 pl-7 font-medium"
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {!item.cost_code_id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeBudgetItem(index)}
+                            className="h-8 w-8"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="import">
+            <Card className="p-6 text-center">
+              <FileSpreadsheet className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <p className="text-muted-foreground mb-4">
+                Import functionality coming soon. For now, please use manual entry.
+              </p>
+              <Button variant="outline" disabled>
+                <Upload className="h-4 w-4 mr-2" />
+                Upload CSV
+              </Button>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-between">
+        <Button variant="ghost" onClick={onSkip} disabled={saving}>
+          Skip for now
+        </Button>
+        <Button
+          onClick={saveBudget}
+          disabled={saving || summary.totalBudget === 0}
+        >
+          {saving ? "Saving..." : "Continue"}
+        </Button>
+      </div>
+    </div>
+  )
+}

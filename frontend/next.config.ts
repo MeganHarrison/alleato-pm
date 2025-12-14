@@ -10,24 +10,24 @@ const nextConfig: NextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
-  // Proxy chatkit requests directly to Python backend (like OpenAI demo)
+  // Proxy chatkit requests to the Alleato RAG backend (port 8051)
   async rewrites() {
     return [
       {
         source: "/rag-chatkit",
-        destination: "http://127.0.0.1:8000/rag-chatkit",
+        destination: "http://127.0.0.1:8051/rag-chatkit",
       },
       {
         source: "/rag-chatkit/:path*",
-        destination: "http://127.0.0.1:8000/rag-chatkit/:path*",
+        destination: "http://127.0.0.1:8051/rag-chatkit/:path*",
       },
       {
         source: "/chatkit",
-        destination: "http://127.0.0.1:8000/chatkit",
+        destination: "http://127.0.0.1:8051/rag-chatkit",
       },
       {
         source: "/chatkit/:path*",
-        destination: "http://127.0.0.1:8000/chatkit/:path*",
+        destination: "http://127.0.0.1:8051/rag-chatkit/:path*",
       },
     ];
   },

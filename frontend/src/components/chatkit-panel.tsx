@@ -1,11 +1,15 @@
 "use client";
 
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
+import React from "react";
 
 type ChatKitPanelProps = {
   initialThreadId?: string | null;
   onThreadChange?: (threadId: string | null) => void;
   onResponseEnd?: () => void;
+  onRunnerUpdate?: () => void;
+  onRunnerEventDelta?: (events: any[]) => void;
+  onRunnerBindThread?: (threadId: string) => void;
 };
 
 const CHATKIT_DOMAIN_KEY =
@@ -15,6 +19,9 @@ export function ChatKitPanel({
   initialThreadId,
   onThreadChange,
   onResponseEnd,
+  onRunnerUpdate,
+  onRunnerEventDelta,
+  onRunnerBindThread,
 }: ChatKitPanelProps) {
   const chatkit = useChatKit({
     api: {
@@ -22,32 +29,37 @@ export function ChatKitPanel({
       domainKey: CHATKIT_DOMAIN_KEY,
     },
     composer: {
-      placeholder: "Message...",
+      placeholder: "Message Alleato AI...",
     },
     history: {
-      enabled: false,
+      enabled: true,
+      showDelete: true,
+      showRename: true,
     },
     theme: {
       colorScheme: "light",
       radius: "round",
-      density: "normal",
+      density: "spacious",
       color: {
         accent: {
-          primary: "#2563eb",
+          primary: "#10a37f",
           level: 1,
         },
       },
     },
     initialThread: initialThreadId ?? null,
     startScreen: {
-      greeting: "Hi! I'm your airline assistant. How can I help today?",
+      greeting: "Hi! I'm your Alleato AI assistant. I have access to your project data, meetings, and more.",
       prompts: [
-        { label: "Change my seat", prompt: "Can you move me to seat 14C?" },
+        { label: "What projects do we have?", prompt: "What projects do we have?" },
         {
-          label: "Flight status",
-          prompt: "What's the status of flight FLT-123?",
+          label: "What meetings happened today?",
+          prompt: "What meetings happened today?",
         },
-        { label: "Cancellation", prompt: "I need to cancel my trip." },
+        {
+          label: "Summarize the latest meetings",
+          prompt: "Summarize the latest meetings",
+        },
       ],
     },
     threadItemActions: {
@@ -58,13 +70,27 @@ export function ChatKitPanel({
     onError: ({ error }) => {
       console.error("ChatKit error", error);
     },
+    onEffect: async ({ name }) => {
+      if (name === "runner_state_update") {
+        onRunnerUpdate?.();
+      }
+      if (name === "runner_event_delta") {
+        onRunnerEventDelta?.((arguments as any)?.[0]?.data?.events ?? []);
+      }
+      if (name === "runner_bind_thread") {
+        const tid = (arguments as any)?.[0]?.data?.thread_id;
+        if (tid) {
+          onRunnerBindThread?.(tid);
+        }
+      }
+    },
   });
 
   return (
     <div className="flex flex-col h-full flex-1 bg-white shadow-sm border border-gray-200 border-t-0 rounded-xl">
-      <div className="bg-blue-600 text-white h-12 px-4 flex items-center rounded-t-xl">
+      <div className="bg-emerald-600 text-white h-12 px-4 flex items-center rounded-t-xl">
         <h2 className="font-semibold text-sm sm:text-base lg:text-lg">
-          Customer View
+          Alleato AI Chat
         </h2>
       </div>
       <div className="flex-1 overflow-hidden pb-1.5">

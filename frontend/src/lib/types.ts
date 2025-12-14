@@ -15,13 +15,14 @@ export interface Agent {
   input_guardrails: string[]
 }
 
-export type EventType = 
-  | "message" 
-  | "handoff" 
-  | "tool_call" 
-  | "tool_output" 
-  | "context_update" 
-  | "rag_query_start" 
+export type EventType =
+  | "message"
+  | "handoff"
+  | "tool_call"
+  | "tool_output"
+  | "context_update"
+  | "progress_update"
+  | "rag_query_start"
   | "rag_retrieval_complete"
   | "guardrail_check"
   | "guardrail_passed"

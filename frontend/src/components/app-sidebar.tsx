@@ -136,11 +136,6 @@ const data = {
       icon: IconChartLine,
     },
     {
-      title: "Archive",
-      url: "/archive/archived-projects",
-      icon: IconArchive,
-    },
-    {
       title: "Settings",
       url: "/settings",
       icon: IconSettings,

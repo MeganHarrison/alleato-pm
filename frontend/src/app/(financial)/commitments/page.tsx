@@ -105,11 +105,11 @@ export default function CommitmentsPage() {
   };
 
   const handleCreateSubcontract = () => {
-    router.push('/commitments/subcontracts/new');
+    router.push('/subcontracts-form');
   };
 
   const handleCreatePurchaseOrder = () => {
-    router.push('/commitments/purchase-orders/new');
+    router.push('/purchase-order-form');
   };
 
   const handleEdit = (commitment: Commitment) => {

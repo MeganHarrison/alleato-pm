@@ -7,7 +7,10 @@ import {
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react"
-import { useSession, signOut } from "next-auth/react"
+import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import type { User } from "@supabase/supabase-js"
 
 import {
   Avatar,
@@ -41,15 +44,30 @@ function getInitials(name: string | null | undefined): string {
 
 export function NavUser() {
   const { isMobile } = useSidebar()
-  const { data: session } = useSession()
+  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
+  const supabase = createClient()
 
-  const user = {
-    name: session?.user?.name || "User",
-    email: session?.user?.email || "",
-    avatar: session?.user?.image || "",
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    getUser()
+  }, [supabase])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/auth/login')
   }
 
-  const initials = getInitials(user.name)
+  const displayUser = {
+    name: user?.user_metadata?.name || user?.email?.split('@')[0] || "User",
+    email: user?.email || "",
+    avatar: user?.user_metadata?.avatar_url || "",
+  }
+
+  const initials = getInitials(displayUser.name)
 
   return (
     <SidebarMenu>
@@ -61,13 +79,13 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
                 <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{displayUser.name}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
+                  {displayUser.email}
                 </span>
               </div>
               <IconDotsVertical className="ml-auto size-4" />
@@ -82,13 +100,13 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
                   <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">{displayUser.name}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
+                    {displayUser.email}
                   </span>
                 </div>
               </div>
@@ -109,7 +127,7 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/auth/login' })}>
+            <DropdownMenuItem onClick={handleSignOut}>
               <IconLogout />
               Log out
             </DropdownMenuItem>

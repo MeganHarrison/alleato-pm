@@ -1,6 +1,6 @@
  "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { Bell, ChevronDown, ChevronRight, MessageSquare, Search, Star, Plus } from "lucide-react"
 import {
   IconLogout,
@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useHeader } from "@/components/layout/header-context"
 
 const coreTools = [
@@ -31,9 +31,9 @@ const coreTools = [
   { name: "360 Reporting", href: "/reporting" },
   { name: "Documents", href: "/documents" },
   { name: "Directory", href: "/directory" },
+  { name: "Employees", href: "/employees" },
   { name: "Tasks", href: "/tasks" },
   { name: "Admin", href: "/admin" },
-  { name: "Connection Manager", href: "/connection-manager", badge: "New" }
 ]
 
 const projectManagementTools = [
@@ -45,7 +45,7 @@ const projectManagementTools = [
   { name: "Meetings", href: "/meetings" },
   { name: "Schedule", href: "/schedule" },
   { name: "Daily Log", href: "/daily-log" },
-  { name: "Photos", href: "/photos", isFavorite: true },
+  { name: "Photos", href: "/photos" },
   { name: "Drawings", href: "/drawings" },
   { name: "Specifications", href: "/specifications" }
 ]
@@ -62,6 +62,12 @@ const financialManagementTools = [
 
 const defaultAvatar = "/favicon-light.png"
 
+interface Project {
+  id: number
+  name: string
+  "job number": string | null
+}
+
 export function SiteHeader({
   userAvatar,
 }: {
@@ -70,12 +76,65 @@ export function SiteHeader({
   const [currentTool, setCurrentTool] = useState("Home")
   const avatarSrc = userAvatar ?? defaultAvatar
   const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [projects, setProjects] = useState<Project[]>([])
+  const [loadingProjects, setLoadingProjects] = useState(false)
+  const [currentProject, setCurrentProject] = useState<Project | null>(null)
   const { header } = useHeader()
   const {
     companyName = "Alleato Group",
     projectName = "24-104 - Goodwill Bart",
   } = header
   const pathname = usePathname()
+  const router = useRouter()
+
+  // Extract project ID from URL
+  const projectId = useMemo(() => {
+    const segments = pathname?.split("/").filter(Boolean) ?? []
+    // Check if first segment is a number (project ID)
+    const firstSegment = segments[0]
+    return firstSegment && /^\d+$/.test(firstSegment) ? parseInt(firstSegment) : null
+  }, [pathname])
+
+  // Fetch current project details when project ID changes
+  useEffect(() => {
+    const fetchCurrentProject = async () => {
+      if (projectId) {
+        try {
+          const response = await fetch(`/api/projects`)
+          const data = await response.json()
+          if (data.data && data.data.length > 0) {
+            const project = data.data.find((p: Project) => p.id === projectId)
+            if (project) {
+              setCurrentProject(project)
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch current project:', error)
+        }
+      } else {
+        setCurrentProject(null)
+      }
+    }
+
+    fetchCurrentProject()
+  }, [projectId])
+
+  // Fetch projects when dropdown is opened
+  const fetchProjects = async () => {
+    setLoadingProjects(true)
+    try {
+      const response = await fetch('/api/projects?limit=10&archived=false')
+      const data = await response.json()
+      if (data.data) {
+        setProjects(data.data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch projects:', error)
+    } finally {
+      setLoadingProjects(false)
+    }
+  }
+
   const breadcrumbs = useMemo(() => {
     const segments = pathname?.split("/").filter(Boolean) ?? []
     const crumbs = [{ label: "Home", href: "/" }]
@@ -119,23 +178,62 @@ export function SiteHeader({
         </nav>
         <div className="ml-auto flex items-center gap-2">
           {/* Company/Project Selector */}
-          <DropdownMenu>
+          <DropdownMenu onOpenChange={(open) => open && fetchProjects()}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 className="h-8 text-[hsl(var(--procore-header-text))] hover:bg-brand px-2"
               >
-                <span className="text-xs text-gray-300">{companyName}</span>
+                <span className="text-xs text-gray-300">Project</span>
                 <span className="mx-1 text-gray-500">|</span>
-                <span className="text-sm font-medium">{projectName}</span>
+                <span className="text-sm font-medium">
+                  {currentProject 
+                    ? `${currentProject["job number"] ? currentProject["job number"] + " - " : ""}${currentProject.name}`
+                    : projectId 
+                    ? "Loading..." 
+                    : "Select Project"
+                  }
+                </span>
                 <ChevronDown className="ml-1 h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-64">
-              <DropdownMenuItem>Switch Project</DropdownMenuItem>
-              <DropdownMenuItem>Switch Company</DropdownMenuItem>
+            <DropdownMenuContent align="start" className="w-80 max-h-96 overflow-y-auto">
+              <DropdownMenuLabel>Recent Projects</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View All Projects</DropdownMenuItem>
+              {loadingProjects ? (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  Loading projects...
+                </div>
+              ) : projects.length > 0 ? (
+                <>
+                  {projects.slice(0, 10).map((project) => (
+                    <DropdownMenuItem 
+                      key={project.id}
+                      onClick={() => router.push(`/${project.id}/home`)}
+                      className="cursor-pointer"
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium">{project.name}</span>
+                        {project["job number"] && (
+                          <span className="text-xs text-muted-foreground">
+                            Job #{project["job number"]}
+                          </span>
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuSeparator />
+                </>
+              ) : (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  No projects found
+                </div>
+              )}
+              <DropdownMenuItem asChild>
+                <Link href="/" className="cursor-pointer font-medium">
+                  View All Projects
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <DropdownMenu>
@@ -151,7 +249,7 @@ export function SiteHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-screen p-6 rounded-none border-x-0">
               <div className="container mx-auto">
-                <div className="grid grid-cols-3 gap-8">
+                <div className="grid grid-cols-3 gap-12">
                 {/* Core Tools Column */}
                 <div>
                   <h3 className="mb-3 text-sm font-semibold text-gray-900">Core Tools</h3>
@@ -183,15 +281,15 @@ export function SiteHeader({
                         key={tool.name}
                         href={tool.href}
                         onClick={() => setCurrentTool(tool.name)}
-                        className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
+                        className="flex w-full items-center rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
                       >
                         <span className="flex items-center gap-2">
                           {tool.isFavorite && <Star className="h-3.5 w-3.5 text-gray-400" />}
                           {tool.name}
+                          {tool.hasCreateAction && (
+                            <Plus className="h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white ml-1" />
+                          )}
                         </span>
-                        {tool.hasCreateAction && (
-                          <Plus className="h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white" />
-                        )}
                       </Link>
                     ))}
                   </div>
@@ -206,12 +304,14 @@ export function SiteHeader({
                         key={tool.name}
                         href={tool.href}
                         onClick={() => setCurrentTool(tool.name)}
-                        className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
+                        className="flex w-full items-center rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
                       >
-                        <span>{tool.name}</span>
-                        {tool.hasCreateAction && (
-                          <Plus className="h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white" />
-                        )}
+                        <span className="flex items-center gap-2">
+                          {tool.name}
+                          {tool.hasCreateAction && (
+                            <Plus className="h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white ml-1" />
+                          )}
+                        </span>
                       </Link>
                     ))}
                   </div>

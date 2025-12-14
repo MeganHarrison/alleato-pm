@@ -13,3 +13,7 @@ export { DataTableResponsive } from './DataTableResponsive'
 export { DataTableToolbarResponsive } from './DataTableToolbarResponsive'
 export { MobileFilterModal } from './MobileFilterModal'
 export { DataTablePaginationResponsive } from './DataTablePaginationResponsive'
+
+// Specialized data tables
+export { MeetingsDataTable } from './meetings-data-table'
+export { EmployeesDataTable } from './employees-data-table'

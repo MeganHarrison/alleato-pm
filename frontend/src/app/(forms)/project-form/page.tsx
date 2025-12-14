@@ -595,22 +595,25 @@ function CreateProjectForm() {
     try {
       const payload = {
         name: values.name,
-        job_number: values.project_number || null,
-        phase: values.stage || null,
-        current_phase: values.stage || null,
+        "job number": values.project_number || null,
+        phase: values.stage || "Current",  // Default to "Current" if no stage selected
+        current_phase: values.stage || "Current",  // Default to "Current" if no stage selected
         category: values.project_type || null,
+        type: values.project_type || null,  // Also set 'type' column
         summary: values.description || null,
         address: values.street_address,
         state: values.state || null,
         archived: !values.active,
-        start_date: values.start_date,
-        est_completion_date: values.completion_date,
-        est_revenue: values.total_value,
+        "start date": values.start_date,
+        "est completion": values.completion_date,
+        "est revenue": values.total_value,
+        // Add new columns directly to payload
+        work_scope: values.work_scope || null,
+        project_sector: values.project_sector || null,
+        delivery_method: values.delivery_method || null,
+        // Keep other metadata in summary_metadata
         summary_metadata: {
           project_template: values.project_template || null,
-          work_scope: values.work_scope || null,
-          project_sector: values.project_sector || null,
-          delivery_method: values.delivery_method || null,
           square_footage: values.square_footage ?? null,
           project_code: values.project_code || null,
           city: values.city,
@@ -642,12 +645,13 @@ function CreateProjectForm() {
 
       const project = await response.json();
       toast.success('Project created', {
-        description: `${values.name} matches the Procore form.`,
+        description: `${values.name} has been created. Redirecting to setup wizard...`,
       });
       form.reset(defaultValues);
       setFileResetKey((key) => key + 1);
       if (project?.id) {
-        router.push(`/${project.id}/home`);
+        // Redirect to the project setup wizard instead of home page
+        router.push(`/${project.id}/setup`);
       } else {
         router.push('/');
       }

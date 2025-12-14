@@ -244,7 +244,7 @@ export default function ContractsPage() {
                   <Download className="h-4 w-4 mr-2" />
                   Export
                 </Button>
-                <Button size="sm" className="bg-orange-500 hover:bg-orange-600" onClick={() => router.push('/contracts/new')}>
+                <Button size="sm" className="bg-orange-500 hover:bg-orange-600" onClick={() => router.push('/contract-form')}>
                   <Plus className="h-4 w-4 mr-2" />
                   New Contract
                 </Button>
@@ -259,7 +259,7 @@ export default function ContractsPage() {
           ) : contracts.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">No contracts found</p>
-              <Button onClick={() => router.push('/contracts/new')}>
+              <Button onClick={() => router.push('/contract-form')}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create your first contract
               </Button>

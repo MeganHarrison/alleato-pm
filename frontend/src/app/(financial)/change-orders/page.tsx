@@ -80,7 +80,7 @@ export default function ChangeOrdersPage() {
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
-              <Button size="sm" onClick={() => router.push('/change-orders/new')}>
+              <Button size="sm" onClick={() => router.push('/change-order-form')}>
                 <Plus className="h-4 w-4 mr-2" />
                 New Change Order
               </Button>
@@ -94,7 +94,7 @@ export default function ChangeOrdersPage() {
           ) : changeOrders.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">No change orders found</p>
-              <Button onClick={() => router.push('/change-orders/new')}>
+              <Button onClick={() => router.push('/change-order-form')}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create your first change order
               </Button>

@@ -197,11 +197,10 @@ class RagChatKitServerUnified(ChatKitServer[dict[str, Any]]):
                                {"has_tripwire": guardrails_has_tripwire(guardrails_result)})
 
                 if guardrails_has_tripwire(guardrails_result):
-                    error_msg = Message(
+                    error_msg = AssistantMessageItem(
                         id=f"error-{thread.id}",
                         thread_id=thread.id,
                         created_at=datetime.now(),
-                        role="assistant",
                         content=[AssistantMessageContent(
                             text="I'm sorry, but I can't process that request. Please rephrase your question."
                         )],
@@ -286,17 +285,17 @@ class RagChatKitServerUnified(ChatKitServer[dict[str, Any]]):
                                     )
                                 elif "get_project" in tool_name:
                                     yield ProgressUpdateEvent(
-                                        icon="folder",
+                                        icon="document",
                                         text="Loading project details..."
                                     )
                                 elif "get_tasks" in tool_name:
                                     yield ProgressUpdateEvent(
-                                        icon="check-square",
+                                        icon="check-circle",
                                         text="Retrieving tasks..."
                                     )
                                 elif "list_all_projects" in tool_name:
                                     yield ProgressUpdateEvent(
-                                        icon="database",
+                                        icon="cube",
                                         text="Loading project portfolio..."
                                     )
                                 elif "web_search" in tool_name:
@@ -345,11 +344,10 @@ class RagChatKitServerUnified(ChatKitServer[dict[str, Any]]):
                 message_content = [AssistantMessageContent(text=response_text)]
 
                 # Create response message
-                response = Message(
+                response = AssistantMessageItem(
                     id=f"msg-{thread.id}-{int(time.time())}",
                     thread_id=thread.id,
                     created_at=datetime.now(),
-                    role="assistant",
                     content=message_content,
                 )
 
@@ -360,11 +358,10 @@ class RagChatKitServerUnified(ChatKitServer[dict[str, Any]]):
                 print(f"Error in unified agent respond: {e}")
                 traceback.print_exc()
 
-                error_msg = Message(
+                error_msg = AssistantMessageItem(
                     id=f"error-{thread.id}",
                     thread_id=thread.id,
                     created_at=datetime.now(),
-                    role="assistant",
                     content=[AssistantMessageContent(
                         text=f"I encountered an error processing your request: {str(e)}"
                     )],

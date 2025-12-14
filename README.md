@@ -59,6 +59,7 @@ pip install -r requirements.txt
 ```
 cd python-backend
 source .venv/bin/activate
+python -m uvicorn api:app --reload --port 8000
 ```
 
 #### Run the backend independently

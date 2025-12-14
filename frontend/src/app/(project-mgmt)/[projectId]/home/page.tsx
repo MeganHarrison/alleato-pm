@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { format } from 'date-fns'
 import { Database } from '@/types/database.types'
+import { CollapsibleSummary } from './collapsible-summary'
 
 // Type definitions - kept for reference and type safety
 // type Project = Database['public']['Tables']['projects']['Row']
@@ -219,17 +220,8 @@ export default async function ProjectHomePage({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Left Column - Summary, Insights, RFIs */}
         <div className="space-y-6">
-          {/* Summary */}
-          <Card className="shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-sm font-medium text-gray-600">SUMMARY</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-700 leading-relaxed">
-                {project.summary || project.description || 'No project summary available.'}
-              </p>
-            </CardContent>
-          </Card>
+          {/* Summary - Collapsible */}
+          <CollapsibleSummary summary={project.summary || project.description || 'No project summary available.'} />
 
           {/* Project Insights */}
           <div>

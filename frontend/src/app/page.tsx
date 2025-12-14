@@ -10,7 +10,7 @@ import { PortfolioViewType, StatusFilter, Project } from '@/types/portfolio';
 import { portfolioViews, financialViews } from '@/config/portfolio';
 import { useRouter } from 'next/navigation';
 
-function PortfolioPageContent() {
+export default function PortfolioPage() {
   const router = useRouter();
   const [activeView, setActiveView] = React.useState('projects');
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -239,7 +239,7 @@ function PortfolioPageContent() {
 
   const handleCreateProject = () => {
     console.log('Create project clicked');
-    router.push('/create-project');
+    router.push('/project-form');
   };
 
   return (
@@ -297,8 +297,4 @@ function PortfolioPageContent() {
       </div>
     </div>
   );
-}
-
-export default function PortfolioPage() {
-  return <PortfolioPageContent />;
 }

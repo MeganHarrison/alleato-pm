@@ -68,9 +68,11 @@ async def get_recent_meetings(limit: int = 10, project_id: Optional[int] = None)
     try:
         supabase = get_supabase_client()
 
+        # Order by created_at since 'date' field is often null
+        # Include both date and created_at for display purposes
         query = supabase.table('document_metadata').select(
-            'id, title, date, participants, summary, project_id'
-        ).order('date', desc=True).limit(limit)
+            'id, title, date, created_at, participants, summary, project_id'
+        ).order('created_at', desc=True).limit(limit)
 
         if project_id:
             query = query.eq('project_id', project_id)
@@ -82,7 +84,11 @@ async def get_recent_meetings(limit: int = 10, project_id: Optional[int] = None)
 
         output = []
         for item in result.data:
-            date = item.get('date', 'Unknown date')
+            # Prefer 'date' field if populated, otherwise use created_at
+            date = item.get('date') or item.get('created_at', 'Unknown date')
+            # Format date nicely (just the date part)
+            if date and isinstance(date, str) and 'T' in date:
+                date = date.split('T')[0]
             title = item.get('title', 'Untitled Meeting')
             output.append(f"**{title}** - {date}")
 

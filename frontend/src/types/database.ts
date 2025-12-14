@@ -1302,43 +1302,70 @@ export type Database = {
       }
       budget_items: {
         Row: {
+          approved_cos: number | null
+          budget_modifications: number | null
           calculation_method: string | null
+          committed_cost: number | null
           cost_code_id: string
           cost_type: string | null
           created_at: string
           created_by: string | null
+          direct_cost: number | null
+          forecast_to_complete: number | null
           id: string
+          original_amount: number | null
           original_budget_amount: number
           parent_cost_code: string | null
+          pending_cost_changes: number | null
           project_id: number
+          projected_cost: number | null
+          revised_budget: number | null
           unit_cost: number | null
           unit_qty: number | null
           uom: string | null
         }
         Insert: {
+          approved_cos?: number | null
+          budget_modifications?: number | null
           calculation_method?: string | null
+          committed_cost?: number | null
           cost_code_id: string
           cost_type?: string | null
           created_at?: string
           created_by?: string | null
+          direct_cost?: number | null
+          forecast_to_complete?: number | null
           id?: string
+          original_amount?: number | null
           original_budget_amount?: number
           parent_cost_code?: string | null
+          pending_cost_changes?: number | null
           project_id: number
+          projected_cost?: number | null
+          revised_budget?: number | null
           unit_cost?: number | null
           unit_qty?: number | null
           uom?: string | null
         }
         Update: {
+          approved_cos?: number | null
+          budget_modifications?: number | null
           calculation_method?: string | null
+          committed_cost?: number | null
           cost_code_id?: string
           cost_type?: string | null
           created_at?: string
           created_by?: string | null
+          direct_cost?: number | null
+          forecast_to_complete?: number | null
           id?: string
+          original_amount?: number | null
           original_budget_amount?: number
           parent_cost_code?: string | null
+          pending_cost_changes?: number | null
           project_id?: number
+          projected_cost?: number | null
+          revised_budget?: number | null
           unit_cost?: number | null
           unit_qty?: number | null
           uom?: string | null
@@ -1837,6 +1864,7 @@ export type Database = {
       }
       change_orders: {
         Row: {
+          apply_vertical_markup: boolean | null
           approved_at: string | null
           approved_by: string | null
           co_number: string | null
@@ -1851,6 +1879,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          apply_vertical_markup?: boolean | null
           approved_at?: string | null
           approved_by?: string | null
           co_number?: string | null
@@ -1865,6 +1894,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          apply_vertical_markup?: boolean | null
           approved_at?: string | null
           approved_by?: string | null
           co_number?: string | null
@@ -2378,6 +2408,7 @@ export type Database = {
           executed_at: string | null
           id: string
           project_id: number
+          retention_percentage: number | null
           status: string | null
           vendor_id: string | null
         }
@@ -2388,6 +2419,7 @@ export type Database = {
           executed_at?: string | null
           id?: string
           project_id: number
+          retention_percentage?: number | null
           status?: string | null
           vendor_id?: string | null
         }
@@ -2398,6 +2430,7 @@ export type Database = {
           executed_at?: string | null
           id?: string
           project_id?: number
+          retention_percentage?: number | null
           status?: string | null
           vendor_id?: string | null
         }
@@ -2585,6 +2618,7 @@ export type Database = {
       }
       contracts: {
         Row: {
+          apply_vertical_markup: boolean | null
           approved_change_orders: number | null
           attachment_count: number | null
           client_id: number
@@ -2603,11 +2637,13 @@ export type Database = {
           private: boolean | null
           project_id: number
           remaining_balance: number | null
+          retention_percentage: number | null
           revised_contract_amount: number | null
           status: string | null
           title: string
         }
         Insert: {
+          apply_vertical_markup?: boolean | null
           approved_change_orders?: number | null
           attachment_count?: number | null
           client_id: number
@@ -2626,11 +2662,13 @@ export type Database = {
           private?: boolean | null
           project_id: number
           remaining_balance?: number | null
+          retention_percentage?: number | null
           revised_contract_amount?: number | null
           status?: string | null
           title: string
         }
         Update: {
+          apply_vertical_markup?: boolean | null
           approved_change_orders?: number | null
           attachment_count?: number | null
           client_id?: number
@@ -2649,6 +2687,7 @@ export type Database = {
           private?: boolean | null
           project_id?: number
           remaining_balance?: number | null
+          retention_percentage?: number | null
           revised_contract_amount?: number | null
           status?: string | null
           title?: string
@@ -2749,6 +2788,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      cost_code_types: {
+        Row: {
+          category: string | null
+          code: string
+          created_at: string | null
+          description: string
+          id: string
+        }
+        Insert: {
+          category?: string | null
+          code: string
+          created_at?: string | null
+          description: string
+          id?: string
+        }
+        Update: {
+          category?: string | null
+          code?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+        }
+        Relationships: []
       }
       cost_codes: {
         Row: {
@@ -3088,6 +3151,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      daily_recaps: {
+        Row: {
+          blockers: Json | null
+          commitments: Json | null
+          created_at: string | null
+          date_range_end: string
+          date_range_start: string
+          decisions: Json | null
+          generation_time_seconds: number | null
+          id: string
+          meeting_count: number | null
+          meetings_analyzed: Json | null
+          model_used: string | null
+          project_count: number | null
+          recap_date: string
+          recap_html: string | null
+          recap_text: string
+          recipients: Json | null
+          risks: Json | null
+          sent_at: string | null
+          sent_email: boolean | null
+          sent_teams: boolean | null
+          wins: Json | null
+        }
+        Insert: {
+          blockers?: Json | null
+          commitments?: Json | null
+          created_at?: string | null
+          date_range_end: string
+          date_range_start: string
+          decisions?: Json | null
+          generation_time_seconds?: number | null
+          id?: string
+          meeting_count?: number | null
+          meetings_analyzed?: Json | null
+          model_used?: string | null
+          project_count?: number | null
+          recap_date: string
+          recap_html?: string | null
+          recap_text: string
+          recipients?: Json | null
+          risks?: Json | null
+          sent_at?: string | null
+          sent_email?: boolean | null
+          sent_teams?: boolean | null
+          wins?: Json | null
+        }
+        Update: {
+          blockers?: Json | null
+          commitments?: Json | null
+          created_at?: string | null
+          date_range_end?: string
+          date_range_start?: string
+          decisions?: Json | null
+          generation_time_seconds?: number | null
+          id?: string
+          meeting_count?: number | null
+          meetings_analyzed?: Json | null
+          model_used?: string | null
+          project_count?: number | null
+          recap_date?: string
+          recap_html?: string | null
+          recap_text?: string
+          recipients?: Json | null
+          risks?: Json | null
+          sent_at?: string | null
+          sent_email?: boolean | null
+          sent_teams?: boolean | null
+          wins?: Json | null
+        }
+        Relationships: []
       }
       decisions: {
         Row: {
@@ -6919,6 +7054,184 @@ export type Database = {
           },
         ]
       }
+      project_cost_codes: {
+        Row: {
+          cost_code_id: string | null
+          cost_type_id: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          project_id: number | null
+        }
+        Insert: {
+          cost_code_id?: string | null
+          cost_type_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          project_id?: number | null
+        }
+        Update: {
+          cost_code_id?: string | null
+          cost_type_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          project_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_cost_codes_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_cost_type_id_fkey"
+            columns: ["cost_type_id"]
+            isOneToOne: false
+            referencedRelation: "cost_code_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_activity_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard_no_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_issue_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_with_manager"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "submittal_project_dashboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_directory: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          permissions: Json | null
+          project_id: number | null
+          role: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          permissions?: Json | null
+          project_id?: number | null
+          role: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          permissions?: Json | null
+          project_id?: number | null
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_directory_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_activity_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard_no_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_issue_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_with_manager"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "submittal_project_dashboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_insights: {
         Row: {
           captured_at: string
@@ -7341,6 +7654,9 @@ export type Database = {
           archived_at: string | null
           archived_by: string | null
           budget: number | null
+          budget_locked: boolean | null
+          budget_locked_at: string | null
+          budget_locked_by: string | null
           budget_used: number | null
           category: string | null
           client: string | null
@@ -7348,6 +7664,7 @@ export type Database = {
           completion_percentage: number | null
           created_at: string
           current_phase: string | null
+          delivery_method: string | null
           erp_last_direct_cost_sync: string | null
           erp_last_job_cost_sync: string | null
           erp_sync_status: string | null
@@ -7365,6 +7682,7 @@ export type Database = {
           phase: string | null
           project_manager: number | null
           project_number: string | null
+          project_sector: string | null
           stakeholders: Json | null
           "start date": string | null
           state: string | null
@@ -7373,6 +7691,7 @@ export type Database = {
           summary_updated_at: string | null
           team_members: string[] | null
           type: string | null
+          work_scope: string | null
         }
         Insert: {
           access?: string | null
@@ -7382,6 +7701,9 @@ export type Database = {
           archived_at?: string | null
           archived_by?: string | null
           budget?: number | null
+          budget_locked?: boolean | null
+          budget_locked_at?: string | null
+          budget_locked_by?: string | null
           budget_used?: number | null
           category?: string | null
           client?: string | null
@@ -7389,6 +7711,7 @@ export type Database = {
           completion_percentage?: number | null
           created_at?: string
           current_phase?: string | null
+          delivery_method?: string | null
           erp_last_direct_cost_sync?: string | null
           erp_last_job_cost_sync?: string | null
           erp_sync_status?: string | null
@@ -7406,6 +7729,7 @@ export type Database = {
           phase?: string | null
           project_manager?: number | null
           project_number?: string | null
+          project_sector?: string | null
           stakeholders?: Json | null
           "start date"?: string | null
           state?: string | null
@@ -7414,6 +7738,7 @@ export type Database = {
           summary_updated_at?: string | null
           team_members?: string[] | null
           type?: string | null
+          work_scope?: string | null
         }
         Update: {
           access?: string | null
@@ -7423,6 +7748,9 @@ export type Database = {
           archived_at?: string | null
           archived_by?: string | null
           budget?: number | null
+          budget_locked?: boolean | null
+          budget_locked_at?: string | null
+          budget_locked_by?: string | null
           budget_used?: number | null
           category?: string | null
           client?: string | null
@@ -7430,6 +7758,7 @@ export type Database = {
           completion_percentage?: number | null
           created_at?: string
           current_phase?: string | null
+          delivery_method?: string | null
           erp_last_direct_cost_sync?: string | null
           erp_last_job_cost_sync?: string | null
           erp_sync_status?: string | null
@@ -7447,6 +7776,7 @@ export type Database = {
           phase?: string | null
           project_manager?: number | null
           project_number?: string | null
+          project_sector?: string | null
           stakeholders?: Json | null
           "start date"?: string | null
           state?: string | null
@@ -7455,8 +7785,16 @@ export type Database = {
           summary_updated_at?: string | null
           team_members?: string[] | null
           type?: string | null
+          work_scope?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "projects_budget_locked_by_fkey"
+            columns: ["budget_locked_by"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "projects_client_id_fkey"
             columns: ["client_id"]
@@ -8374,6 +8712,78 @@ export type Database = {
           },
         ]
       }
+      schedule_of_values: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          commitment_id: string | null
+          contract_id: number | null
+          created_at: string | null
+          id: string
+          status: string | null
+          total_amount: number
+          updated_at: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          commitment_id?: string | null
+          contract_id?: number | null
+          created_at?: string | null
+          id?: string
+          status?: string | null
+          total_amount?: number
+          updated_at?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          commitment_id?: string | null
+          contract_id?: number | null
+          created_at?: string | null
+          id?: string
+          status?: string | null
+          total_amount?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_of_values_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_of_values_commitment_id_fkey"
+            columns: ["commitment_id"]
+            isOneToOne: false
+            referencedRelation: "commitments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_of_values_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contract_financial_summary"
+            referencedColumns: ["contract_id"]
+          },
+          {
+            foreignKeyName: "schedule_of_values_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contract_financial_summary_mv"
+            referencedColumns: ["contract_id"]
+          },
+          {
+            foreignKeyName: "schedule_of_values_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       schedule_progress_updates: {
         Row: {
           actual_finish: string | null
@@ -8634,6 +9044,54 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      sov_line_items: {
+        Row: {
+          cost_code_id: string | null
+          created_at: string | null
+          description: string
+          id: string
+          line_number: number
+          scheduled_value: number
+          sov_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cost_code_id?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          line_number: number
+          scheduled_value?: number
+          sov_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cost_code_id?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          line_number?: number
+          scheduled_value?: number
+          sov_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sov_line_items_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sov_line_items_sov_id_fkey"
+            columns: ["sov_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_of_values"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       specifications: {
         Row: {
@@ -9874,6 +10332,30 @@ export type Database = {
           },
         ]
       }
+      todos: {
+        Row: {
+          id: number
+          inserted_at: string
+          is_complete: boolean | null
+          task: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: number
+          inserted_at?: string
+          is_complete?: boolean | null
+          task?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: number
+          inserted_at?: string
+          is_complete?: boolean | null
+          task?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           created_at: string
@@ -9966,6 +10448,89 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      vertical_markup: {
+        Row: {
+          calculation_order: number
+          compound: boolean | null
+          created_at: string | null
+          id: string
+          markup_type: string
+          percentage: number
+          project_id: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          calculation_order: number
+          compound?: boolean | null
+          created_at?: string | null
+          id?: string
+          markup_type: string
+          percentage: number
+          project_id?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          calculation_order?: number
+          compound?: boolean | null
+          created_at?: string | null
+          id?: string
+          markup_type?: string
+          percentage?: number
+          project_id?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_activity_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard_no_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_issue_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_with_manager"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "submittal_project_dashboard"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -10997,6 +11562,35 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "project_with_manager"
             referencedColumns: ["manager_id"]
+          },
+        ]
+      }
+      sov_line_items_with_percentage: {
+        Row: {
+          cost_code_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          line_number: number | null
+          percentage: number | null
+          scheduled_value: number | null
+          sov_id: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sov_line_items_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sov_line_items_sov_id_fkey"
+            columns: ["sov_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_of_values"
+            referencedColumns: ["id"]
           },
         ]
       }

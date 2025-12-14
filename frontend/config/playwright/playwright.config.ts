@@ -43,7 +43,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
       },
-      testMatch: /comprehensive-page-check\.spec\.ts|check-styling\.spec\.ts|project-tools-dropdown\.spec\.ts|meetings2-page\.spec\.ts/,
+      testMatch: /comprehensive-page-check\.spec\.ts|check-styling\.spec\.ts|project-tools-dropdown\.spec\.ts|meetings2-page\.spec\.ts|employees-page\.spec\.ts|project-home-collapsible\.spec\.ts|project-setup-wizard\.spec\.ts|project-setup-wizard-comprehensive\.spec\.ts|wizard-manual-test\.spec\.ts/,
     },
   ],
   outputDir: '../../tests/test-results',

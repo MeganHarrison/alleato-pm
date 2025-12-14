@@ -1,253 +1,308 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { createClient } from "@/lib/supabase/client"
-import { Database } from '@/types/database.types'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Badge } from '@/components/ui/badge'
+import { createClient } from '@/lib/supabase/server'
+import { notFound } from 'next/navigation'
+import { format } from 'date-fns'
 import {
-  ArrowLeft,
   Calendar,
-  Clock,
-  Users,
+  User,
   FileText,
   ExternalLink,
-  Loader2
+  ArrowLeft,
+  Clock,
+  Tag,
+  FolderOpen
 } from 'lucide-react'
-import { format } from 'date-fns'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
 
-type DocumentMetadata = Database['public']['Tables']['document_metadata']['Row']
+interface PageProps {
+  params: Promise<{ id: string }>
+}
 
-export default function MeetingDetailPage() {
-  const params = useParams()
-  const router = useRouter()
-  const [meeting, setMeeting] = useState<DocumentMetadata | null>(null)
-  const [transcript, setTranscript] = useState<string>('')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+export default async function MeetingDetailPage({ params }: PageProps) {
+  const { id } = await params
+  const supabase = await createClient()
 
-  useEffect(() => {
-    fetchMeetingData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.id])
-
-  const fetchMeetingData = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      // Fetch meeting metadata
-      const supabase = createClient()
-      const { data: meetingData, error: meetingError } = await supabase
-        .from('document_metadata')
-        .select('*')
-        .eq('id', params.id as string)
-        .single()
-
-      if (meetingError) throw meetingError
-
-      setMeeting(meetingData)
-
-      // If there's a URL, fetch the transcript
-      if (meetingData?.url) {
-        try {
-          const response = await fetch(meetingData.url)
-          if (response.ok) {
-            const text = await response.text()
-            setTranscript(text)
-          } else {
-            setTranscript('Unable to load transcript from the provided URL.')
-          }
-        } catch (fetchError) {
-          console.error('Error fetching transcript:', fetchError)
-          setTranscript('Error loading transcript. The document may not be accessible.')
-        }
-      } else if (meetingData?.content) {
-        // Use content field if available
-        setTranscript(meetingData.content)
-      } else {
-        setTranscript('No transcript available for this meeting.')
-      }
-    } catch (err) {
-      console.error('Error fetching meeting:', err)
-      setError(err instanceof Error ? err.message : 'Failed to load meeting')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Date not available'
-    try {
-      return format(new Date(dateString), 'MMMM d, yyyy')
-    } catch {
-      return dateString
-    }
-  }
-
-  const formatDuration = (minutes: number | null) => {
-    if (!minutes) return null
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    if (hours > 0) {
-      return `${hours}h ${mins}m`
-    }
-    return `${mins}m`
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-      </div>
-    )
-  }
+  // Fetch meeting metadata
+  const { data: meeting, error } = await supabase
+    .from('document_metadata')
+    .select('*')
+    .eq('id', id)
+    .single()
 
   if (error || !meeting) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <FileText className="h-12 w-12 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Meeting Not Found</h2>
-          <p className="text-gray-400 mb-6">{error || 'The requested meeting could not be found.'}</p>
-          <Button onClick={() => router.back()} variant="outline">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Go Back
-          </Button>
-        </div>
-      </div>
-    )
+    notFound()
+  }
+
+  // Fetch meeting segments for better organization
+  const { data: segments } = await supabase
+    .from('meeting_segments')
+    .select('*')
+    .eq('metadata_id', id)
+    .order('segment_index', { ascending: true })
+
+  // Fetch transcript from storage bucket if URL exists
+  let transcriptContent = null
+
+  // Check both 'url' and 'source' columns for the storage URL
+  const storageUrl = meeting.url || meeting.source
+
+  if (storageUrl && storageUrl.includes('supabase.co/storage')) {
+    try {
+      const response = await fetch(storageUrl)
+      if (response.ok) {
+        transcriptContent = await response.text()
+      }
+    } catch (error) {
+      console.error('Error fetching transcript:', error)
+    }
+  } else {
+    // Fallback: Try to fetch from documents table
+    const { data: document } = await supabase
+      .from('documents')
+      .select('content')
+      .eq('metadata_id', id)
+      .single()
+
+    transcriptContent = document?.content
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
+      {/* Back Button */}
+      <Link href="/meetings">
+        <Button variant="ghost" className="mb-6">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Meetings
+        </Button>
+      </Link>
+
       {/* Header */}
-      <div className="border-b">
+      <div className="space-y-6">
         <div>
-          <Button
-            onClick={() => router.back()}
-            variant="ghost"
-            className="text-xs mb-6"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Meetings
-          </Button>
-
-          <div className="space-y-6">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wider mb-3">
-                {meeting.project || 'MEETING TRANSCRIPT'}
-              </p>
-              <h1 className="text-3xl font-light mb-4">
-                {meeting.title || 'Untitled Meeting'}
-              </h1>
-            </div>
-
-            {/* Meeting Metadata */}
-            <div className="flex flex-wrap gap-6 text-sm">
-              {meeting.date && (
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  {formatDate(meeting.date)}
-                </div>
-              )}
-              {meeting.duration_minutes && (
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  {formatDuration(meeting.duration_minutes)}
-                </div>
-              )}
-              {meeting.participants && Array.isArray(meeting.participants) && meeting.participants.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  {meeting.participants.length} Participants
-                </div>
-              )}
-              {meeting.source && (
-                <Badge>
-                  {meeting.source}
-                </Badge>
-              )}
-            </div>
-
-            {/* External Links */}
-            <div className="flex gap-4">
-              {meeting.fireflies_link && (
-                <a
-                  href={meeting.fireflies_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs flex items-center gap-2 text-brand hover:text-gray-700 transition-colors"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  View in Fireflies
-                </a>
-              )}
-              {meeting.url && (
-                <a
-                  href={meeting.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs flex items-center gap-2 text-brand hover:text-gray-700 transition-colors"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  View Original Document
-                </a>
-              )}
-            </div>
-          </div>
+          <h1 className="text-4xl font-bold tracking-tight mb-2">
+            {meeting.title || 'Untitled Meeting'}
+          </h1>
         </div>
-      </div>
 
-      {/* Content Sections */}
-      <div className="py-10 space-y-10">
-        {/* Summary Section */}
-        {meeting.summary && (
-          <div className="bg-gray-100 py-6 px-8 rounded-lg">
-            <h2 className="text-sm font-semibold uppercase tracking-wider mb-4">
-              SUMMARY
-            </h2>
-            <div className="rounded-lg">
-              <p className="leading-relaxed">{meeting.summary}</p>
-            </div>
-          </div>
-        )}
+        {/* Metadata Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {meeting.date && (
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Calendar className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Date</p>
+                    <p className="font-semibold text-sm">
+                      {format(new Date(meeting.date), 'EEEE, MMMM d, yyyy')}
+                    </p>
+                  </div>
+                </div>
+          )}
 
-        {/* Action Items */}
-        {meeting.action_items && Array.isArray(meeting.action_items) && meeting.action_items.length > 0 && (
-          <div className="bg-gray-100 p-8 rounded-lg">
-            <h2 className="text-sm font-semibold uppercase tracking-wider mb-4">
-              ACTION ITEMS
-            </h2>
-            <div className="rounded-lg py-6 px-8">
-              <ul className="space-y-3">
-                {meeting.action_items.map((item: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <span className="text-brand mt-0.5">•</span>
-                    <span className="">{item}</span>
-                  </li>
+          {meeting.duration && (
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Clock className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Duration</p>
+                    <p className="font-semibold">{meeting.duration} min</p>
+                  </div>
+                </div>
+          )}
+
+
+          {meeting.type && (
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Tag className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Type</p>
+                    <Badge variant="secondary" className="font-semibold">
+                      {meeting.type}
+                    </Badge>
+                  </div>
+                </div>
+          )}
+
+          {meeting.category && (
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <FolderOpen className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Category</p>
+                    <Badge variant="outline" className="font-semibold">
+                      {meeting.category}
+                    </Badge>
+                  </div>
+                </div>
+          )}
+
+          {meeting.project && (
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <FolderOpen className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Project</p>
+                    <Badge variant="outline" className="font-semibold">
+                      {meeting.project}
+                    </Badge>
+                  </div>
+                </div>
+          )}
+        </div>
+
+        {/* Participants Section */}
+        {meeting.participants && (
+              <div className="flex flex-wrap gap-2">
+                {meeting.participants.split(',').map((participant, index) => (
+                  <Badge key={index} variant="secondary" className="px-3 py-1.5 text-sm">
+                    <User className="h-3 w-3 mr-1.5" />
+                    {participant.trim()}
+                  </Badge>
                 ))}
-              </ul>
+              </div>
+        )}
+
+        {/* External Links */}
+        {(meeting.source || meeting.fireflies_link) && (
+          <div className="flex gap-3">
+            {meeting.source && (
+              <a href={meeting.source} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline">
+                  <FileText className="h-4 w-4 mr-2" />
+                  View Source
+                </Button>
+              </a>
+            )}
+            {meeting.fireflies_link && (
+              <a href={meeting.fireflies_link} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Fireflies Recording
+                </Button>
+              </a>
+            )}
+          </div>
+        )}
+
+        <div>
+                    <p className="text-base">
+            {meeting.summary || 'No summary available'}
+          </p>
+        </div>
+
+        <Separator />
+
+        {/* Meeting Segments */}
+        {segments && segments.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Meeting Topics</h2>
+            <div className="space-y-4">
+              {segments.map((segment, index) => (
+                <Card key={segment.id}>
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1 flex-1">
+                        <CardTitle className="text-xl">
+                          {segment.title || `Topic ${index + 1}`}
+                        </CardTitle>
+                        {segment.summary && (
+                          <CardDescription className="text-base">
+                            {segment.summary}
+                          </CardDescription>
+                        )}
+                      </div>
+                      <Badge variant="secondary" className="ml-4">
+                        {segment.segment_index + 1}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  {(segment.decisions || segment.risks || segment.tasks) && (
+                    <CardContent className="space-y-4">
+                      {segment.decisions && Array.isArray(segment.decisions) && segment.decisions.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold mb-2 text-sm text-muted-foreground">Decisions</h4>
+                          <ul className="space-y-1">
+                            {segment.decisions.map((decision: any, idx: number) => (
+                              <li key={idx} className="text-sm flex items-start gap-2">
+                                <span className="text-green-600 mt-0.5">✓</span>
+                                <span>{typeof decision === 'string' ? decision : decision.description}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {segment.risks && Array.isArray(segment.risks) && segment.risks.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold mb-2 text-sm text-muted-foreground">Risks</h4>
+                          <ul className="space-y-1">
+                            {segment.risks.map((risk: any, idx: number) => (
+                              <li key={idx} className="text-sm flex items-start gap-2">
+                                <span className="text-amber-600 mt-0.5">⚠</span>
+                                <span>{typeof risk === 'string' ? risk : risk.description}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      {segment.tasks && Array.isArray(segment.tasks) && segment.tasks.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold mb-2 text-sm text-muted-foreground">Action Items</h4>
+                          <ul className="space-y-1">
+                            {segment.tasks.map((task: any, idx: number) => (
+                              <li key={idx} className="text-sm flex items-start gap-2">
+                                <span className="text-blue-600 mt-0.5">→</span>
+                                <span>{typeof task === 'string' ? task : task.description}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </CardContent>
+                  )}
+                </Card>
+              ))}
             </div>
           </div>
         )}
 
+        {/* Full Transcript */}
+        {transcriptContent && (
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Full Transcript</h2>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="prose prose-base max-w-none dark:prose-invert">
+                  <ReactMarkdown>{transcriptContent}</ReactMarkdown>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
-        {/* Transcript Section */}
-        <div className="bg-gray-100 py-6 px-8 rounded-lg">
-          <h2 className="text-sm font-semibold uppercase tracking-wider mb-4">
-            TRANSCRIPT
-          </h2>
-          <ScrollArea className="h-[600px] rounded-lg">
-            <div>
-              <pre className="whitespace-pre-wrap font-sans leading-relaxed">
-                {transcript}
-              </pre>
-            </div>
-          </ScrollArea>
-        </div>
+        {/* Show message if no transcript */}
+        {!transcriptContent && (!segments || segments.length === 0) && (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-12">
+                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No transcript available</h3>
+                <p className="text-muted-foreground">
+                  The full transcript for this meeting has not been processed yet.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   )

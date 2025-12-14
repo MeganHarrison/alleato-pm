@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-import { SessionProvider } from "@/components/providers/session-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { HeaderProvider } from "@/components/layout/header-context";
@@ -24,12 +22,6 @@ export const metadata: Metadata = {
   description: "Modern construction management platform - 80% of Procore's value at 10% of the cost",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  display: "swap",
-  subsets: ["latin"],
-});
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -37,29 +29,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} font-sans antialiased bg-background text-foreground`} suppressHydrationWarning>
-        <SessionProvider>
-          <QueryProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <HeaderProvider>
-                <SidebarProvider defaultOpen={false}>
-                  <AppSidebar />
-                  <SidebarInset>
-                  <SiteHeader />
-                  <div className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6">
-                  {children}
-                </div>
-                  </SidebarInset>
-                </SidebarProvider>
-              </HeaderProvider>
-            </ThemeProvider>
-          </QueryProvider>
-        </SessionProvider>
+      <body className="font-sans antialiased bg-background text-foreground" suppressHydrationWarning>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <HeaderProvider>
+              <SidebarProvider defaultOpen={false}>
+                <AppSidebar />
+                <SidebarInset>
+                <SiteHeader />
+                <div className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6">
+                {children}
+              </div>
+                </SidebarInset>
+              </SidebarProvider>
+            </HeaderProvider>
+          </ThemeProvider>
+        </QueryProvider>
         <Toaster />
       </body>
     </html>
