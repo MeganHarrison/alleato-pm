@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building2, Users, User } from 'lucide-react';
+import { Building2, Users, User, Contact } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DirectoryPage() {
@@ -10,11 +10,11 @@ export default function DirectoryPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Directory</h1>
         <p className="text-muted-foreground mt-2">
-          Manage companies, clients, and users across your organization
+          Manage companies, clients, contacts, and users across your organization
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Link href="/directory/companies">
           <Card className="cursor-pointer transition-all hover:shadow-lg">
             <CardHeader>
@@ -42,6 +42,22 @@ export default function DirectoryPage() {
               </div>
               <CardDescription>
                 Manage client relationships and contacts
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link href="/directory/contacts">
+          <Card className="cursor-pointer transition-all hover:shadow-lg">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-primary/10 p-2">
+                  <Contact className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle>Contacts</CardTitle>
+              </div>
+              <CardDescription>
+                Manage individual contacts and relationships
               </CardDescription>
             </CardHeader>
           </Card>

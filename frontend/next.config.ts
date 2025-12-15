@@ -1,15 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   devIndicators: {
     appIsrStatus: false,
     buildActivity: false,
-  },
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
   },
   typescript: {
     // Skip type checking during build (for faster deployments)
