@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { PageHeader } from '@/components/layout/PageHeader'
 import { format } from 'date-fns'
 import { FileText, Clock, Users, Calendar, ExternalLink, Filter } from 'lucide-react'
 
@@ -127,17 +128,19 @@ export default function DocumentsInfiniteDemoPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Documents Infinite Query Demo</h1>
-        <p className="text-muted-foreground">
-          Browse document metadata with infinite scrolling. This demo showcases filtering,
-          rich metadata display, and efficient pagination.
-        </p>
-      </div>
+    <>
+      <PageHeader
+        title="Documents Infinite Query Demo"
+        description="Browse document metadata with infinite scrolling. This demo showcases filtering, rich metadata display, and efficient pagination."
+        breadcrumbs={[
+          { label: 'Demo', href: '/' },
+          { label: 'Documents Infinite' }
+        ]}
+      />
 
-      {/* Filters */}
-      <div className="mb-6 flex flex-wrap gap-4 p-4 bg-muted/30 rounded-lg">
+      <div className="container mx-auto p-6 max-w-7xl">
+        {/* Filters */}
+        <div className="mb-6 flex flex-wrap gap-4 p-4 bg-muted/30 rounded-lg">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">Filters:</span>
@@ -340,6 +343,7 @@ export default function DocumentsInfiniteDemoPage() {
           )}
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }

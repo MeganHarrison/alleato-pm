@@ -4,5 +4,6 @@ export { AppShell } from './app-shell';
 export { AppHeader } from './AppHeader';
 export { PageContainer } from './PageContainer';
 export { PageHeader } from './PageHeader';
+export { ProjectPageHeader } from './ProjectPageHeader';
 export { PageToolbar } from './PageToolbar';
 export { PageTabs } from './PageTabs';

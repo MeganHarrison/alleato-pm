@@ -14,7 +14,7 @@ import {
 import { StatusBadge } from '@/components/financial/shared/status-badge';
 import { useFinancialStore } from '@/lib/stores/financial-store';
 import { Commitment } from '@/types/financial';
-import { PageHeader, PageContainer, PageToolbar, PageTabs } from '@/components/layout';
+import { ProjectPageHeader, PageContainer, PageToolbar, PageTabs } from '@/components/layout';
 import { DataTableResponsive } from '@/components/tables';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -256,7 +256,7 @@ export default function ProjectCommitmentsPage() {
   if (errors.commitments) {
     return (
       <>
-        <PageHeader
+        <ProjectPageHeader
           title="Commitments"
           description="Manage purchase orders and subcontracts"
         />
@@ -275,7 +275,7 @@ export default function ProjectCommitmentsPage() {
 
   return (
     <>
-      <PageHeader
+      <ProjectPageHeader
         title="Commitments"
         description="Manage purchase orders and subcontracts"
         actions={

@@ -49,50 +49,6 @@ export function PortfolioHeader({
             </button>
           </div>
 
-          {/* Financial navigation links */}
-          <div className="flex items-center gap-3 text-sm">
-            <Link
-              href="/budget"
-              className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-            >
-              Budget
-            </Link>
-            <span className="text-gray-300">|</span>
-            <Link
-              href="/commitments"
-              className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-            >
-              Commitments
-            </Link>
-            <span className="text-gray-300">|</span>
-            <Link
-              href="/change-orders"
-              className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-            >
-              Change Orders
-            </Link>
-            <span className="text-gray-300">|</span>
-            <Link
-              href="/change-events"
-              className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-            >
-              Change Events
-            </Link>
-            <span className="text-gray-300 hidden sm:inline">|</span>
-            <Link
-              href="/contracts"
-              className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors hidden sm:inline"
-            >
-              Prime Contracts
-            </Link>
-            <span className="text-gray-300 hidden md:inline">|</span>
-            <Link
-              href="/invoices"
-              className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors hidden md:inline"
-            >
-              Invoicing
-            </Link>
-          </div>
         </div>
       </div>
 

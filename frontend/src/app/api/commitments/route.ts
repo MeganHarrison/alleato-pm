@@ -17,11 +17,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('commitments')
-      .select(`
-        *,
-        contract_company:companies!contract_company_id(*),
-        assignee:users!assignee_id(*)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
 
     // Filter by project if projectId is provided
@@ -103,11 +99,7 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from('commitments')
       .insert(commitment)
-      .select(`
-        *,
-        contract_company:companies!contract_company_id(*),
-        assignee:users!assignee_id(*)
-      `)
+      .select('*')
       .single();
     
     if (error) {
