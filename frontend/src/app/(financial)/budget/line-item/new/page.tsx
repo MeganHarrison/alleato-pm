@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Plus, Search, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Search, Trash2, ChevronRight, ChevronDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
@@ -11,9 +11,7 @@ import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -91,6 +89,7 @@ export default function NewBudgetLineItemPage() {
     costCodeId: '', // ID from cost_codes table
     costType: 'L',
   });
+  const [expandedDivisions, setExpandedDivisions] = useState<Set<string>>(new Set());
 
   // Budget Code selector state
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
@@ -202,6 +201,18 @@ export default function NewBudgetLineItemPage() {
       O: 'Other',
     };
     return types[type] || type;
+  };
+
+  const toggleDivision = (division: string) => {
+    setExpandedDivisions((prev) => {
+      const next = new Set(prev);
+      if (next.has(division)) {
+        next.delete(division);
+      } else {
+        next.add(division);
+      }
+      return next;
+    });
   };
 
   const handleCreateBudgetCode = async () => {
@@ -567,33 +578,57 @@ export default function NewBudgetLineItemPage() {
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="costCode">Cost Code*</Label>
-              <Select
-                value={newCodeData.costCodeId}
-                onValueChange={(value) =>
-                  setNewCodeData({ ...newCodeData, costCodeId: value })
-                }
-                disabled={loadingCostCodes}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={loadingCostCodes ? 'Loading cost codes...' : 'Select cost code'} />
-                </SelectTrigger>
-                <SelectContent className="max-h-[400px]">
+              {loadingCostCodes ? (
+                <div className="border rounded-md p-3 text-sm text-gray-500">
+                  Loading cost codes...
+                </div>
+              ) : (
+                <div className="border rounded-md max-h-[400px] overflow-y-auto">
                   {Object.keys(groupedCostCodes).sort().map((division) => (
-                    <SelectGroup key={division}>
-                      <SelectLabel className="text-xs font-semibold text-gray-700 px-2 py-1.5">
-                        {division}
-                      </SelectLabel>
-                      {groupedCostCodes[division].map((costCode) => (
-                        <SelectItem key={costCode.id} value={costCode.id} className="pl-6">
-                          {costCode.id} – {costCode.description}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
+                    <div key={division} className="border-b last:border-b-0">
+                      {/* Division Header - Clickable */}
+                      <button
+                        type="button"
+                        onClick={() => toggleDivision(division)}
+                        className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-gray-50 transition-colors"
+                      >
+                        <span className="text-sm font-semibold text-gray-700">
+                          {division}
+                        </span>
+                        {expandedDivisions.has(division) ? (
+                          <ChevronDown className="w-4 h-4 text-gray-500" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-gray-500" />
+                        )}
+                      </button>
+
+                      {/* Cost Codes - Only show when expanded */}
+                      {expandedDivisions.has(division) && (
+                        <div className="bg-gray-50/50">
+                          {groupedCostCodes[division].map((costCode) => (
+                            <button
+                              key={costCode.id}
+                              type="button"
+                              onClick={() =>
+                                setNewCodeData({ ...newCodeData, costCodeId: costCode.id })
+                              }
+                              className={`w-full text-left px-6 py-2 text-sm hover:bg-gray-100 transition-colors ${
+                                newCodeData.costCodeId === costCode.id
+                                  ? 'bg-blue-50 text-blue-700 font-medium'
+                                  : 'text-gray-700'
+                              }`}
+                            >
+                              {costCode.id} – {costCode.description}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   ))}
-                </SelectContent>
-              </Select>
+                </div>
+              )}
               <p className="text-sm text-gray-500">
-                Cost codes grouped by division
+                Click on a division to expand and select a cost code
               </p>
             </div>
             <div className="grid gap-2">

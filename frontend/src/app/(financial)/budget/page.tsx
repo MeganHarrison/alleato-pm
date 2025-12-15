@@ -29,6 +29,7 @@ function BudgetPageContent() {
   const [selectedView, setSelectedView] = React.useState('procore-standard');
   const [selectedSnapshot, setSelectedSnapshot] = React.useState('current');
   const [selectedGroup, setSelectedGroup] = React.useState('cost-code-tier-1');
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
 
   const handleCreateClick = () => {
     console.log('Create clicked');
@@ -61,9 +62,48 @@ function BudgetPageContent() {
   };
 
   const handleToggleFullscreen = () => {
-    console.log('Toggle fullscreen clicked');
+    setIsFullscreen(!isFullscreen);
   };
 
+  // Fullscreen mode - show only filters and table
+  if (isFullscreen) {
+    return (
+      <ProjectGuard message={`Please select a project to view budget for ${selectedProject?.name || 'this project'}.`}>
+        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+          {/* Filter Controls - Sticky at top */}
+          <div className="bg-white border-b shadow-sm">
+            <BudgetFilters
+              views={budgetViews}
+              snapshots={budgetSnapshots}
+              groups={budgetGroups}
+              selectedView={selectedView}
+              selectedSnapshot={selectedSnapshot}
+              selectedGroup={selectedGroup}
+              onViewChange={setSelectedView}
+              onSnapshotChange={setSelectedSnapshot}
+              onGroupChange={setSelectedGroup}
+              onAddFilter={handleAddFilter}
+              onAnalyzeVariance={handleAnalyzeVariance}
+              onToggleFullscreen={handleToggleFullscreen}
+              isFullscreen={isFullscreen}
+            />
+          </div>
+
+          {/* Budget Table - Takes full remaining space */}
+          <div className="flex-1 overflow-hidden bg-white">
+            <Suspense fallback={<div className="flex items-center justify-center h-full">Loading...</div>}>
+              <BudgetTable
+                data={budgetLineItems}
+                grandTotals={budgetGrandTotals}
+              />
+            </Suspense>
+          </div>
+        </div>
+      </ProjectGuard>
+    );
+  }
+
+  // Normal mode
   return (
     <ProjectGuard message={`Please select a project to view budget for ${selectedProject?.name || 'this project'}.`}>
       <AppShell
@@ -108,6 +148,7 @@ function BudgetPageContent() {
               onAddFilter={handleAddFilter}
               onAnalyzeVariance={handleAnalyzeVariance}
               onToggleFullscreen={handleToggleFullscreen}
+              isFullscreen={isFullscreen}
             />
           </div>
 

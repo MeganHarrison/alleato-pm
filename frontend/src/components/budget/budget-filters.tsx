@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { ChevronDown, Plus, Maximize2 } from 'lucide-react';
+import { ChevronDown, Plus, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -24,6 +24,7 @@ interface BudgetFiltersProps {
   onAddFilter?: () => void;
   onAnalyzeVariance?: () => void;
   onToggleFullscreen?: () => void;
+  isFullscreen?: boolean;
 }
 
 export function BudgetFilters({
@@ -39,6 +40,7 @@ export function BudgetFilters({
   onAddFilter,
   onAnalyzeVariance,
   onToggleFullscreen,
+  isFullscreen = false,
 }: BudgetFiltersProps) {
   const selectedViewName =
     views.find((v) => v.id === selectedView)?.name || 'Select View';
@@ -152,8 +154,13 @@ export function BudgetFilters({
           size="icon"
           className="h-9 w-9"
           onClick={onToggleFullscreen}
+          title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         >
-          <Maximize2 className="w-4 h-4" />
+          {isFullscreen ? (
+            <Minimize2 className="w-4 h-4" />
+          ) : (
+            <Maximize2 className="w-4 h-4" />
+          )}
         </Button>
       </div>
     </div>

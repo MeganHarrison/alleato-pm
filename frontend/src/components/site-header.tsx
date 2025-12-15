@@ -167,7 +167,7 @@ export function SiteHeader({
   const activeToolName = useMemo(() => {
     const segments = pathname?.split("/").filter(Boolean) ?? []
 
-    // If we're on a project-scoped page, the tool is the second segment
+    // Check if we're on a project-scoped page (/{projectId}/{tool})
     if (segments.length >= 2 && /^\d+$/.test(segments[0])) {
       const toolPath = segments[1]
 
@@ -176,6 +176,17 @@ export function SiteHeader({
       const matchingTool = allTools.find(tool => tool.path === toolPath)
 
       return matchingTool?.name || "Home"
+    }
+
+    // Check if we're on a legacy query-param based page (e.g., /budget/line-item/new?projectId=47)
+    if (segments.length >= 1) {
+      const firstSegment = segments[0]
+      const allTools = [...coreTools, ...projectManagementTools, ...financialManagementTools]
+      const matchingTool = allTools.find(tool => tool.path === firstSegment)
+
+      if (matchingTool) {
+        return matchingTool.name
+      }
     }
 
     return "Home"

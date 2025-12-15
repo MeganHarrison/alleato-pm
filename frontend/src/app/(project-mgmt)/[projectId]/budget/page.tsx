@@ -65,7 +65,7 @@ export default function ProjectBudgetPage() {
 
   const handleCreateClick = () => {
     console.log('Create clicked for project:', projectId);
-    window.location.href = `/budget/line-item/new?projectId=${projectId}`;
+    window.location.href = `/${projectId}/budget/line-item/new`;
   };
 
   const handleResendToERP = () => {
