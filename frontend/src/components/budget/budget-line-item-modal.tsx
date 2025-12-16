@@ -341,7 +341,7 @@ export function BudgetLineItemModal({
         const budgetCode = budgetCodes.find((code) => code.id === row.budgetCodeId);
 
         return {
-          costCodeId: budgetCode?.code || row.budgetCodeId,
+          costCodeId: budgetCode?.id || row.budgetCodeId,
           costType: budgetCode?.costType || null,
           qty: row.qty,
           uom: row.uom,
