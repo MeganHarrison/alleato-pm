@@ -28,7 +28,7 @@ import {
   X,
 } from "lucide-react"
 import { StepComponentProps } from "./project-setup-wizard"
-import type { Database } from "../../../../database.types"
+import type { Database } from "@/types/database.types"
 
 type BudgetItem = Database["public"]["Tables"]["budget_items"]["Row"]
 type CostCode = Database["public"]["Tables"]["cost_codes"]["Row"]

@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { SubmittalsClient } from './submittals-client';
-import type { Database } from '@/lib/types/database.types';
+import type { Database } from '@/types/database.types';
 
 type SubmittalRow = Database['public']['Tables']['submittals']['Row'];
 

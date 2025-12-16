@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { Database } from '@/lib/types/database.types';
+import type { Database } from '@/types/database.types';
 
 type SubmittalRow = Database['public']['Tables']['submittals']['Row'] & {
   projects?: {

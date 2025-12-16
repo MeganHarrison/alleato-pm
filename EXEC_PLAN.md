@@ -773,6 +773,11 @@ Based on the video walkthrough analysis, the following implementation phases are
 
 (This section must be updated continuously by contributors.)
 
+- [x] (Completed 2025-12-16) Consolidated folder structure and type imports
+  - Documented canonical layout and placement rules in `FOLDER_STRUCTURE.md` and surfaced a summary in `README.md`/`CLAUDE.md`
+  - Removed duplicate Supabase type copies; all frontend imports now use `@/types/database.types` backed by `frontend/src/types/database.ts`
+  - Collapsed stray root and nested `frontend/`/`src/` directories; centralized screenshots under `frontend/tests/screenshots/`
+
 - [x] (Completed 2025-12-15) Stabilized `/chat-rag` when the Python AI backend is offline
   - Added offline bootstrap/state fallbacks so `/api/rag-chatkit/bootstrap` and `/api/rag-chatkit/state` always hydrate demo data: [`frontend/src/app/api/rag-chatkit/bootstrap/route.ts`](frontend/src/app/api/rag-chatkit/bootstrap/route.ts), [`frontend/src/app/api/rag-chatkit/state/route.ts`](frontend/src/app/api/rag-chatkit/state/route.ts)
   - Introduced a shared helper + offline datasets to keep ChatKit rendering even without the backend: [`frontend/src/app/api/rag-chatkit/utils.ts`](frontend/src/app/api/rag-chatkit/utils.ts), [`frontend/src/lib/rag-chatkit/offline-data.ts`](frontend/src/lib/rag-chatkit/offline-data.ts)

@@ -8,6 +8,19 @@
 - https://cookbook.openai.com/articles/codex_exec_plans
 - /Users/meganharrison/Documents/github/alleato-procore/.agents/PLANS.md
 
+## Repository layout (canonical locations)
+
+Follow the structure below to avoid scattering files. See [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md) for the full breakdown and placement rules.
+
+- `frontend/` – Next.js 15 app code
+  - `src/app` for routes, `src/components` for shared UI, `src/lib` for utilities/hooks, `src/types` for shared types. Supabase schema lives at `frontend/src/types/database.ts` and should be imported via `@/types/database.types`.
+  - `tests/` – **only** location for Playwright, Jest, and screenshots (keep screenshots in `frontend/tests/screenshots/`).
+  - `public/`, `supabase/`, and `scripts/` for static assets and app-specific tooling.
+- `backend/` – Python APIs, workers, and tests (`backend/src/api|services|workers`, `backend/tests/{unit,integration}`, `backend/scripts`).
+- `scripts/` – root-level automation and tooling shared across the monorepo.
+- `supabase/` and `migrations/` – database migrations and metadata.
+- `docs/` – architectural/process documentation referenced by CLAUDE.md and the Exec Plan.
+
 
 
 # Customer Service Agents Demo

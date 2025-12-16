@@ -27,7 +27,7 @@ import {
   X,
 } from "lucide-react"
 import { StepComponentProps } from "./project-setup-wizard"
-import type { Database } from "../../../../database.types"
+import type { Database } from "@/types/database.types"
 
 interface UploadedDocument {
   id: string

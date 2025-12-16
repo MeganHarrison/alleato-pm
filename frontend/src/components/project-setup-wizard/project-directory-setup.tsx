@@ -33,7 +33,7 @@ import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { Plus, Trash2, AlertCircle, Building, User } from "lucide-react"
 import { StepComponentProps } from "./project-setup-wizard"
-import type { Database } from "../../../../database.types"
+import type { Database } from "@/types/database.types"
 
 type Company = Database["public"]["Tables"]["companies"]["Row"]
 type ProjectDirectory = Database["public"]["Tables"]["project_directory"]["Row"]

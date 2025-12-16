@@ -59,6 +59,12 @@ Always read .agents/PLANS.md and EXEC_PLAN.md
    - Remove dead code and obsolete files.
    - Run lint/build to confirm no references are broken.
 
+3. **Folder placement (enforced; see FOLDER_STRUCTURE.md):**
+   - Frontend code lives under `frontend/src/*`; tests and screenshots belong in `frontend/tests/` (`frontend/tests/screenshots/` is the ONLY screenshot location).
+   - Supabase types are canonical at `frontend/src/types/database.ts` and must be imported via `@/types/database.types`—do not create extra copies elsewhere.
+   - Backend APIs/services/workers stay under `backend/src/{api,services,workers}` with matching tests under `backend/tests/{unit,integration}`.
+   - Keep root tidy: do not add ad-hoc top-level folders (e.g., avoid stray `source/`, duplicate `frontend/`, or empty `src/` trees).
+
 ### 4. File Management
 1. **Edit in place; do NOT create duplicate versions of the same file.**
    - Do NOT create files with names like:

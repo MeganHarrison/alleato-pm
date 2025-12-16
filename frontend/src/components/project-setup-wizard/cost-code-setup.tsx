@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/dialog"
 import { Plus, X, Upload, AlertCircle } from "lucide-react"
 import { StepComponentProps } from "./project-setup-wizard"
-import type { Database } from "../../../../database.types"
+import type { Database } from "@/types/database.types"
 
 type CostCode = Database["public"]["Tables"]["cost_codes"]["Row"]
 type CostCodeType = Database["public"]["Tables"]["cost_code_types"]["Row"]
