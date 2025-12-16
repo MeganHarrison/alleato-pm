@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [email, setEmail] = useState('')
@@ -35,8 +36,8 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
       return
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters')
       setIsLoading(false)
       return
     }
@@ -54,9 +55,12 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
         throw new Error(data.error || 'Failed to create account')
       }
 
+      toast.success('Account created! Check your email to confirm.')
       router.push('/auth/sign-up-success')
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
+      const message = error instanceof Error ? error.message : 'An error occurred'
+      setError(message)
+      toast.error(message)
     } finally {
       setIsLoading(false)
     }
@@ -76,7 +80,9 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
+                  name="name"
                   type="text"
+                  autoComplete="name"
                   placeholder="John Doe"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -86,7 +92,9 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
+                  autoComplete="email"
                   placeholder="m@example.com"
                   required
                   value={email}
@@ -99,7 +107,9 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 </div>
                 <Input
                   id="password"
+                  name="password"
                   type="password"
+                  autoComplete="new-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -111,7 +121,9 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 </div>
                 <Input
                   id="repeat-password"
+                  name="repeat-password"
                   type="password"
+                  autoComplete="new-password"
                   required
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}

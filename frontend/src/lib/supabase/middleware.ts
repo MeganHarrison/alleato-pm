@@ -1,5 +1,6 @@
 // import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+// import { getSupabaseConfig } from './config'
 
 export async function updateSession(request: NextRequest) {
   // Pass through all requests - authentication is handled by NextAuth middleware
@@ -13,9 +14,10 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
+  const { url, anonKey } = getSupabaseConfig()
   const supabase = createServerClient(
-    supabaseConfig.url,
-    supabaseConfig.anonKey,
+    url,
+    anonKey,
     {
       cookies: {
         getAll() {

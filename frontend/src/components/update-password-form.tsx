@@ -53,6 +53,7 @@ export function UpdatePasswordForm({ className, ...props }: React.ComponentProps
                 <Label htmlFor="password">New password</Label>
                 <Input
                   id="password"
+                  name="password"
                   type="password"
                   placeholder="New password"
                   required

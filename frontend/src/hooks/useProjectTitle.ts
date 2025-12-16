@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect } from 'react'
 import { useProject } from '@/contexts/project-context'
 import { usePathname } from 'next/navigation'
@@ -13,6 +15,9 @@ export function useProjectTitle(pageTitle?: string, includeProject = true) {
   const pathname = usePathname()
 
   useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[useProjectTitle] updating title', { pageTitle, includeProject, selectedProject })
+    }
     // Build the title parts in the format: "PageTitle - Project - ProjectName"
     const parts: string[] = []
 

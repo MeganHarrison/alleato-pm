@@ -17,11 +17,13 @@ import { Commitment } from '@/types/financial';
 import { ProjectPageHeader, PageContainer, PageToolbar, PageTabs } from '@/components/layout';
 import { DataTableResponsive } from '@/components/tables';
 import { ColumnDef } from '@tanstack/react-table';
+import { useProjectTitle } from '@/hooks/useProjectTitle';
 
 export default function ProjectCommitmentsPage() {
   const router = useRouter();
   const params = useParams();
   const projectId = parseInt(params.projectId as string);
+  useProjectTitle('Commitments');
 
   const {
     commitments,

@@ -69,11 +69,12 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />

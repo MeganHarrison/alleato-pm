@@ -21,6 +21,7 @@ Alleato-Procore is a modern alternative to Procore (construction project managem
 5. **Be proactive** - Look for ways to add value and improve code
 6. **Take ownership** - Create files and structure as needed to achieve results
 7. **Never commit** unless explicitly requested
+8. **Stay autonomous** – Never hand work back to the user. If you discover an issue, fix it proactively, document what you did, and only follow up with a summary plus the next steps you’ve already queued for yourself. The user should never be assigned tasks unless something is truly impossible for us to execute.
 
 ## PLANS.md
 Always read .agents/PLANS.md and EXEC_PLAN.md
@@ -154,6 +155,7 @@ This prevents errors like:
 ### Pre-Task Checklist
 Before starting any task:
 - [ ] Read CLAUDE.md (this file)
+- [ ] Read EXEC_PLAN.md
 - [ ] Review RULE-VIOLATION-LOG.md for patterns to avoid
 - [ ] Check EXEC_PLAN.md for project context
 - [ ] Understand existing code conventions
@@ -251,14 +253,15 @@ load_env()  # Automatically loads from root .env
 
 The core philosophy: **Be proactive and take ownership**. Constantly look for ways to add value and improve the codebase. Create the files and structure needed to achieve excellent results. Never take the easy way out - persist until the desired outcome is achieved.
 
-Key principles:
+### Key principles:
+
 - Take initiative to improve code quality
 - Create necessary files and structure without waiting for explicit instructions
 - Add helpful documentation and comments
 - Be persistent in solving problems thoroughly
 - Always aim for the best solution, not the quickest one
 
-Remember: Excellence requires initiative. These guidelines empower you to make the codebase better with each contribution.
+**Remember: Excellence requires initiative. These guidelines empower you to make the codebase better with each contribution.**
 
 ---
 

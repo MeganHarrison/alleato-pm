@@ -19,10 +19,12 @@ import {
   budgetGrandTotals,
 } from '@/config/budget';
 import { useParams } from 'next/navigation';
+import { useProjectTitle } from '@/hooks/useProjectTitle';
 
 export default function ProjectBudgetPage() {
   const params = useParams();
   const projectId = params.projectId as string;
+  useProjectTitle('Budget');
 
   const [activeTab, setActiveTab] = React.useState('budget');
   const [selectedView, setSelectedView] = React.useState('procore-standard');

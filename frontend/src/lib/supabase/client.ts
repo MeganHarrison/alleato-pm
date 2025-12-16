@@ -1,9 +1,10 @@
 import { createBrowserClient } from '@supabase/ssr'
-import { supabaseConfig } from './config'
+import { getSupabaseConfig } from './config'
 
 export function createClient() {
+  const { url, anonKey } = getSupabaseConfig()
   return createBrowserClient(
-    supabaseConfig.url,
-    supabaseConfig.anonKey
+    url,
+    anonKey
   )
 }

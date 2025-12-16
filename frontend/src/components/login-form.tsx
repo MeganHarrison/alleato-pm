@@ -1,7 +1,6 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { signIn } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -15,11 +14,22 @@ import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
 
-export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+type LoginFormProps = React.ComponentPropsWithoutRef<'div'> & {
+  redirectTo?: string
+}
+
+export function LoginForm({
+  className,
+  redirectTo = '/',
+  ...props
+}: LoginFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
@@ -27,28 +37,31 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
     e.preventDefault()
     setIsLoading(true)
     setError(null)
+    setSuccessMessage(null)
 
     try {
-      const result = await signIn('credentials', {
+      const supabase = createClient()
+      const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
-        redirect: false,
       })
 
-      if (result?.error) {
-        setError('Invalid email or password')
-        setIsLoading(false)
-      } else if (result?.ok) {
-        router.push('/')
-        router.refresh()
-      } else {
-        // Handle unexpected response
-        setError('Login failed. Please try again.')
-        setIsLoading(false)
+      if (authError) {
+        setError(authError.message || 'Invalid email or password')
+        toast.error(authError.message || 'Unable to log in with those credentials')
+        return
       }
-    } catch (error: unknown) {
-      console.error('Login error:', error)
-      setError('An error occurred during login. Please try again.')
+
+      setSuccessMessage('Login successful! Redirecting you now...')
+      toast.success('Logged in successfully')
+      router.push(redirectTo)
+      router.refresh()
+    } catch (err: unknown) {
+      console.error('Login error:', err)
+      const fallbackMessage = 'An error occurred during login. Please try again.'
+      setError(err instanceof Error ? err.message : fallbackMessage)
+      toast.error(fallbackMessage)
+    } finally {
       setIsLoading(false)
     }
   }
@@ -56,16 +69,30 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   const handleGoogleLogin = async () => {
     setIsLoading(true)
     setError(null)
+    setSuccessMessage(null)
 
     try {
-      await signIn('google', {
-        callbackUrl: '/',
+      const supabase = createClient()
+      const origin = typeof window !== 'undefined' ? window.location.origin : ''
+      const { error: googleError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${origin}/auth/callback`,
+        },
       })
-    } catch (error: unknown) {
-      console.error('Google login error:', error)
-      setError('An error occurred during Google login. Please try again.')
+
+      if (googleError) {
+        setError(googleError.message || 'Google login failed')
+        toast.error(googleError.message || 'Google login failed')
+      }
+    } catch (err: unknown) {
+      console.error('Google login error:', err)
+      const fallbackMessage = 'An error occurred during Google login. Please try again.'
+      setError(err instanceof Error ? err.message : fallbackMessage)
+      toast.error(fallbackMessage)
       setIsLoading(false)
     }
+    setIsLoading(false)
   }
 
   return (
@@ -120,7 +147,9 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
+                  autoComplete="email"
                   placeholder="m@example.com"
                   required
                   value={email}
@@ -139,13 +168,16 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                 </div>
                 <Input
                   id="password"
+                  name="password"
                   type="password"
+                  autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
+              {successMessage && <p className="text-sm text-emerald-600">{successMessage}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? 'Logging in...' : 'Login'}
               </Button>
