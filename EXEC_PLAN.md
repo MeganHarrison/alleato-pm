@@ -1154,6 +1154,11 @@ This document assumes Phase 0 exists (component system) and builds upward.
 - [ ] Prioritize features
 - [ ] Create implementation roadmap
 
+### Phase 0 Maintenance — 2025-12-16
+- [x] Patched `/auth/login` to resolve `searchParams` asynchronously and keep redirect support working on Next 15 (`frontend/src/app/auth/login/page.tsx`).
+- [x] Relaxed Supabase proxy redirect rules so `/api/auth/*` routes stay reachable when unauthenticated (`frontend/src/lib/supabase/proxy.ts`).
+- [x] Added targeted Playwright coverage for sign-up + login flows, including screenshot capture, and verified via `npx playwright test tests/e2e/auth-flow.spec.ts --project=chromium` (screenshots in `frontend/tests/screenshots/auth/`).
+
 ---
 
 # Phase 1 — Evidence Capture & UI Traceability ✓ COMPLETED

@@ -45,7 +45,8 @@ test.describe('Auth pages', () => {
       password: AUTH_PASSWORD,
       redirect: '/',
     })
-    await request.get(`/dev-login?${params.toString()}`)
+    const bootstrapResponse = await request.get(`/dev-login?${params.toString()}`)
+    expect(bootstrapResponse.ok()).toBeTruthy()
 
     await page.goto('/auth/login')
     await page.fill('input[name="email"]', createdEmail)

@@ -58,10 +58,24 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
 
       try {
         setIsLoading(true)
-        const response = await fetch(`/api/projects/${projectIdFromUrl}`)
+        const response = await fetch(`/api/projects/${projectIdFromUrl}`, {
+          credentials: 'include',
+        })
+
         if (response.ok) {
-          const project = await response.json()
-          setSelectedProjectState(project)
+          const contentType = response.headers.get('content-type') || ''
+
+          if (contentType.includes('application/json')) {
+            const project = await response.json()
+            setSelectedProjectState(project)
+          } else {
+            const fallbackBody = await response.text()
+            console.error(
+              'Projects API returned non-JSON response:',
+              fallbackBody.slice(0, 200)
+            )
+            setSelectedProjectState(null)
+          }
         } else {
           console.error('Failed to fetch project:', response.statusText)
           setSelectedProjectState(null)
