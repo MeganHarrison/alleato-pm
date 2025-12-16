@@ -222,16 +222,18 @@ export function SiteHeader({
   }, [pathname, currentProject])
 
   return (
-    <header className="bg-gray-800 text-white flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-      <div className="flex w-full items-center gap-1 px-4 py-3 lg:gap-2 lg:px-6">
-        <SidebarTrigger className="-ml-1" />
-        <Separator
-          orientation="vertical"
-          className="mx-2 data-[orientation=vertical]:h-4"
-        />
+    <header className="bg-gray-800 text-white flex flex-wrap items-center gap-2 border-b transition-[width,height] ease-linear">
+      <div className="flex w-full flex-wrap items-center gap-2 px-4 py-3 lg:gap-3 lg:px-6">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="hidden h-4 sm:inline-flex"
+          />
+        </div>
         <nav
           aria-label="Breadcrumb"
-          className="flex items-center gap-2 text-sm font-medium tracking-wide text-white/90"
+          className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto text-sm font-medium tracking-wide text-white/90 whitespace-nowrap"
         >
           {breadcrumbs.map((crumb, index) => (
             <span key={`${crumb.href}-${index}`} className="flex items-center gap-2">
@@ -248,7 +250,7 @@ export function SiteHeader({
             </span>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex w-full flex-wrap items-center gap-2 sm:justify-end md:w-auto">
           {/* Company/Project Selector */}
           <DropdownMenu onOpenChange={(open) => open && fetchProjects()}>
             <DropdownMenuTrigger asChild>
