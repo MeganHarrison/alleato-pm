@@ -20,6 +20,7 @@ import {
 } from '@/config/budget';
 import { useParams } from 'next/navigation';
 import { useProjectTitle } from '@/hooks/useProjectTitle';
+import { toast } from 'sonner';
 
 export default function ProjectBudgetPage() {
   const params = useParams();
@@ -36,14 +37,38 @@ export default function ProjectBudgetPage() {
   const [showLineItemModal, setShowLineItemModal] = React.useState(false);
   const [showModificationModal, setShowModificationModal] = React.useState(false);
 
+  // Budget lock state
+  const [isLocked, setIsLocked] = React.useState(false);
+  const [lockedAt, setLockedAt] = React.useState<string | null>(null);
+  const [lockedBy, setLockedBy] = React.useState<string | null>(null);
+
+  // Fetch budget lock status
+  const fetchLockStatus = React.useCallback(async () => {
+    try {
+      const response = await fetch(`/api/projects/${projectId}/budget/lock`);
+      if (response.ok) {
+        const data = await response.json();
+        setIsLocked(data.isLocked || false);
+        setLockedAt(data.lockedAt);
+        setLockedBy(data.lockedBy);
+      }
+    } catch (error) {
+      console.error('Error fetching lock status:', error);
+    }
+  }, [projectId]);
+
   // Fetch budget data
   React.useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // Fetch budget data
-        const budgetResponse = await fetch(`/api/projects/${projectId}/budget`);
+        // Fetch budget data and lock status in parallel
+        const [budgetResponse] = await Promise.all([
+          fetch(`/api/projects/${projectId}/budget`),
+          fetchLockStatus(),
+        ]);
+
         if (budgetResponse.ok) {
           const budgetDataResponse = await budgetResponse.json();
           setBudgetData(budgetDataResponse.lineItems || []);
@@ -59,9 +84,13 @@ export default function ProjectBudgetPage() {
     if (projectId) {
       fetchData();
     }
-  }, [projectId]);
+  }, [projectId, fetchLockStatus]);
 
   const handleCreateClick = () => {
+    if (isLocked) {
+      toast.error('Budget is locked. Unlock to add new line items.');
+      return;
+    }
     console.log('Create clicked for project:', projectId);
     setShowLineItemModal(true);
   };
@@ -70,8 +99,47 @@ export default function ProjectBudgetPage() {
     console.log('Resend to ERP clicked');
   };
 
-  const handleUnlockBudget = () => {
-    console.log('Unlock Budget clicked');
+  const handleLockBudget = async () => {
+    try {
+      const response = await fetch(`/api/projects/${projectId}/budget/lock`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsLocked(true);
+        setLockedAt(data.data.budget_locked_at);
+        setLockedBy(data.data.budget_locked_by);
+        toast.success('Budget locked successfully');
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Failed to lock budget');
+      }
+    } catch (error) {
+      console.error('Error locking budget:', error);
+      toast.error('Failed to lock budget');
+    }
+  };
+
+  const handleUnlockBudget = async () => {
+    try {
+      const response = await fetch(`/api/projects/${projectId}/budget/lock`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setIsLocked(false);
+        setLockedAt(null);
+        setLockedBy(null);
+        toast.success('Budget unlocked successfully');
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Failed to unlock budget');
+      }
+    } catch (error) {
+      console.error('Error unlocking budget:', error);
+      toast.error('Failed to unlock budget');
+    }
   };
 
   const handleExport = (format: string) => {
@@ -123,8 +191,12 @@ export default function ProjectBudgetPage() {
         <BudgetPageHeader
           title="Budget"
           isSynced={budgetSyncStatus.isSynced}
+          isLocked={isLocked}
+          lockedAt={lockedAt}
+          lockedBy={lockedBy}
           onCreateClick={handleCreateClick}
           onResendToERP={handleResendToERP}
+          onLockBudget={handleLockBudget}
           onUnlockBudget={handleUnlockBudget}
           onExport={handleExport}
         />
