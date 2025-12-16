@@ -10,73 +10,111 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useClients } from '@/hooks/use-clients';
+import { ClientFormDialog } from '@/components/domain/clients/ClientFormDialog';
+import { deleteClient } from '@/app/actions/table-actions';
+import { toast } from 'sonner';
+
+interface Client {
+  id: number;
+  name: string | null;
+  company_id: string | null;
+  status: string | null;
+  created_at: string;
+  company?: {
+    id: string;
+    name: string;
+    address: string | null;
+    city: string | null;
+    state: string | null;
+  } | null;
+}
 
 interface ClientDisplay {
-  id: string;
+  id: number;
   name: string;
-  contact: string;
-  email: string;
-  phone: string;
+  companyName: string;
   address: string;
-  projectCount: number;
   status: 'active' | 'inactive';
+  raw: Client;
 }
 
 export default function ClientDirectoryPage() {
-  // Fetch clients from Supabase
-  const { clients: dbClients, isLoading, error, createClient, refetch } = useClients();
+  const { clients: dbClients, isLoading, error, refetch } = useClients();
 
-  // State for "Add New Client" dialog
-  const [showAddClient, setShowAddClient] = React.useState(false);
-  const [newClientName, setNewClientName] = React.useState('');
-  const [isCreating, setIsCreating] = React.useState(false);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [editingClient, setEditingClient] = React.useState<Client | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [clientToDelete, setClientToDelete] = React.useState<Client | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
-  // Transform database clients to the format expected by the table
   const data: ClientDisplay[] = React.useMemo(() => {
     return dbClients.map((client) => {
       const company = client.company;
       return {
-        id: client.id.toString(),
+        id: client.id,
         name: client.name || 'Unnamed Client',
-        contact: '', // Contact info not directly on clients table
-        email: '', // Would need to join with contacts
-        phone: '',
-        address: company ? `${company.address || ''}, ${company.city || ''}, ${company.state || ''}`.replace(/^, |, $/g, '') : '',
-        projectCount: 0, // Would need to count from projects table
+        companyName: company?.name || '-',
+        address: company
+          ? [company.address, company.city, company.state].filter(Boolean).join(', ')
+          : '-',
         status: (client.status || 'active') as 'active' | 'inactive',
+        raw: client as Client,
       };
     });
   }, [dbClients]);
 
-  const handleCreateClient = async () => {
-    if (!newClientName.trim()) return;
+  const handleAddClient = () => {
+    setEditingClient(null);
+    setDialogOpen(true);
+  };
 
-    setIsCreating(true);
-    const newClient = await createClient({
-      name: newClientName.trim(),
-      status: 'active',
-    });
+  const handleEditClient = (client: Client) => {
+    setEditingClient(client);
+    setDialogOpen(true);
+  };
 
-    if (newClient) {
-      setNewClientName('');
-      setShowAddClient(false);
-      refetch();
+  const handleDeleteClick = (client: Client) => {
+    setClientToDelete(client);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!clientToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const result = await deleteClient(clientToDelete.id);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success('Client deleted successfully');
+        refetch();
+      }
+    } catch (error) {
+      toast.error('Failed to delete client');
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setClientToDelete(null);
     }
-    setIsCreating(false);
+  };
+
+  const handleDialogSuccess = () => {
+    refetch();
   };
 
   const columns: ColumnDef<ClientDisplay>[] = [
@@ -86,14 +124,13 @@ export default function ClientDirectoryPage() {
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Building className="h-4 w-4 text-gray-400" />
-          <button
-            type="button"
-            className="font-medium text-[hsl(var(--procore-orange))] hover:underline"
-          >
-            {row.getValue('name')}
-          </button>
+          <span className="font-medium">{row.getValue('name')}</span>
         </div>
       ),
+    },
+    {
+      accessorKey: 'companyName',
+      header: 'Company',
     },
     {
       accessorKey: 'address',
@@ -105,7 +142,13 @@ export default function ClientDirectoryPage() {
       cell: ({ row }) => {
         const status = row.getValue('status') as string;
         return (
-          <Badge className={status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+          <Badge
+            className={
+              status === 'active'
+                ? 'bg-green-100 text-green-700'
+                : 'bg-gray-100 text-gray-700'
+            }
+          >
             {status}
           </Badge>
         );
@@ -113,29 +156,32 @@ export default function ClientDirectoryPage() {
     },
     {
       id: 'actions',
-      cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Eye className="mr-2 h-4 w-4" />
-              View
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600">
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
+      cell: ({ row }) => {
+        const client = row.original.raw;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleEditClient(client)}>
+                <Edit className="mr-2 h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-red-600"
+                onClick={() => handleDeleteClick(client)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
     },
   ];
 
@@ -164,41 +210,13 @@ export default function ClientDirectoryPage() {
           <h1 className="text-3xl font-bold text-gray-900">Client Directory</h1>
           <p className="text-sm text-gray-500 mt-1">Manage clients and owners</p>
         </div>
-        <Dialog open={showAddClient} onOpenChange={setShowAddClient}>
-          <DialogTrigger asChild>
-            <Button className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Client
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Add New Client</DialogTitle>
-              <DialogDescription>
-                Create a new client to associate with projects.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="client-name">Client Name *</Label>
-                <Input
-                  id="client-name"
-                  value={newClientName}
-                  onChange={(e) => setNewClientName(e.target.value)}
-                  placeholder="Enter client name"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setShowAddClient(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleCreateClient} disabled={!newClientName.trim() || isCreating}>
-                {isCreating ? 'Creating...' : 'Create Client'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button
+          onClick={handleAddClient}
+          className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add Client
+        </Button>
       </div>
 
       {/* Summary Cards */}
@@ -210,7 +228,7 @@ export default function ClientDirectoryPage() {
         <div className="bg-white rounded-lg border p-4">
           <div className="text-sm font-medium text-gray-500">Active</div>
           <div className="text-2xl font-bold text-gray-900 mt-1">
-            {data.filter(c => c.status === 'active').length}
+            {data.filter((c) => c.status === 'active').length}
           </div>
         </div>
       </div>
@@ -222,7 +240,7 @@ export default function ClientDirectoryPage() {
           <p className="text-gray-500 mb-4">No clients found</p>
           <Button
             className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90"
-            onClick={() => setShowAddClient(true)}
+            onClick={handleAddClient}
           >
             <Plus className="h-4 w-4 mr-2" />
             Add First Client
@@ -241,6 +259,37 @@ export default function ClientDirectoryPage() {
           />
         </div>
       )}
+
+      {/* Client Form Dialog */}
+      <ClientFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        client={editingClient}
+        onSuccess={handleDialogSuccess}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Client</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &quot;{clientToDelete?.name}&quot;? This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

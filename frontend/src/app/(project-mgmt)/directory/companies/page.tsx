@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Building2, ExternalLink } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CompanyFormDialog } from '@/components/domain/companies/CompanyFormDialog';
 
 interface Company {
   id: string;
@@ -25,6 +26,10 @@ interface Company {
 }
 
 export default function CompanyDirectoryPage() {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [editingCompany, setEditingCompany] = React.useState<Company | null>(null);
+  const [refreshKey, setRefreshKey] = React.useState(0);
+
   const {
     data,
     count,
@@ -120,6 +125,15 @@ export default function CompanyDirectoryPage() {
     },
   ];
 
+  const handleAddCompany = () => {
+    setEditingCompany(null);
+    setDialogOpen(true);
+  };
+
+  const handleDialogSuccess = () => {
+    window.location.reload();
+  };
+
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -139,7 +153,10 @@ export default function CompanyDirectoryPage() {
           <h1 className="text-3xl font-bold">Company Directory</h1>
           <p className="text-gray-500">Manage your companies and contractors</p>
         </div>
-        <Button className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90">
+        <Button
+          onClick={handleAddCompany}
+          className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Add Company
         </Button>
@@ -171,7 +188,10 @@ export default function CompanyDirectoryPage() {
             <Building2 className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             <h3 className="text-lg font-semibold mb-2">No companies found</h3>
             <p className="text-gray-500 mb-4">Get started by adding your first company.</p>
-            <Button className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90">
+            <Button
+              onClick={handleAddCompany}
+              className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90"
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add Company
             </Button>
@@ -200,6 +220,14 @@ export default function CompanyDirectoryPage() {
           </Button>
         </div>
       )}
+
+      {/* Company Form Dialog */}
+      <CompanyFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        company={editingCompany}
+        onSuccess={handleDialogSuccess}
+      />
     </div>
   );
 }

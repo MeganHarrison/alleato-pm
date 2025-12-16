@@ -22,6 +22,23 @@ export default function PortfolioPage() {
   const [projects, setProjects] = React.useState<Project[]>([]);
   const [loading, setLoading] = React.useState(true);
 
+  const parseProjectsResponse = React.useCallback(async (response: Response) => {
+    const contentType = response.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      try {
+        return await response.json();
+      } catch (error) {
+        console.error('Failed to parse projects JSON:', error);
+        return null;
+      }
+    }
+
+    const fallbackBody = await response.text();
+    console.error('Projects API returned non-JSON response:', fallbackBody.slice(0, 200));
+    return null;
+  }, []);
+
   // Fetch projects from Supabase
   React.useEffect(() => {
     const fetchProjects = async () => {
@@ -35,7 +52,12 @@ export default function PortfolioPage() {
         else if (statusFilter === 'inactive') params.append('archived', 'true');
 
         const response = await fetch(`/api/projects?${params.toString()}`);
-        const result = await response.json();
+        const result = await parseProjectsResponse(response);
+
+        if (!result) {
+          setProjects([]);
+          return;
+        }
 
         if (response.ok) {
           // Map Supabase data to our Project interface
@@ -65,7 +87,8 @@ export default function PortfolioPage() {
 
           setProjects(mappedProjects);
         } else {
-          console.error('Failed to fetch projects:', result.error);
+          console.error('Failed to fetch projects:', result?.error || response.statusText);
+          setProjects([]);
         }
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -75,7 +98,7 @@ export default function PortfolioPage() {
     };
 
     fetchProjects();
-  }, [searchQuery, statusFilter]);
+  }, [searchQuery, statusFilter, parseProjectsResponse]);
 
   // Extract unique phase, category, and client options from projects
   const phaseOptions = React.useMemo(() => {

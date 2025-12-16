@@ -1,0 +1,226 @@
+"use client";
+
+import { useState, useCallback, useEffect } from "react";
+import { MessageSquare, X, Minimize2 } from "lucide-react";
+import { RagChatKitPanel } from "@/components/chat/rag-chatkit-panel";
+import { SimpleRagChat } from "@/components/chat/simple-rag-chat";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+type RagStatePayload = {
+  thread_id?: string | null;
+  current_agent?: string;
+  context?: {
+    backend_status?: string;
+    notice?: string;
+    [key: string]: unknown;
+  };
+};
+
+type RagStateResult<T = RagStatePayload> = {
+  data: T | null;
+  offline: boolean;
+};
+
+async function fetchRagBootstrapState(): Promise<RagStateResult> {
+  try {
+    const res = await fetch("/api/rag-chatkit/bootstrap");
+    const offline = res.headers.get("x-rag-backend-status") === "offline";
+    if (!res.ok) {
+      return { data: null, offline };
+    }
+    const data = (await res.json()) as RagStatePayload;
+    return { data, offline };
+  } catch {
+    return { data: null, offline: true };
+  }
+}
+
+async function fetchRagThreadState(threadId: string): Promise<RagStateResult> {
+  try {
+    const res = await fetch(`/api/rag-chatkit/state?thread_id=${threadId}`);
+    const offline = res.headers.get("x-rag-backend-status") === "offline";
+    if (!res.ok) {
+      return { data: null, offline };
+    }
+    const data = (await res.json()) as RagStatePayload;
+    return { data, offline };
+  } catch {
+    return { data: null, offline: true };
+  }
+}
+
+export function AIChatWidget() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const [initialThreadId, setInitialThreadId] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
+  const [offlineMessage, setOfflineMessage] = useState<string | null>(null);
+  const [bootstrapReady, setBootstrapReady] = useState(false);
+
+  const hydrateState = useCallback(
+    async (id: string | null) => {
+      if (!id || isOffline) return;
+      const { data, offline } = await fetchRagThreadState(id);
+      if (offline) {
+        setIsOffline(true);
+        setOfflineMessage(
+          data?.context?.notice ||
+            "The realtime AI backend is offline. Showing demo mode instead."
+        );
+        return;
+      }
+      if (!data) return;
+    },
+    [isOffline]
+  );
+
+  useEffect(() => {
+    if (threadId && !isOffline) {
+      void hydrateState(threadId);
+    }
+  }, [threadId, hydrateState, isOffline]);
+
+  // Bootstrap on mount
+  useEffect(() => {
+    (async () => {
+      const { data: bootstrap, offline } = await fetchRagBootstrapState();
+      if (!bootstrap || offline || bootstrap?.context?.backend_status === "offline") {
+        setIsOffline(true);
+        setOfflineMessage(
+          bootstrap?.context?.notice ||
+            "The Alleato AI backend is currently offline. You can continue in demo mode."
+        );
+        setBootstrapReady(true);
+        return;
+      }
+
+      setInitialThreadId(bootstrap.thread_id || null);
+      setThreadId(bootstrap.thread_id || null);
+      setBootstrapReady(true);
+    })();
+  }, []);
+
+  const handleThreadChange = useCallback((id: string | null) => {
+    setThreadId(id);
+  }, []);
+
+  const handleResponseEnd = useCallback(() => {
+    if (!isOffline) {
+      void hydrateState(threadId);
+    }
+  }, [hydrateState, threadId, isOffline]);
+
+  const toggleWidget = () => {
+    if (isOpen && !isMinimized) {
+      setIsOpen(false);
+    } else {
+      setIsOpen(true);
+      setIsMinimized(false);
+    }
+  };
+
+  const minimizeWidget = () => {
+    setIsMinimized(true);
+  };
+
+  const closeWidget = () => {
+    setIsOpen(false);
+    setIsMinimized(false);
+  };
+
+  return (
+    <>
+      {/* Chat Widget Button - Intercom style */}
+      {!isOpen && (
+        <button
+          onClick={toggleWidget}
+          className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 ease-in-out transform hover:scale-105"
+          aria-label="Open chat"
+        >
+          <MessageSquare className="w-6 h-6" />
+        </button>
+      )}
+
+      {/* Chat Widget Panel */}
+      {isOpen && (
+        <div
+          className={`fixed z-50 bg-white rounded-lg shadow-2xl transition-all duration-300 ease-in-out ${
+            isMinimized
+              ? "bottom-6 right-6 w-80 h-16"
+              : "bottom-6 right-6 w-[420px] h-[660px]"
+          }`}
+          style={{
+            maxHeight: isMinimized ? "64px" : "calc(100vh - 80px)",
+          }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-t-lg">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+              <span className="font-semibold">Alleato AI Assistant</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {!isMinimized && (
+                <button
+                  onClick={minimizeWidget}
+                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  aria-label="Minimize chat"
+                >
+                  <Minimize2 className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                onClick={closeWidget}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                aria-label="Close chat"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Chat Content */}
+          {!isMinimized && (
+            <div className="flex flex-col h-[calc(100%-56px)] overflow-hidden">
+              {!bootstrapReady ? (
+                <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+                  Connecting to Alleato AI…
+                </div>
+              ) : isOffline ? (
+                <div className="flex flex-col h-full p-4 gap-4">
+                  <Alert>
+                    <AlertDescription className="text-sm">
+                      {offlineMessage ||
+                        "Real-time responses are paused. Use demo mode to continue."}
+                    </AlertDescription>
+                  </Alert>
+                  <div className="flex-1 overflow-hidden rounded-lg border bg-white">
+                    <SimpleRagChat placeholder="Demo mode – ask about any project update" />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 overflow-hidden">
+                  <RagChatKitPanel
+                    initialThreadId={initialThreadId}
+                    onThreadChange={handleThreadChange}
+                    onResponseEnd={handleResponseEnd}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Minimized Click Area */}
+          {isMinimized && (
+            <button
+              onClick={() => setIsMinimized(false)}
+              className="absolute inset-0 w-full h-full cursor-pointer"
+              aria-label="Expand chat"
+            />
+          )}
+        </div>
+      )}
+    </>
+  );
+}

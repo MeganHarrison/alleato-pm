@@ -31,22 +31,14 @@ export default function ProjectBudgetPage() {
   const [budgetData, setBudgetData] = React.useState<any[]>([]);
   const [grandTotals, setGrandTotals] = React.useState<any>(budgetGrandTotals);
   const [loading, setLoading] = React.useState(true);
-  const [projectName, setProjectName] = React.useState<string>('');
   const [showLineItemModal, setShowLineItemModal] = React.useState(false);
   const [showModificationModal, setShowModificationModal] = React.useState(false);
 
-  // Fetch project data and budget data
+  // Fetch budget data
   React.useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-
-        // Fetch project details
-        const projectResponse = await fetch(`/api/projects/${projectId}`);
-        if (projectResponse.ok) {
-          const projectData = await projectResponse.json();
-          setProjectName(projectData.data?.name || `Project ${projectId}`);
-        }
 
         // Fetch budget data
         const budgetResponse = await fetch(`/api/projects/${projectId}/budget`);
@@ -127,7 +119,7 @@ export default function ProjectBudgetPage() {
       {/* Page Header */}
       <div>
         <BudgetPageHeader
-          title={projectName ? `Budget - ${projectName}` : 'Budget'}
+          title="Budget"
           isSynced={budgetSyncStatus.isSynced}
           onCreateClick={handleCreateClick}
           onResendToERP={handleResendToERP}

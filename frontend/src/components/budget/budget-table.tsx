@@ -20,6 +20,140 @@ import {
 } from '@/components/ui/table';
 import { BudgetLineItem, BudgetGrandTotals } from '@/types/budget';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
+const columnTooltips = {
+  originalBudgetAmount: {
+    title: 'Original Budget Amount',
+    formula: 'Baseline dollars imported from estimating or entered during project setup.',
+    details: ['Starting point for every downstream calculation.'],
+  },
+  budgetModifications: {
+    title: 'Budget Modifications',
+    formula: 'Manual transfers and adjustments applied after the baseline budget was published.',
+    details: ['Revised Budget = Original Budget + Budget Modifications + Approved COs.'],
+  },
+  approvedCOs: {
+    title: 'Approved Change Orders',
+    formula: 'Sum of all approved owner-facing change orders tied to this cost code.',
+    details: ['Automatically rolls into the revised budget once approved.'],
+  },
+  revisedBudget: {
+    title: 'Revised Budget',
+    formula: 'Original Budget Amount + Budget Modifications + Approved COs.',
+  },
+  jobToDateCostDetail: {
+    title: 'Job-to-Date Cost Detail',
+    formula: 'Direct cost transactions posted to this cost code.',
+    details: [
+      'Source column: Direct Costs',
+      'Types: Invoice, Expense, Payroll, Subcontractor Invoice',
+      'Status filter: Approved only',
+    ],
+  },
+  directCosts: {
+    title: 'Direct Costs',
+    formula: 'Sum of approved invoices, expenses, payroll, and subcontractor invoices.',
+    details: ['Feeds the Job-to-Date Cost Detail and Projected Costs columns.'],
+  },
+  pendingChanges: {
+    title: 'Pending Budget Changes',
+    formula: 'Total value of pending budget change items not yet approved.',
+    details: ['Projected Budget = Revised Budget + Pending Changes.'],
+  },
+  projectedBudget: {
+    title: 'Projected Budget',
+    formula: 'Revised Budget + Pending Changes.',
+  },
+  committedCosts: {
+    title: 'Committed Costs',
+    formula: 'Remaining value of executed subcontracts and purchase orders for this code.',
+    details: ['Excludes pending commitment change orders.'],
+  },
+  pendingCostChanges: {
+    title: 'Pending Cost Changes',
+    formula: 'Sum of pending change orders that will modify commitments once approved.',
+  },
+  projectedCosts: {
+    title: 'Projected Costs',
+    formula: 'Direct Costs + Committed Costs + Pending Cost Changes.',
+  },
+  forecastToComplete: {
+    title: 'Forecast to Complete',
+    formula: 'Projected Costs - Direct Costs.',
+    details: ['Equivalent to Committed Costs + Pending Cost Changes (remaining spend).'],
+  },
+  estimatedCostAtCompletion: {
+    title: 'Estimated Cost at Completion',
+    formula: 'Direct Costs + Forecast to Complete (equals Projected Costs).',
+  },
+  projectedOverUnder: {
+    title: 'Projected Over / Under',
+    formula: 'Projected Budget - Estimated Cost at Completion.',
+    details: ['Positive = under budget, Negative = over budget.'],
+  },
+} as const;
+
+type ColumnTooltipKey = keyof typeof columnTooltips;
+
+interface ColumnHeaderProps {
+  lines: string[];
+  columnKey?: ColumnTooltipKey;
+}
+
+function ColumnHeader({ lines, columnKey }: ColumnHeaderProps) {
+  const label = (
+    <div className="text-right leading-tight">
+      {lines.map((line, index) => (
+        <React.Fragment key={`${line}-${index}`}>
+          {line}
+          {index < lines.length - 1 && <br />}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+
+  if (!columnKey) {
+    return label;
+  }
+
+  const tooltip = columnTooltips[columnKey];
+  if (!tooltip) {
+    return label;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="text-right leading-tight cursor-help text-gray-700 hover:text-gray-900 transition-colors">
+          {lines.map((line, index) => (
+            <React.Fragment key={`${line}-${index}`}>
+              {line}
+              {index < lines.length - 1 && <br />}
+            </React.Fragment>
+          ))}
+        </div>
+      </TooltipTrigger>
+      <TooltipContent
+        side="bottom"
+        align="center"
+        className="max-w-xs space-y-2 text-left leading-snug"
+      >
+        <div>
+          <p className="font-semibold text-xs">{tooltip.title}</p>
+          <p className="text-xs">{tooltip.formula}</p>
+        </div>
+        {tooltip.details?.length ? (
+          <ul className="list-disc space-y-1 pl-4 text-xs">
+            {tooltip.details.map((detail) => (
+              <li key={detail}>{detail}</li>
+            ))}
+          </ul>
+        ) : null}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 interface BudgetTableProps {
   data: BudgetLineItem[];
@@ -96,11 +230,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'originalBudgetAmount',
       header: () => (
-        <div className="text-right">
-          Original Budget
-          <br />
-          Amount
-        </div>
+        <ColumnHeader
+          columnKey="originalBudgetAmount"
+          lines={['Original Budget', 'Amount']}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -112,11 +245,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'budgetModifications',
       header: () => (
-        <div className="text-right">
-          Budget
-          <br />
-          Modifications
-        </div>
+        <ColumnHeader
+          columnKey="budgetModifications"
+          lines={['Budget', 'Modifications']}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -128,9 +260,7 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'approvedCOs',
       header: () => (
-        <div className="text-right">
-          Approved COs
-        </div>
+        <ColumnHeader columnKey="approvedCOs" lines={['Approved COs']} />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -142,9 +272,7 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'revisedBudget',
       header: () => (
-        <div className="text-right">
-          Revised Budget
-        </div>
+        <ColumnHeader columnKey="revisedBudget" lines={['Revised Budget']} />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -156,11 +284,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'jobToDateCostDetail',
       header: () => (
-        <div className="text-right">
-          Job to Date Cost
-          <br />
-          Detail
-        </div>
+        <ColumnHeader
+          columnKey="jobToDateCostDetail"
+          lines={['Job to Date Cost', 'Detail']}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -172,9 +299,7 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'directCosts',
       header: () => (
-        <div className="text-right">
-          Direct Costs
-        </div>
+        <ColumnHeader columnKey="directCosts" lines={['Direct Costs']} />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -186,11 +311,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'pendingChanges',
       header: () => (
-        <div className="text-right">
-          Pending
-          <br />
-          Changes
-        </div>
+        <ColumnHeader
+          columnKey="pendingChanges"
+          lines={['Pending', 'Changes']}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -202,9 +326,7 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'projectedBudget',
       header: () => (
-        <div className="text-right">
-          Projected Budget
-        </div>
+        <ColumnHeader columnKey="projectedBudget" lines={['Projected Budget']} />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -216,9 +338,7 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'committedCosts',
       header: () => (
-        <div className="text-right">
-          Committed Costs
-        </div>
+        <ColumnHeader columnKey="committedCosts" lines={['Committed Costs']} />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -230,11 +350,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'pendingCostChanges',
       header: () => (
-        <div className="text-right">
-          Pending Cost
-          <br />
-          Changes
-        </div>
+        <ColumnHeader
+          columnKey="pendingCostChanges"
+          lines={['Pending Cost', 'Changes']}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -246,9 +365,7 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'projectedCosts',
       header: () => (
-        <div className="text-right">
-          Projected Costs
-        </div>
+        <ColumnHeader columnKey="projectedCosts" lines={['Projected Costs']} />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -260,11 +377,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'forecastToComplete',
       header: () => (
-        <div className="text-right">
-          Forecast to
-          <br />
-          Complete
-        </div>
+        <ColumnHeader
+          columnKey="forecastToComplete"
+          lines={['Forecast to', 'Complete']}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -276,11 +392,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'estimatedCostAtCompletion',
       header: () => (
-        <div className="text-right">
-          Estimated Cost at
-          <br />
-          Completion
-        </div>
+        <ColumnHeader
+          columnKey="estimatedCostAtCompletion"
+          lines={['Estimated Cost at', 'Completion']}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-right">
@@ -292,11 +407,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
     {
       accessorKey: 'projectedOverUnder',
       header: () => (
-        <div className="text-right">
-          Projected
-          <br />
-          Over / Under
-        </div>
+        <ColumnHeader
+          columnKey="projectedOverUnder"
+          lines={['Projected', 'Over / Under']}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-right">

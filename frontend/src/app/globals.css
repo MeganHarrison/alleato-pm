@@ -40,6 +40,9 @@
     --procore-info-bg: 214 95% 93%;
     --procore-info-text: 214 80% 40%;
     --procore-negative: 0 84% 60%;
+    
+    /* Brand color #DB802D */
+    --brand: 29 71% 52%;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -66,6 +69,9 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    
+    /* Brand color #DB802D - slightly brighter for dark mode */
+    --brand: 29 71% 58%;
   }
 }
 

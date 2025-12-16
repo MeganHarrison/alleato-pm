@@ -114,19 +114,19 @@ export default function ProjectCommitmentsPage() {
   };
 
   const handleCreateSubcontract = () => {
-    router.push('/subcontracts-form');
+    router.push('/commitments-form?type=subcontract');
   };
 
   const handleCreatePurchaseOrder = () => {
-    router.push('/purchase-order-form');
+    router.push('/commitments-form?type=purchase_order');
   };
 
   const handleEdit = (commitment: Commitment) => {
-    router.push(`/protected/financial/commitments/${commitment.id}/edit`);
+    router.push(`/commitments-form/${commitment.id}`);
   };
 
   const handleView = (commitment: Commitment) => {
-    router.push(`/protected/financial/commitments/${commitment.id}`);
+    router.push(`/commitments-form/${commitment.id}`);
   };
 
   const handleDelete = async (commitment: Commitment) => {

@@ -37,6 +37,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { getDivisionMetadataFromCostCodeId } from '@/lib/cost-code-divisions';
 
 interface BudgetCode {
   id: string;
@@ -56,6 +57,14 @@ interface BudgetLineItemRow {
   amount: string;
 }
 
+type CostCodeOption = {
+  id: string;
+  description: string | null;
+  status: string | null;
+  divisionCode: string;
+  divisionTitle: string;
+};
+
 export default function NewBudgetLineItemPage() {
   const router = useRouter();
   const params = useParams();
@@ -66,19 +75,9 @@ export default function NewBudgetLineItemPage() {
   const [loadingCodes, setLoadingCodes] = useState(true);
 
   // Cost codes from Supabase
-  const [availableCostCodes, setAvailableCostCodes] = useState<Array<{
-    id: string;
-    description: string | null;
-    status: string | null;
-    division_title: string | null;
-  }>>([]);
+  const [availableCostCodes, setAvailableCostCodes] = useState<CostCodeOption[]>([]);
   const [loadingCostCodes, setLoadingCostCodes] = useState(false);
-  const [groupedCostCodes, setGroupedCostCodes] = useState<Record<string, Array<{
-    id: string;
-    description: string | null;
-    status: string | null;
-    division_title: string | null;
-  }>>>({});
+  const [groupedCostCodes, setGroupedCostCodes] = useState<Record<string, CostCodeOption[]>>({});
 
   // Multiple rows state
   const [rows, setRows] = useState<BudgetLineItemRow[]>([
@@ -116,7 +115,7 @@ export default function NewBudgetLineItemPage() {
 
         const { data, error } = await supabase
           .from('cost_codes')
-          .select('id, description, status, division_title')
+          .select('id, description, status')
           .eq('status', 'True')
           .order('id', { ascending: true });
 
@@ -125,18 +124,27 @@ export default function NewBudgetLineItemPage() {
           return;
         }
 
-        const codes = data || [];
-        setAvailableCostCodes(codes);
+        const codesWithDivisions =
+          data?.map((code) => {
+            const { divisionCode, divisionTitle } = getDivisionMetadataFromCostCodeId(code.id);
+            return {
+              ...code,
+              divisionCode,
+              divisionTitle,
+            };
+          }) ?? [];
+
+        setAvailableCostCodes(codesWithDivisions);
 
         // Group cost codes by division_title
-        const grouped = codes.reduce((acc, code) => {
-          const divisionKey = code.division_title || 'Other';
+        const grouped = codesWithDivisions.reduce((acc, code) => {
+          const divisionKey = code.divisionTitle || 'Other';
           if (!acc[divisionKey]) {
             acc[divisionKey] = [];
           }
           acc[divisionKey].push(code);
           return acc;
-        }, {} as Record<string, typeof codes>);
+        }, {} as Record<string, CostCodeOption[]>);
 
         setGroupedCostCodes(grouped);
       } catch (error) {
@@ -358,6 +366,7 @@ export default function NewBudgetLineItemPage() {
   const filteredCodes = budgetCodes.filter((code) =>
     code.fullLabel.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const previewCostCode = availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId);
 
   return (
     <div className="container mx-auto py-6 max-w-7xl">
@@ -666,11 +675,9 @@ export default function NewBudgetLineItemPage() {
             <div className="p-3 bg-gray-50 rounded-md">
               <p className="text-sm font-medium text-gray-700">Preview:</p>
               <p className="text-sm text-gray-600 mt-1">
-                {newCodeData.costCodeId ? (
+                {newCodeData.costCodeId && previewCostCode ? (
                   <>
-                    {availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId)?.id}
-                    .{newCodeData.costType} –{' '}
-                    {availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId)?.description} –{' '}
+                    {previewCostCode.id}.{newCodeData.costType} – {previewCostCode.description} –{' '}
                     {getCostTypeLabel(newCodeData.costType)}
                   </>
                 ) : (

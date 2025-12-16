@@ -2,11 +2,28 @@ import { z } from 'zod';
 
 export const companySchema = z.object({
   name: z.string().min(1, 'Company name is required'),
-  type: z.enum(['vendor', 'subcontractor', 'supplier', 'owner']),
-  contact_email: z.string().email().optional(),
-  contact_phone: z.string().optional(),
+  title: z.string().optional(),
   address: z.string().optional(),
-  tax_id: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  website: z.string().url().optional().or(z.literal('')),
+  currency_code: z.string().optional(),
+  currency_symbol: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export const companyUpdateSchema = companySchema.partial().extend({
+  id: z.string().uuid(),
+});
+
+export const clientSchema = z.object({
+  name: z.string().min(1, 'Client name is required'),
+  company_id: z.string().uuid().optional().nullable(),
+  status: z.enum(['active', 'inactive']).default('active'),
+});
+
+export const clientUpdateSchema = clientSchema.partial().extend({
+  id: z.number(),
 });
 
 export const commitmentSchema = z.object({
@@ -73,6 +90,9 @@ export const invoiceSchema = z.object({
 });
 
 export type CompanyFormData = z.infer<typeof companySchema>;
+export type CompanyUpdateData = z.infer<typeof companyUpdateSchema>;
+export type ClientFormData = z.infer<typeof clientSchema>;
+export type ClientUpdateData = z.infer<typeof clientUpdateSchema>;
 export type CommitmentFormData = z.infer<typeof commitmentSchema>;
 export type ChangeEventFormData = z.infer<typeof changeEventSchema>;
 export type ChangeOrderFormData = z.infer<typeof changeOrderSchema>;

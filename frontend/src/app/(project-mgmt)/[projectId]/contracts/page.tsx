@@ -102,7 +102,7 @@ function ContractChangeOrders({ contract, formatCurrency, getStatusBadge }: {
         <tr key={co.id} className="bg-blue-50/50 border-b border-gray-100">
           <td className="px-4 py-2"></td>
           <td className="px-4 py-2 pl-12 text-sm text-gray-600">
-            <Link href={`/change-orders/${co.id}`} className="text-blue-600 hover:underline">
+            <Link href={`/${contract.project_id}/change-orders/${co.id}`} className="text-blue-600 hover:underline">
               {co.co_number || `PCO-${co.id}`}
             </Link>
           </td>
@@ -222,7 +222,7 @@ export default function ProjectContractsPage() {
           <Button
             size="sm"
             className="bg-orange-500 hover:bg-orange-600"
-            onClick={() => router.push('/contract-form')}
+            onClick={() => router.push(`/${projectId}/contracts/new`)}
           >
             <Plus className="h-4 w-4 mr-2" />
             New Contract
@@ -272,7 +272,7 @@ export default function ProjectContractsPage() {
           ) : contracts.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">No contracts found</p>
-              <Button onClick={() => router.push('/contract-form')}>
+              <Button onClick={() => router.push(`/${projectId}/contracts/new`)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create your first contract
               </Button>
@@ -327,7 +327,7 @@ export default function ProjectContractsPage() {
                           </td>
                           <td className="px-4 py-3">
                             <Link
-                              href={`/contracts/${contract.id}`}
+                              href={`/${projectId}/contracts/${contract.id}`}
                               className="text-blue-600 hover:text-blue-800 hover:underline"
                               onClick={(e) => e.stopPropagation()}
                             >
@@ -339,7 +339,7 @@ export default function ProjectContractsPage() {
                           </td>
                           <td className="px-4 py-3">
                             <Link
-                              href={`/contracts/${contract.id}`}
+                              href={`/${projectId}/contracts/${contract.id}`}
                               className="text-blue-600 hover:text-blue-800 hover:underline"
                               onClick={(e) => e.stopPropagation()}
                             >

@@ -98,7 +98,7 @@ export default function ProjectInvoicesPage() {
         title="Invoices"
         description="Manage project invoices and billing"
         actions={
-          <Button size="sm" onClick={() => router.push('/invoice-form')}>
+          <Button size="sm" onClick={() => router.push(`/${projectId}/invoices/new`)}>
             <Plus className="h-4 w-4 mr-2" />
             New Invoice
           </Button>
@@ -153,7 +153,7 @@ export default function ProjectInvoicesPage() {
               <div className="text-center py-12">
                 <DollarSign className="h-12 w-12 mx-auto text-gray-400 mb-4" />
                 <p className="text-muted-foreground mb-4">No invoices found</p>
-                <Button onClick={() => router.push('/invoice-form')}>
+                <Button onClick={() => router.push(`/${projectId}/invoices/new`)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create your first invoice
                 </Button>

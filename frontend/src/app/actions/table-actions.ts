@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { createClient as createSupabaseClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 export async function updateTableRow(
@@ -10,7 +10,7 @@ export async function updateTableRow(
   revalidatePaths?: string[]
 ) {
   try {
-    const supabase = await createClient();
+    const supabase = await createSupabaseClient();
     
     const { error } = await supabase
       .from(tableName)
@@ -41,7 +41,7 @@ export async function deleteTableRow(
   revalidatePaths?: string[]
 ) {
   try {
-    const supabase = await createClient();
+    const supabase = await createSupabaseClient();
     
     const { error } = await supabase
       .from(tableName)
@@ -83,10 +83,62 @@ export async function deleteProject(id: string | number) {
   return deleteTableRow('projects', id, ['/projects', '/']);
 }
 
+export async function createCompany(data: Record<string, any>) {
+  try {
+    const supabase = await createSupabaseClient();
+
+    const { data: company, error } = await supabase
+      .from('companies')
+      .insert(data)
+      .select()
+      .single();
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    revalidatePath('/companies');
+    revalidatePath('/directory/companies');
+    return { success: true, data: company };
+  } catch (error) {
+    return { error: 'Failed to create company' };
+  }
+}
+
 export async function updateCompany(id: string, data: Record<string, any>) {
-  return updateTableRow('companies', id, data, ['/companies']);
+  return updateTableRow('companies', id, data, ['/companies', '/directory/companies']);
 }
 
 export async function deleteCompany(id: string) {
-  return deleteTableRow('companies', id, ['/companies']);
+  return deleteTableRow('companies', id, ['/companies', '/directory/companies']);
+}
+
+export async function createClient(data: Record<string, any>) {
+  try {
+    const supabase = await createSupabaseClient();
+
+    const { data: client, error } = await supabase
+      .from('clients')
+      .insert(data)
+      .select()
+      .single();
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    revalidatePath('/clients');
+    revalidatePath('/directory/clients');
+    return { success: true, data: client };
+  } catch (error) {
+    return { error: 'Failed to create client' };
+  }
+}
+
+export async function updateClient(id: number, data: Record<string, any>) {
+  return updateTableRow('clients', id, data, ['/clients', '/directory/clients']);
+}
+
+export async function deleteClient(id: number) {
+  return deleteTableRow('clients', id, ['/clients', '/directory/clients']);
 }

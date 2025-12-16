@@ -12,6 +12,7 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
+import { AIChatWidget } from "@/components/chat/ai-chat-widget";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -57,6 +58,7 @@ export default function RootLayout({
           </ThemeProvider>
         </QueryProvider>
         <Toaster />
+        <AIChatWidget />
       </body>
     </html>
   );

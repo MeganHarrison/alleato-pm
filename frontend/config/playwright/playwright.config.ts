@@ -33,7 +33,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         // Use saved auth state
-        storageState: '../../tests/.auth/user.json',
+        storageState: './tests/.auth/user.json',
       },
       dependencies: ['setup'],
     },
@@ -43,7 +43,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
       },
-      testMatch: /comprehensive-page-check\.spec\.ts|check-styling\.spec\.ts|project-tools-dropdown\.spec\.ts|meetings2-page\.spec\.ts|employees-page\.spec\.ts|project-home-collapsible\.spec\.ts|project-setup-wizard\.spec\.ts|project-setup-wizard-comprehensive\.spec\.ts|wizard-manual-test\.spec\.ts|chat-rag-e2e\.spec\.ts|project-scoped-routing\.spec\.ts|budget-modals\.spec\.ts/,
+      testMatch: /comprehensive-page-check\.spec\.ts|check-styling\.spec\.ts|project-tools-dropdown\.spec\.ts|meetings2-page\.spec\.ts|employees-page\.spec\.ts|project-home-collapsible\.spec\.ts|project-setup-wizard\.spec\.ts|project-setup-wizard-comprehensive\.spec\.ts|wizard-manual-test\.spec\.ts|chat-rag-e2e\.spec\.ts|project-scoped-routing\.spec\.ts|budget-modals\.spec\.ts|page-title-verification\.spec\.ts|form-testing-simple\.spec\.ts|comprehensive-form-testing\.spec\.ts|project-home-navigation\.spec\.ts|ai-chat-widget\.spec\.ts/,
     },
   ],
   outputDir: '../../tests/test-results',

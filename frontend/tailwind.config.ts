@@ -10,6 +10,7 @@ export default {
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        brand: "hsl(var(--brand))",
         procore: {
           orange: "hsl(var(--procore-orange))",
           "orange-hover": "hsl(var(--procore-orange-hover))",

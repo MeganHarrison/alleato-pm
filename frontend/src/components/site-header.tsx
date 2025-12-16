@@ -86,6 +86,22 @@ export function SiteHeader({
   const router = useRouter()
   const searchParams = useSearchParams()
 
+  const parseProjectsResponse = async (response: Response) => {
+    const contentType = response.headers.get('content-type') || ''
+    if (contentType.includes('application/json')) {
+      try {
+        return await response.json()
+      } catch (error) {
+        console.error('Failed to parse project response JSON:', error)
+        return null
+      }
+    }
+
+    const fallbackBody = await response.text()
+    console.error('Projects API returned non-JSON response:', fallbackBody.slice(0, 200))
+    return null
+  }
+
   // Extract project ID from URL path or query parameters
   const projectId = useMemo(() => {
     // First check URL path segments
@@ -110,12 +126,14 @@ export function SiteHeader({
       if (projectId) {
         try {
           const response = await fetch(`/api/projects`)
-          const data = await response.json()
-          if (data.data && data.data.length > 0) {
+          const data = await parseProjectsResponse(response)
+          if (data?.data?.length) {
             const project = data.data.find((p: Project) => p.id === projectId)
             if (project) {
               setCurrentProject(project)
             }
+          } else if (!response.ok) {
+            console.error('Failed to fetch current project:', response.statusText)
           }
         } catch (error) {
           console.error('Failed to fetch current project:', error)
@@ -133,9 +151,11 @@ export function SiteHeader({
     setLoadingProjects(true)
     try {
       const response = await fetch('/api/projects?limit=10&archived=false')
-      const data = await response.json()
-      if (data.data) {
+      const data = await parseProjectsResponse(response)
+      if (data?.data) {
         setProjects(data.data)
+      } else if (!response.ok) {
+        console.error('Failed to fetch projects for dropdown:', response.statusText)
       }
     } catch (error) {
       console.error('Failed to fetch projects:', error)
@@ -256,9 +276,7 @@ export function SiteHeader({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className={`h-8 text-[hsl(var(--procore-header-text))] px-2 ${
-                  currentProject ? 'bg-brand/10' : ''
-                }`}
+                className="h-8 text-[hsl(var(--procore-header-text))] px-2 bg-white/10"
               >
                 {currentProject && (
                   <span className="mr-2 h-2 w-2 rounded-full bg-[hsl(var(--procore-orange))]" />
@@ -320,7 +338,7 @@ export function SiteHeader({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex h-8 items-center gap-2 rounded px-2 text-[hsl(var(--procore-header-text))] transition-colors"
+                className="flex h-8 items-center gap-2 rounded px-2 text-[hsl(var(--procore-header-text))] transition-colors bg-white/10"
               >
                 <span className="text-xs text-gray-200">Project Tools</span>
                 <span className="ml-2 text-sm font-medium">{activeToolName}</span>

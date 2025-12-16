@@ -189,13 +189,36 @@ export default function NewInvoicePage() {
     setLoading(true);
 
     try {
-      // TODO: API call to create invoice
-      console.log('Creating invoice:', { ...invoiceData, lineItems });
-      
-      // Navigate back to invoices list
+      const response = await fetch('/api/invoices', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          invoice_number: invoiceData.invoiceNumber,
+          contract_id: invoiceData.contractType === 'prime' ? invoiceData.contractId : null,
+          commitment_id: invoiceData.contractType === 'commitment' ? invoiceData.contractId : null,
+          billing_period_start: invoiceData.billingPeriod,
+          billing_period_end: invoiceData.billingPeriod,
+          invoice_date: invoiceData.invoiceDate?.toISOString(),
+          due_date: invoiceData.dueDate?.toISOString(),
+          status: invoiceData.status,
+          amount: parseFloat(invoiceData.thisMonthBilling) || 0,
+          retention_amount: parseFloat(invoiceData.retentionAmount) || 0,
+          net_amount: parseFloat(invoiceData.netDue) || 0,
+          notes: invoiceData.description,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create invoice');
+      }
+
       router.push('/invoices');
     } catch (error) {
       console.error('Error creating invoice:', error);
+      alert(error instanceof Error ? error.message : 'Failed to create invoice');
     } finally {
       setLoading(false);
     }

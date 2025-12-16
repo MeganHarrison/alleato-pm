@@ -2,16 +2,48 @@
 
 import { format } from 'date-fns'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { MoreVertical } from 'lucide-react'
+import { MoreVertical, ChevronDown, Plus, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EditableCard } from './editable-card'
 import { EditableSummary } from './editable-summary'
 import { FinancialToggles } from './financial-toggles'
+import { ProjectAccordions } from '@/components/project-accordions'
 import { Database } from '@/types/database.types'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Badge } from "@/components/ui/badge"
+import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
+import {
+  Card,
+  CardAction,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 type Project = Database['public']['Tables']['projects']['Row']
 type Insight = Database['public']['Tables']['ai_insights']['Row']
@@ -22,6 +54,9 @@ type RFI = Database['public']['Tables']['rfis']['Row']
 type DailyLog = Database['public']['Tables']['daily_logs']['Row']
 type Commitment = Database['public']['Tables']['commitments']['Row']
 type Contract = Database['public']['Tables']['financial_contracts']['Row']
+type BudgetItem = Database['public']['Tables']['budget_items']['Row']
+type ChangeEvent = Database['public']['Tables']['change_events']['Row']
+type SOV = Database['public']['Tables']['schedule_of_values']['Row']
 
 interface ProjectHomeClientProps {
   project: Project
@@ -33,6 +68,10 @@ interface ProjectHomeClientProps {
   dailyLogs: DailyLog[]
   commitments: Commitment[]
   contracts: Contract[]
+  budget?: BudgetItem[]
+  changeEvents?: ChangeEvent[]
+  schedule?: any[]
+  sov?: SOV[]
 }
 
 export function ProjectHomeClient({
@@ -44,9 +83,22 @@ export function ProjectHomeClient({
   rfis,
   dailyLogs,
   commitments,
-  contracts
+  contracts,
+  budget = [],
+  changeEvents = [],
+  schedule = [],
+  sov = []
 }: ProjectHomeClientProps) {
   const router = useRouter()
+  const [isEditing, setIsEditing] = useState<string | null>(null)
+  const [editValue, setEditValue] = useState('')
+  const [isAddTeamMemberOpen, setIsAddTeamMemberOpen] = useState(false)
+  const [newTeamMember, setNewTeamMember] = useState({
+    name: '',
+    role: '',
+    email: '',
+    phone: ''
+  })
 
   // Handle saving project updates
   const handleSaveProject = async (updates: Record<string, string>) => {
@@ -74,438 +126,354 @@ export function ProjectHomeClient({
     await handleSaveProject({ summary })
   }
 
+  // Tool definitions for navigation
+  const financialTools = [
+    { name: "Prime Contracts", path: "contracts" },
+    { name: "Budget", path: "budget" },
+    { name: "Commitments", path: "commitments" },
+    { name: "Change Orders", path: "change-orders" },
+    { name: "Change Events", path: "change-events" },
+    { name: "Direct Costs", path: "direct-costs" },
+    { name: "Invoicing", path: "invoices" }
+  ]
+
+  const projectManagementTools = [
+    { name: "Emails", path: "emails" },
+    { name: "RFIs", path: "rfis" },
+    { name: "Submittals", path: "submittals" },
+    { name: "Transmittals", path: "transmittals" },
+    { name: "Punch List", path: "punch-list" },
+    { name: "Meetings", path: "meetings" },
+    { name: "Schedule", path: "schedule" },
+    { name: "Daily Log", path: "daily-log" },
+    { name: "Photos", path: "photos" },
+    { name: "Drawings", path: "drawings" },
+    { name: "Specifications", path: "specifications" }
+  ]
+
+  const coreTools = [
+    { name: "Home", path: "home" },
+    { name: "360 Reporting", path: "reporting" },
+    { name: "Documents", path: "documents" },
+    { name: "Directory", path: "directory" },
+    { name: "Tasks", path: "tasks" },
+    { name: "Admin", path: "admin" }
+  ]
+
+  const handleEditField = (field: string, value: string) => {
+    setIsEditing(field)
+    setEditValue(value)
+  }
+
+  const handleSaveField = async (field: string) => {
+    await handleSaveProject({ [field]: editValue })
+    setIsEditing(null)
+    setEditValue('')
+  }
+
+  const handleAddTeamMember = async () => {
+    // TODO: Implement team member addition logic
+    console.log('Adding team member:', newTeamMember)
+    setIsAddTeamMemberOpen(false)
+    setNewTeamMember({ name: '', role: '', email: '', phone: '' })
+  }
+
   return (
     <div className="min-h-screen p-6">
+      {/* Client Pre-heading */}
+      <div className="mb-2">
+        <p className="text-sm text-muted-foreground">{project.client || 'No client assigned'}</p>
+      </div>
+
       {/* Project Title */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-brand mb-2">
+      <div className="mb-4">
+        <h1 className="text-3xl font-bold text-brand">
           {project.name || project['job number']}
         </h1>
-
-        {/* Financial navigation links */}
-        <div className="flex items-center gap-3 text-sm flex-wrap">
-          <Link
-            href={`/${project.id}/budget`}
-            className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-          >
-            Budget
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link
-            href={`/${project.id}/commitments`}
-            className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-          >
-            Commitments
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link
-            href={`/${project.id}/change-orders`}
-            className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-          >
-            Change Orders
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link
-            href={`/${project.id}/change-events`}
-            className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-          >
-            Change Events
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link
-            href={`/${project.id}/direct-costs`}
-            className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-          >
-            Direct Costs
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link
-            href={`/${project.id}/contracts`}
-            className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-          >
-            Prime Contracts
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link
-            href={`/${project.id}/invoices`}
-            className="text-gray-600 hover:text-[hsl(var(--procore-orange))] transition-colors"
-          >
-            Invoicing
-          </Link>
-        </div>
       </div>
 
-      {/* Three Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {/* Overview Card */}
-        <EditableCard
-          title="OVERVIEW"
-          fields={[
-            {
-              label: 'Client',
-              value: project.client || 'N/A',
-              key: 'client'
-            },
-            {
-              label: 'Status',
-              value: project.phase || project.state || 'Active',
-              key: 'phase'
-            },
-            {
-              label: 'Start Date',
-              value: project['start date'] ? format(new Date(project['start date']), 'yyyy-MM-dd') : '',
-              key: 'start date'
-            },
-            {
-              label: 'Est Completion',
-              value: project['est completion'] ? format(new Date(project['est completion']), 'yyyy-MM-dd') : '',
-              key: 'est completion'
-            }
-          ]}
-          onSave={handleSaveProject}
-        />
-
-        {/* Project Team Card */}
-        <Card>
-          <div className="p-6">
-            <h3 className="text-sm font-medium mb-4">PROJECT TEAM</h3>
-            <div>
-              {project.team_members && Array.isArray(project.team_members) && project.team_members.length > 0 ? (
-                project.team_members.slice(0, 4).map((member, index) => (
-                  <div key={index}>
-                    <span className="text-sm font-medium">Member {index + 1}:</span>
-                    <span className="text-sm text-gray-700 ml-1">{member}</span>
-                  </div>
-                ))
-              ) : (
-                <>
-                  <div>
-                    <span className="text-sm font-medium">Owner:</span>
-                    <span className="text-sm text-gray-700 ml-1">Not assigned</span>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium">PM:</span>
-                    <span className="text-sm text-gray-700 ml-1">Not assigned</span>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium">Estimator:</span>
-                    <span className="text-sm text-gray-700 ml-1">Not assigned</span>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium">Superintendent:</span>
-                    <span className="text-sm text-gray-700 ml-1">Not assigned</span>
-                  </div>
-                </>
-              )}
+      {/* Status Row - Editable on hover/click */}
+      <div className="flex items-center gap-6 mb-6 pb-4 border-b">
+        {/* Status */}
+        <button
+          type="button"
+          className="group cursor-pointer hover:bg-muted/50 px-3 py-2 rounded transition-colors border-0 bg-transparent"
+          onClick={() => handleEditField('phase', project.phase || project.state || 'Active')}
+        >
+          {isEditing === 'phase' ? (
+            <div className="flex items-center gap-2">
+              <Input
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onBlur={() => handleSaveField('phase')}
+                onKeyDown={(e) => e.key === 'Enter' && handleSaveField('phase')}
+                className="h-8 w-32"
+                autoFocus
+              />
             </div>
-          </div>
-        </Card>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground uppercase">Status:</span>
+              <span className="text-sm font-medium">{project.phase || project.state || 'Active'}</span>
+              <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+          )}
+        </button>
 
-        {/* Financials Card */}
-        <EditableCard
-          title="FINANCIALS"
-          fields={[
-            {
-              label: 'Est Revenue',
-              value: project['est revenue'] ? (project['est revenue'] / 1000000).toFixed(1) : '0',
-              key: 'est revenue'
-            },
-            {
-              label: 'Est Profit',
-              value: project['est profit'] ? (project['est profit'] / 1000000).toFixed(1) : '0',
-              key: 'est profit'
-            },
-            {
-              label: 'Budget Used',
-              value: project.budget_used ? (project.budget_used / 1000000).toFixed(1) : '0',
-              key: 'budget_used'
-            },
-            {
-              label: 'Balance',
-              value: project['est revenue'] && project.budget_used
-                ? ((project['est revenue'] - project.budget_used) / 1000000).toFixed(1)
-                : '0',
-              key: 'balance'
-            }
-          ]}
-          onSave={async (updates) => {
-            // Convert million values back to actual values
-            const converted: Record<string, string> = {}
-            if (updates['est revenue']) {
-              converted['est revenue'] = (parseFloat(updates['est revenue']) * 1000000).toString()
-            }
-            if (updates['est profit']) {
-              converted['est profit'] = (parseFloat(updates['est profit']) * 1000000).toString()
-            }
-            if (updates.budget_used) {
-              converted.budget_used = (parseFloat(updates.budget_used) * 1000000).toString()
-            }
-            await handleSaveProject(converted)
-          }}
-        />
+        {/* Start Date */}
+        <button
+          type="button"
+          className="group cursor-pointer hover:bg-muted/50 px-3 py-2 rounded transition-colors border-0 bg-transparent"
+          onClick={() => handleEditField('start date', project['start date'] ? format(new Date(project['start date']), 'yyyy-MM-dd') : '')}
+        >
+          {isEditing === 'start date' ? (
+            <div className="flex items-center gap-2">
+              <Input
+                type="date"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onBlur={() => handleSaveField('start date')}
+                onKeyDown={(e) => e.key === 'Enter' && handleSaveField('start date')}
+                className="h-8 w-40"
+                autoFocus
+              />
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground uppercase">Start Date:</span>
+              <span className="text-sm font-medium">
+                {project['start date'] ? format(new Date(project['start date']), 'MMM d, yyyy') : 'Not set'}
+              </span>
+              <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+          )}
+        </button>
+
+        {/* Est Completion */}
+        <button
+          type="button"
+          className="group cursor-pointer hover:bg-muted/50 px-3 py-2 rounded transition-colors border-0 bg-transparent"
+          onClick={() => handleEditField('est completion', project['est completion'] ? format(new Date(project['est completion']), 'yyyy-MM-dd') : '')}
+        >
+          {isEditing === 'est completion' ? (
+            <div className="flex items-center gap-2">
+              <Input
+                type="date"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onBlur={() => handleSaveField('est completion')}
+                onKeyDown={(e) => e.key === 'Enter' && handleSaveField('est completion')}
+                className="h-8 w-40"
+                autoFocus
+              />
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground uppercase">Est. Completion:</span>
+              <span className="text-sm font-medium">
+                {project['est completion'] ? format(new Date(project['est completion']), 'MMM d, yyyy') : 'Not set'}
+              </span>
+              <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+          )}
+        </button>
       </div>
 
-      {/* Two Column Layout */}
+      {/* Project Tools Dropdown */}
+      <div className="mb-8">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="w-auto">
+              Project Tools <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-[800px] max-w-[95vw] p-6 bg-gradient-to-br from-white to-gray-50"
+            align="start"
+            sideOffset={8}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Finance Column */}
+              <div>
+                <h3 className="text-sm font-semibold text-brand uppercase tracking-wide mb-4 pb-2 border-b-2 border-brand/20">
+                  Finance
+                </h3>
+                <nav className="space-y-2">
+                  {financialTools.map((tool) => (
+                    <Link
+                      key={tool.path}
+                      href={`/${project.id}/${tool.path}`}
+                      className="block text-sm text-gray-700 hover:text-brand hover:translate-x-1 transition-all duration-200 py-1"
+                    >
+                      {tool.name}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+
+              {/* Project Management Column */}
+              <div>
+                <h3 className="text-sm font-semibold text-orange-600 uppercase tracking-wide mb-4 pb-2 border-b-2 border-orange-600/20">
+                  Project Management
+                </h3>
+                <nav className="space-y-2">
+                  {projectManagementTools.map((tool) => (
+                    <Link
+                      key={tool.path}
+                      href={`/${project.id}/${tool.path}`}
+                      className="block text-sm text-gray-700 hover:text-orange-600 hover:translate-x-1 transition-all duration-200 py-1"
+                    >
+                      {tool.name}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+
+              {/* Core Tools Column */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-2 border-b-2 border-gray-300">
+                  Core Tools
+                </h3>
+                <nav className="space-y-2">
+                  {coreTools.map((tool) => (
+                    <Link
+                      key={tool.path}
+                      href={`/${project.id}/${tool.path}`}
+                      className="block text-sm text-gray-700 hover:text-gray-900 hover:translate-x-1 transition-all duration-200 py-1"
+                    >
+                      {tool.name}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Two Column Layout - Summary and Team */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Left Column - Summary, Insights, RFIs */}
-        <div className="space-y-6">
-          {/* Summary - Collapsible and Editable */}
+        {/* Left Column - Summary */}
+        <div>
           <EditableSummary
             summary={project.summary || 'No project summary available.'}
             onSave={handleSaveSummary}
           />
-
-          {/* Project Insights */}
-          <div>
-            <h2 className="text-lg font-semibold text-brand mb-3">Project Insights:</h2>
-            {insights.length > 0 ? (
-              <div className="space-y-2">
-                {insights.map((insight) => (
-                  <div key={insight.id}>
-                    <p className="text-sm font-medium">
-                      {insight.created_at ? format(new Date(insight.created_at), 'MMM d, yyyy') : 'No date'}
-                    </p>
-                    <p className="text-sm text-gray-600">{insight.description}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500">No insights available yet.</p>
-            )}
-          </div>
-
-          {/* RFIs */}
-          <div>
-            <h2 className="text-lg font-semibold text-orange-600 mb-3">RFIs</h2>
-            {rfis.length > 0 ? (
-              <div className="space-y-2">
-                {rfis.map((rfi) => (
-                  <div key={rfi.id} className="bg-white p-3 rounded-lg">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">#{rfi.number} - {rfi.subject}</p>
-                        <p className="text-sm text-gray-600 mt-1">{rfi.question}</p>
-                        <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                          <span>Status: {rfi.status}</span>
-                          {rfi.due_date && (
-                            <span>Due: {format(new Date(rfi.due_date), 'MMM d')}</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500">No RFIs submitted yet.</p>
-            )}
-          </div>
-
         </div>
 
-        {/* Right Column - Tasks */}
-        <div>
-          <h2 className="text-lg font-semibold text-orange-600 mb-3">Tasks</h2>
-          {tasks.length > 0 ? (
-            <div className="space-y-3">
-              {tasks.map((task) => (
-                <div key={task.id} className="flex items-center justify-between bg-white p-3 rounded-lg">
-                  <div className="flex-1">
-                    <span className="text-sm">{task.task_description}</span>
-                    {task.due_date && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Due: {format(new Date(task.due_date), 'MMM d, yyyy')}
-                      </p>
-                    )}
+        {/* Right Column - Project Team */}
+        <div className="border rounded-lg p-6 bg-white">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Project Team</h3>
+            <Dialog open={isAddTeamMemberOpen} onOpenChange={setIsAddTeamMemberOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Member
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Team Member</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      value={newTeamMember.name}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, name: e.target.value })}
+                      placeholder="John Doe"
+                    />
                   </div>
-                  {task.assigned_to && (
-                    <Avatar className="w-8 h-8">
-                      <AvatarFallback>
-                        {task.assigned_to.substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="role">Role</Label>
+                    <Input
+                      id="role"
+                      value={newTeamMember.role}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, role: e.target.value })}
+                      placeholder="Project Manager"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={newTeamMember.email}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, email: e.target.value })}
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={newTeamMember.phone}
+                      onChange={(e) => setNewTeamMember({ ...newTeamMember, phone: e.target.value })}
+                      placeholder="(555) 123-4567"
+                    />
+                  </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">No active tasks.</p>
-          )}
+                <div className="flex justify-end gap-3">
+                  <Button variant="outline" onClick={() => setIsAddTeamMemberOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleAddTeamMember}>
+                    Add Member
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="space-y-3">
+            {project.team_members && Array.isArray(project.team_members) && project.team_members.length > 0 ? (
+              project.team_members.map((member, index) => {
+                const memberName = typeof member === 'string' ? member : (member as any)?.name || 'Team Member'
+                const memberRole = typeof member === 'object' && member !== null && (member as any)?.role ? (member as any).role : 'Role not specified'
+                const initials = typeof member === 'string' ? member.substring(0, 2).toUpperCase() : 'TM'
+
+                return (
+                  <div key={`team-member-${index}`} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                    <Avatar>
+                      <AvatarFallback>{initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{memberName}</p>
+                      <p className="text-xs text-muted-foreground">{memberRole}</p>
+                    </div>
+                  </div>
+                )
+              })
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-sm text-muted-foreground mb-3">No team members assigned yet</p>
+                <p className="text-xs text-muted-foreground">Click "Add Member" to get started</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Tabbed Section */}
-          <Tabs defaultValue="meetings" className="w-full">
-            <TabsList className="w-full justify-start rounded-none border-b h-auto p-0">
-              <TabsTrigger value="meetings" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Meetings</TabsTrigger>
-              <TabsTrigger value="insights" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Insights</TabsTrigger>
-              <TabsTrigger value="files" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Files</TabsTrigger>
-              <TabsTrigger value="reports" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Reports</TabsTrigger>
-              <TabsTrigger value="schedule" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Schedule</TabsTrigger>
-              <TabsTrigger value="expenses" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Expenses</TabsTrigger>
-              <TabsTrigger value="subs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Subs</TabsTrigger>
-              <TabsTrigger value="change-orders" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-600 data-[state=active]:text-orange-600">Change Orders</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="meetings" className="p-6">
-              {meetings.length > 0 ? (
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left border-b">
-                      <th className="pb-3 font-medium text-sm">Title</th>
-                      <th className="pb-3 font-medium text-sm">Summary</th>
-                      <th className="pb-3 font-medium text-sm">Date</th>
-                      <th className="pb-3 font-medium text-sm">Duration</th>
-                      <th className="pb-3 w-8"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {meetings.map((meeting) => (
-                      <tr key={meeting.id} className="border-b hover:bg-gray-50 cursor-pointer transition-colors">
-                        <td className="py-3">
-                          <Link href={`/meetings/${meeting.id}`} className="flex items-center">
-                            <input type="checkbox" className="mr-3" onClick={(e) => e.stopPropagation()} />
-                            <span className="text-sm">{meeting.title}</span>
-                          </Link>
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">
-                          <Link href={`/meetings/${meeting.id}`} className="block">
-                            {meeting.summary
-                              ? meeting.summary.substring(0, 100) + '...'
-                              : 'No summary available'}
-                          </Link>
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">
-                          <Link href={`/meetings/${meeting.id}`} className="block">
-                            {meeting.date ? format(new Date(meeting.date), 'MMM d, yyyy') : 'N/A'}
-                          </Link>
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">
-                          <Link href={`/meetings/${meeting.id}`} className="block">
-                            {meeting.duration_minutes ? `${meeting.duration_minutes} min` : 'N/A'}
-                          </Link>
-                        </td>
-                        <td className="py-3">
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p className="text-sm text-gray-500">No meetings recorded yet.</p>
-              )}
-            </TabsContent>
-
-            <TabsContent value="insights" className="p-6">
-              <p className="text-sm text-gray-600">Insights content goes here</p>
-            </TabsContent>
-
-            <TabsContent value="files" className="p-6">
-              <p className="text-sm text-gray-600">Files content goes here</p>
-            </TabsContent>
-
-            <TabsContent value="reports" className="p-6">
-              {dailyLogs.length > 0 ? (
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left border-b">
-                      <th className="pb-3 font-medium text-sm">Date</th>
-                      <th className="pb-3 font-medium text-sm">Weather</th>
-                      <th className="pb-3 font-medium text-sm">Created By</th>
-                      <th className="pb-3 font-medium text-sm">Created At</th>
-                      <th className="pb-3 w-8"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {dailyLogs.map((log) => (
-                      <tr key={log.id} className="border-b">
-                        <td className="py-3 text-sm">
-                          {format(new Date(log.log_date), 'MMM d, yyyy')}
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">
-                          {log.weather_conditions
-                            ? (typeof log.weather_conditions === 'object'
-                              ? (log.weather_conditions as { description?: string }).description || 'N/A'
-                              : 'N/A')
-                            : 'N/A'}
-                        </td>
-                        <td className="py-3 text-sm text-gray-600">{log.created_by || 'N/A'}</td>
-                        <td className="py-3 text-sm text-gray-600">
-                          {log.created_at ? format(new Date(log.created_at), 'MMM d, yyyy') : 'N/A'}
-                        </td>
-                        <td className="py-3">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p className="text-sm text-gray-500">No daily reports yet.</p>
-              )}
-            </TabsContent>
-
-            <TabsContent value="schedule" className="p-6">
-              <p className="text-sm text-gray-600">Schedule content goes here</p>
-            </TabsContent>
-
-            <TabsContent value="expenses" className="p-6">
-              <p className="text-sm text-gray-600">Expenses content goes here</p>
-            </TabsContent>
-
-            <TabsContent value="subs" className="p-6">
-              <p className="text-sm text-gray-600">Subs content goes here</p>
-            </TabsContent>
-
-            <TabsContent value="change-orders" className="p-6">
-              {changeOrders.length > 0 ? (
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left border-b">
-                      <th className="pb-3 font-medium text-sm">Number</th>
-                      <th className="pb-3 font-medium text-sm">Title</th>
-                      <th className="pb-3 font-medium text-sm">Status</th>
-                      <th className="pb-3 font-medium text-sm">Amount</th>
-                      <th className="pb-3 font-medium text-sm">Created</th>
-                      <th className="pb-3 w-8"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {changeOrders.map((order) => (
-                      <tr key={order.id} className="border-b">
-                        <td className="py-3 text-sm">{order.co_number || `CO-${order.id}`}</td>
-                        <td className="py-3 text-sm">{order.title || 'Untitled'}</td>
-                        <td className="py-3 text-sm text-gray-600">{order.status || 'Draft'}</td>
-                        <td className="py-3 text-sm">TBD</td>
-                        <td className="py-3 text-sm text-gray-600">
-                          {order.created_at ? format(new Date(order.created_at), 'MMM d, yyyy') : 'N/A'}
-                        </td>
-                        <td className="py-3">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p className="text-sm text-gray-500">No change orders yet.</p>
-              )}
-            </TabsContent>
-          </Tabs>
-
-      {/* Financial Toggles Section */}
+            {/* Project Accordions Section */}
       <div className="mb-6">
-        <FinancialToggles 
-          project={project}
-          commitments={commitments}
-          contracts={contracts}
+        <h2 className="text-lg font-semibold text-brand mb-4">Project Information</h2>
+        <ProjectAccordions
+          projectId={project.id.toString()}
+          meetings={meetings}
+          budget={budget}
+          primeContracts={contracts}
+          changeOrders={changeOrders}
+          changeEvents={changeEvents}
+          schedule={schedule}
+          sov={sov}
+          rfis={rfis}
+          tasks={tasks}
+          insights={insights}
+          submittals={[]}
+          documents={[]}
+          drawings={[]}
         />
       </div>
 

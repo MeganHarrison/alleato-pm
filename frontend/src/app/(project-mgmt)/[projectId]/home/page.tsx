@@ -20,7 +20,11 @@ export default async function ProjectHomePage({
     rfisResult,
     dailyLogsResult,
     commitmentsResult,
-    contractsResult
+    contractsResult,
+    budgetResult,
+    changeEventsResult,
+    scheduleResult,
+    sovResult
   ] = await Promise.all([
     // Fetch main project data
     supabase
@@ -90,7 +94,35 @@ export default async function ProjectHomePage({
       .from('financial_contracts')
       .select('*')
       .eq('project_id', projectId)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false }),
+    
+    // Fetch budget items
+    supabase
+      .from('budget_items')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('cost_code_id', { ascending: true }),
+    
+    // Fetch change events
+    supabase
+      .from('change_events')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false }),
+    
+    // Fetch schedule items
+    supabase
+      .from('schedule_items')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('start_date', { ascending: true }),
+    
+    // Fetch schedule of values
+    supabase
+      .from('schedule_of_values')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('line_number', { ascending: true })
   ])
 
   if (projectResult.error || !projectResult.data) {
@@ -106,6 +138,10 @@ export default async function ProjectHomePage({
   const dailyLogs = dailyLogsResult.data || []
   const commitments = commitmentsResult.data || []
   const contracts = contractsResult.data || []
+  const budget = budgetResult.data || []
+  const changeEvents = changeEventsResult.data || []
+  const schedule = scheduleResult.data || []
+  const sov = sovResult.data || []
 
   return (
     <ProjectHomeClient
@@ -118,6 +154,10 @@ export default async function ProjectHomePage({
       dailyLogs={dailyLogs}
       commitments={commitments}
       contracts={contracts}
+      budget={budget}
+      changeEvents={changeEvents}
+      schedule={schedule}
+      sov={sov}
     />
   )
 }

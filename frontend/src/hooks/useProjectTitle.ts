@@ -13,15 +13,10 @@ export function useProjectTitle(pageTitle?: string, includeProject = true) {
   const pathname = usePathname()
 
   useEffect(() => {
-    // Build the title parts
+    // Build the title parts in the format: "PageTitle - Project - ProjectName"
     const parts: string[] = []
 
-    // Add project name if available and requested
-    if (includeProject && selectedProject?.name) {
-      parts.push(selectedProject.name)
-    }
-
-    // Add page title if provided
+    // Add page title first (if provided)
     if (pageTitle) {
       parts.push(pageTitle)
     } else {
@@ -39,10 +34,13 @@ export function useProjectTitle(pageTitle?: string, includeProject = true) {
       }
     }
 
-    // Add app name
-    parts.push('Alleato OS')
+    // Add "Project" separator and project name if available
+    if (includeProject && selectedProject?.name) {
+      parts.push('Project')
+      parts.push(selectedProject.name)
+    }
 
-    // Set the document title
+    // Set the document title (without app name for cleaner titles)
     document.title = parts.join(' - ')
 
     // Cleanup function to restore default title on unmount
