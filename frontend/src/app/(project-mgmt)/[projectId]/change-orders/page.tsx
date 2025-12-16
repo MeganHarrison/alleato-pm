@@ -154,7 +154,11 @@ export default function ProjectChangeOrdersPage() {
                 </TableHeader>
                 <TableBody>
                   {changeOrders.map((order) => (
-                    <TableRow key={order.id} className="cursor-pointer hover:bg-gray-50">
+                    <TableRow
+                      key={order.id}
+                      className="cursor-pointer hover:bg-gray-50"
+                      onClick={() => router.push(`/change-order-form/${order.id}`)}
+                    >
                       <TableCell className="font-medium">{order.number}</TableCell>
                       <TableCell>{order.title}</TableCell>
                       <TableCell>{order.commitment?.title || '-'}</TableCell>
