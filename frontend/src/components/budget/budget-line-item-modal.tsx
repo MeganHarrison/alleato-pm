@@ -48,7 +48,7 @@ import {
 interface BudgetCode {
   id: string;
   code: string;
-  costType: string;
+  costType: string | null;
   description: string;
   fullLabel: string;
 }
@@ -198,44 +198,21 @@ export function BudgetLineItemModal({
 
       try {
         setLoadingCodes(true);
-        // TODO: Replace with actual API call
-        // const response = await fetch(`/api/projects/${projectId}/budget-codes`);
-        // const data = await response.json();
+        const response = await fetch(`/api/projects/${projectId}/budget-codes`);
 
-        // Mock data for now
-        const mockCodes: BudgetCode[] = [
-          {
-            id: '1',
-            code: '01-3120',
-            costType: 'L',
-            description: 'Vice President',
-            fullLabel: '01-3120.L – Vice President – Labor',
-          },
-          {
-            id: '2',
-            code: '01-3130',
-            costType: 'L',
-            description: 'Project Manager',
-            fullLabel: '01-3130.L – Project Manager – Labor',
-          },
-          {
-            id: '3',
-            code: '01-3140',
-            costType: 'M',
-            description: 'Concrete Materials',
-            fullLabel: '01-3140.M – Concrete Materials – Material',
-          },
-          {
-            id: '4',
-            code: '01-3150',
-            costType: 'E',
-            description: 'Equipment Rental',
-            fullLabel: '01-3150.E – Equipment Rental – Equipment',
-          },
-        ];
-        setBudgetCodes(mockCodes);
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error?.error || 'Failed to load budget codes');
+        }
+
+        const { budgetCodes } = (await response.json()) as {
+          budgetCodes: BudgetCode[];
+        };
+
+        setBudgetCodes(budgetCodes || []);
       } catch (error) {
         console.error('Error fetching budget codes:', error);
+        setBudgetCodes([]);
       } finally {
         setLoadingCodes(false);
       }
@@ -355,6 +332,7 @@ export function BudgetLineItemModal({
 
       if (invalidRows.length > 0) {
         alert('All rows must have a budget code and a non-zero amount.');
+        setLoading(false);
         return;
       }
 

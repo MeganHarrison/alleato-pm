@@ -42,7 +42,7 @@ import { getDivisionMetadataFromCostCodeId } from '@/lib/cost-code-divisions';
 interface BudgetCode {
   id: string;
   code: string;
-  costType: string; // L = Labor, M = Material, E = Equipment, S = Subcontract, O = Other
+  costType: string | null; // L = Labor, M = Material, E = Equipment, S = Subcontract, O = Other
   description: string;
   fullLabel: string; // Composite label like "01-3120.L – Vice President – Labor"
 }
@@ -164,44 +164,21 @@ export default function NewBudgetLineItemPage() {
 
       try {
         setLoadingCodes(true);
-        // TODO: Replace with actual API call
-        // const response = await fetch(`/api/projects/${projectId}/budget-codes`);
-        // const data = await response.json();
+        const response = await fetch(`/api/projects/${projectId}/budget-codes`);
 
-        // Mock data for now
-        const mockCodes: BudgetCode[] = [
-          {
-            id: '1',
-            code: '01-3120',
-            costType: 'L',
-            description: 'Vice President',
-            fullLabel: '01-3120.L – Vice President – Labor',
-          },
-          {
-            id: '2',
-            code: '01-3130',
-            costType: 'L',
-            description: 'Project Manager',
-            fullLabel: '01-3130.L – Project Manager – Labor',
-          },
-          {
-            id: '3',
-            code: '01-3140',
-            costType: 'M',
-            description: 'Concrete Materials',
-            fullLabel: '01-3140.M – Concrete Materials – Material',
-          },
-          {
-            id: '4',
-            code: '01-3150',
-            costType: 'E',
-            description: 'Equipment Rental',
-            fullLabel: '01-3150.E – Equipment Rental – Equipment',
-          },
-        ];
-        setBudgetCodes(mockCodes);
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error?.error || 'Failed to load budget codes');
+        }
+
+        const { budgetCodes } = (await response.json()) as {
+          budgetCodes: BudgetCode[];
+        };
+
+        setBudgetCodes(budgetCodes || []);
       } catch (error) {
         console.error('Error fetching budget codes:', error);
+        setBudgetCodes([]);
       } finally {
         setLoadingCodes(false);
       }
@@ -344,16 +321,49 @@ export default function NewBudgetLineItemPage() {
 
       if (invalidRows.length > 0) {
         alert('All rows must have a budget code and a non-zero amount.');
+        setLoading(false);
         return;
       }
 
-      // TODO: API call to create budget line items
-      console.log('Creating budget line items:', { projectId, rows });
+      const lineItemsToSubmit = rows.map((row) => {
+        const budgetCode = budgetCodes.find((code) => code.id === row.budgetCodeId);
+
+        return {
+          costCodeId: budgetCode?.code || row.budgetCodeId,
+          costType: budgetCode?.costType || null,
+          qty: row.qty,
+          uom: row.uom,
+          unitCost: row.unitCost,
+          amount: row.amount,
+        };
+      });
+
+      const response = await fetch(`/api/projects/${projectId}/budget`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lineItems: lineItemsToSubmit,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.details || error.error || 'Failed to create budget line items');
+      }
+
+      await response.json();
 
       // Navigate back to project budget page
       router.push(`/${projectId}/budget`);
     } catch (error) {
       console.error('Error creating budget line items:', error);
+      alert(
+        `Failed to create budget line items: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      );
     } finally {
       setLoading(false);
     }
