@@ -48,7 +48,7 @@ import {
 import { pluginManager } from '@/lib/plugins/plugin-manager';
 import { createClient } from '@/lib/supabase/client';
 import type { PluginRecord, PluginStatus } from '@/types/plugin.types';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 
 export function PluginManagerUI() {
   const [plugins, setPlugins] = useState<PluginRecord[]>([]);
@@ -57,7 +57,6 @@ export function PluginManagerUI() {
   const [selectedTab, setSelectedTab] = useState('installed');
   const [installUrl, setInstallUrl] = useState('');
   const [isInstalling, setIsInstalling] = useState(false);
-  const { toast } = useToast();
   const supabase = createClient();
 
   // Load plugins on mount
@@ -76,11 +75,7 @@ export function PluginManagerUI() {
       setPlugins(data || []);
     } catch (error) {
       console.error('Failed to load plugins:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load plugins',
-        variant: 'destructive',
-      });
+      toast.error('Failed to load plugins');
     } finally {
       setIsLoading(false);
     }
@@ -88,22 +83,15 @@ export function PluginManagerUI() {
 
   const handleInstallPlugin = async () => {
     if (!installUrl) return;
-    
+
     setIsInstalling(true);
     try {
       const record = await pluginManager.installPlugin(installUrl);
-      toast({
-        title: 'Success',
-        description: `Plugin "${record.manifest.metadata.name}" installed successfully`,
-      });
+      toast.success(`Plugin "${record.manifest.metadata.name}" installed successfully`);
       setInstallUrl('');
       await loadPlugins();
     } catch (error: any) {
-      toast({
-        title: 'Installation Failed',
-        description: error.message,
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Installation failed');
     } finally {
       setIsInstalling(false);
     }
@@ -113,41 +101,24 @@ export function PluginManagerUI() {
     try {
       if (plugin.status === 'enabled') {
         await pluginManager.disablePlugin(plugin.id);
-        toast({
-          title: 'Plugin Disabled',
-          description: `${plugin.manifest.metadata.name} has been disabled`,
-        });
+        toast.success(`${plugin.manifest.metadata.name} has been disabled`);
       } else {
         await pluginManager.enablePlugin(plugin.id);
-        toast({
-          title: 'Plugin Enabled',
-          description: `${plugin.manifest.metadata.name} has been enabled`,
-        });
+        toast.success(`${plugin.manifest.metadata.name} has been enabled`);
       }
       await loadPlugins();
     } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Failed to toggle plugin');
     }
   };
 
   const handleUninstallPlugin = async (plugin: PluginRecord) => {
     try {
       await pluginManager.uninstallPlugin(plugin.id);
-      toast({
-        title: 'Plugin Uninstalled',
-        description: `${plugin.manifest.metadata.name} has been uninstalled`,
-      });
+      toast.success(`${plugin.manifest.metadata.name} has been uninstalled`);
       await loadPlugins();
     } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Failed to uninstall plugin');
     }
   };
 

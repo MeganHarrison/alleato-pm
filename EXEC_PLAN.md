@@ -773,6 +773,60 @@ Based on the video walkthrough analysis, the following implementation phases are
 - [x] [Tasks](/app/(procore)/tasks/page.tsx)
 - [x] [Documents](/app/(procore)/documents-infinite/page.tsx)
 
+### Infinite Scroll Document Browser (Next.js + Framer Motion)
+
+**Purpose**: Recreate the Supabase “Infinite Scroll with Next.js + Framer Motion” experience inside Alleato so that browsing `document_metadata` feels fast, animated, and resilient. Today’s `/app/(demo)/documents-infinite/page.tsx` proves the data query but lacks animation, parallax, or an automatic sentinel trigger. This phase delivers a production-ready feed with staggered card entrances, scroll-driven parallax, filter-aware pagination, and accessibility fallbacks.
+
+**What users gain**
+- Scroll through the full document history without pagination controls; new cards fade/slide into place as they near the viewport.
+- Filters (type, category, status, project) re-query Supabase instantly with optimistic skeletons.
+- Background gradients and card hover states mirror the Supabase blog aesthetics while respecting `prefers-reduced-motion`.
+
+**Key files**
+- `frontend/src/hooks/use-infinite-query.ts` – expose `reset()` + `prefetchPage()` so filter changes and sentinel triggers mirror the blog’s smooth loading.
+- `frontend/src/hooks/useInfiniteDocuments.ts` – thin wrapper that centralizes filters, sorts, and transforms Supabase rows into UI-friendly shapes (`DocumentCardData`).
+- `frontend/src/components/documents/infinite/DocumentCard.tsx` – animated card that uses `motion.article`, variants, and `layoutId` for hover expansion.
+- `frontend/src/components/documents/infinite/DocumentFilters.tsx` – shared controls with debounced search + chips.
+- `frontend/src/components/documents/infinite/InfiniteSentinel.tsx` – intersection observer that calls `fetchNextPage` and exposes manual fallback button.
+- `frontend/src/app/(demo)/documents-infinite/page.tsx` – orchestrates filters, animated grid/list toggle, background motion layers, and renders Playwright data attributes for testing.
+- `frontend/tests/e2e/documents-infinite-scroll.spec.ts` + `frontend/tests/screenshots/documents-infinite-scroll.png` – verifies infinite loading, filter resets, and captured evidence per CLAUDE.
+
+**Implementation outline**
+1. **Data + Query prep**
+   - Reconfirm `document_metadata` columns from `frontend/src/types/database.ts` and add a `DocumentMetadataRow` type alias in `frontend/src/types/documents.ts` (new file) so UI components stay typed.
+   - Add composite index (if missing) on `(date DESC, id DESC)` via Supabase migration to ensure deterministic pagination, mirroring the blog’s ordered queries.
+   - Extend `frontend/src/lib/docs.ts` (or new helper) with a `fetchDocumentMetadataPage({ limit, offset, filters })` server util for potential server rendering or tests.
+
+2. **Hook enhancements**
+   - Update `use-infinite-query.ts` so it exposes `reset()` and returns `isReachingEnd`, `isRefetching`. Internally, keep a `currentAbortController` so rapid filter changes cancel prior fetches just like the blog’s `AbortController` example.
+   - Create `useInfiniteDocuments(filters)` that memoizes the `trailingQuery`, normalizes Supabase rows (dates → Date objects, participants → arrays), and surfaces convenience helpers required by the `DocumentCard` (duration label, avatar initials, CTA URLs).
+
+3. **Animated UI shell**
+   - Build `DocumentCard` with Framer Motion variants (`hidden`, `visible`, `hover`) so cards slide up and fade in with a small delay based on index. Use `layout` + `whileHover` for smooth expansion and embed metadata chips + CTA button referencing `fireflies_link` or `url`.
+   - Add `ParallaxBackdrop` (new component) that uses `useScroll` + `useTransform` to move gradient blobs and line patterns at different speeds, emulating the blog’s hero background. Respect reduced-motion by gating animations behind `useReducedMotion`.
+   - Provide skeleton placeholders leveraging `Skeleton` and motion `opacity` transitions so layout shifts are minimal.
+
+4. **Infinite scroll mechanics**
+   - Implement `InfiniteSentinel` using `IntersectionObserver`. It should trigger `fetchNextPage` when in view, show a progress ring via `framer-motion` while `isFetching` is true, and fall back to a “Load more” button when the observer is unavailable (SSR or reduced-motion).
+   - Ensure `hasMore` is derived from Supabase `count`; when false, render an “You’ve reached the end” motion chip that gently pulses (per blog inspiration).
+
+5. **Filters + controls**
+   - Move filter state into a dedicated component with `useMemo`-driven option arrays so we can reuse it elsewhere. Add optional free-text search (ILIKE title or summary) as described in the blog’s “searchable feed” section.
+   - Wire filters to `useInfiniteDocuments`. On change, call the new `reset()` to clear existing pages, show skeletons, and request a new first page. Persist filter pills in the query string so deep links mirror the blog tutorial.
+
+6. **Accessibility + resilience**
+   - Add `aria-live="polite"` region describing when new cards load and include `role="feed"`/`role="article"` semantics, matching the blog’s a11y guidance.
+   - Provide error boundary card with retry button hitting `reset()`.
+
+7. **Testing & evidence**
+   - Unit test the new hook (`frontend/src/hooks/useInfiniteDocuments.test.ts`) with mocked Supabase client to ensure filter changes call `reset()` and shape data correctly.
+   - Playwright spec scrolls to the sentinel, asserts that at least two pages load, toggles filters, and captures screenshots after animations settle (`await page.waitForTimeout(500)` to allow Framer Motion to finish).
+   - Update `EXEC_PLAN.md` progress + `docs/pages/planning/PROCORE_VIDEO_IMPLEMENTATION_PLAN.mdx` references once the feature ships.
+
+**Deployment notes**
+- This work is client-only; no backend schema beyond the optional index. It can ship behind a feature flag by wrapping the page export in `if (!enableInfiniteDocuments) redirect('/tables-directory')` if needed.
+- Follow the Supabase blog guidance for performance: keep page size modest (12), prefetch the next page when the user is halfway through the current one, and memoize Framer Motion variants to avoid re-creating objects every render.
+
 **Evidence Capture**
 
 - [x] [Full DOM captures for all modules](/scripts/procore-screenshot-capture/)

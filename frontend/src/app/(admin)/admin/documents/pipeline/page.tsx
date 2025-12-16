@@ -24,7 +24,7 @@ import {
   Sparkles
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 
 interface Document {
   id: string
@@ -92,19 +92,11 @@ export default function DocumentPipelinePage() {
         const data = await response.json()
         setDocuments(data.documents)
       } else {
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch documents',
-          variant: 'destructive'
-        })
+        toast.error('Failed to fetch documents')
       }
     } catch (error) {
       console.error('Error fetching documents:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch documents',
-        variant: 'destructive'
-      })
+      toast.error('Failed to fetch documents')
     }
   }
 
@@ -130,10 +122,7 @@ export default function DocumentPipelinePage() {
     setRefreshing(true)
     await loadData()
     setRefreshing(false)
-    toast({
-      title: 'Refreshed',
-      description: 'Document status updated',
-    })
+    toast.success('Document status updated')
   }
 
   const triggerPhase = async (phase: string) => {
@@ -146,28 +135,17 @@ export default function DocumentPipelinePage() {
       })
 
       const data = await response.json()
-      
+
       if (response.ok) {
-        toast({
-          title: 'Success',
-          description: data.message,
-        })
+        toast.success(data.message || 'Pipeline triggered successfully')
         // Refresh data to show updated status
         await loadData()
       } else {
-        toast({
-          title: 'Error',
-          description: data.error || 'Failed to trigger pipeline',
-          variant: 'destructive'
-        })
+        toast.error(data.error || 'Failed to trigger pipeline')
       }
     } catch (error) {
       console.error('Error triggering phase:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to trigger pipeline phase',
-        variant: 'destructive'
-      })
+      toast.error('Failed to trigger pipeline phase')
     } finally {
       setTriggering(null)
     }
