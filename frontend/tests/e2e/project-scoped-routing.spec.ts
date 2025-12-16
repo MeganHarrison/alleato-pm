@@ -146,11 +146,12 @@ test.describe('Project-Scoped Routing', () => {
       }
 
       // All other links should be project-scoped when not disabled
-      if (isDisabled !== 'true') {
-        expect(href).toMatch(new RegExp(`^/${projectId}/`),
-          `Link ${i} with href "${href}" should be project-scoped`);
+        if (isDisabled !== 'true') {
+          expect(href, `Link ${i} with href "${href}" should be project-scoped`).toMatch(
+            new RegExp(`^/${projectId}/`)
+          );
+        }
       }
-    }
   });
 
   test('Tools should be disabled when no project is selected', async ({ page }) => {

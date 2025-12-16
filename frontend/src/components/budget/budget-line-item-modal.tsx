@@ -281,10 +281,10 @@ export function BudgetLineItemModal({
       // TODO: API call to create project budget code
       const newCode: BudgetCode = {
         id: Date.now().toString(),
-        code: selectedCostCode.division || selectedCostCode.id,
+        code: selectedCostCode.division_title || selectedCostCode.id,
         costType: newCodeData.costType,
         description: selectedCostCode.description || '',
-        fullLabel: `${selectedCostCode.division || selectedCostCode.id}.${newCodeData.costType} – ${selectedCostCode.description} – ${getCostTypeLabel(newCodeData.costType)}`,
+        fullLabel: `${selectedCostCode.division_title || selectedCostCode.id}.${newCodeData.costType} – ${selectedCostCode.description} – ${getCostTypeLabel(newCodeData.costType)}`,
       };
 
       setBudgetCodes([...budgetCodes, newCode]);
@@ -642,7 +642,7 @@ export function BudgetLineItemModal({
                                     : 'text-gray-700'
                                 }`}
                               >
-                                {costCode.division || costCode.id} - {costCode.description}
+                                {costCode.division_title || costCode.id} - {costCode.description}
                               </button>
                             ))}
                           </div>
@@ -677,7 +677,7 @@ export function BudgetLineItemModal({
               <p className="text-sm text-gray-600 mt-1">
                 {newCodeData.costCodeId ? (
                   <>
-                    {availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId)?.division || 
+                    {availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId)?.division_title ||
                      availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId)?.id}.
                     {newCodeData.costType} – {' '}
                     {availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId)?.description} – {' '}

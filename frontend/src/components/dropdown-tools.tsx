@@ -1,84 +1,129 @@
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex h-8 items-center gap-2 rounded px-2 text-[hsl(var(--procore-header-text))] hover:bg-brand transition-colors"
-              >
-                <span className="text-xs text-gray-400">Project Tools</span>
-                <span className="ml-2 text-sm font-medium">{currentTool}</span>
-                <ChevronDown className="ml-1 h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-screen p-6 rounded-none border-x-0">
-              <div className="container mx-auto">
-                <div className="grid grid-cols-3 gap-12">
-                {/* Core Tools Column */}
-                <div>
-                  <h3 className="mb-3 text-sm font-semibold text-gray-900">Core Tools</h3>
-                  <div className="space-y-1">
-                    {coreTools.map((tool) => (
-                      <Link
-                        key={tool.name}
-                        href={tool.href}
-                        onClick={() => setCurrentTool(tool.name)}
-                        className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
-                      >
-                        <span>{tool.name}</span>
-                        {tool.badge && (
-                          <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                            {tool.badge}
-                          </span>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+'use client'
 
-                {/* Project Management Column */}
-                <div>
-                  <h3 className="mb-3 text-sm font-semibold text-gray-900">Project Management</h3>
-                  <div className="space-y-1">
-                    {projectManagementTools.map((tool) => (
-                      <Link
-                        key={tool.name}
-                        href={tool.href}
-                        onClick={() => setCurrentTool(tool.name)}
-                        className="flex w-full items-center rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
-                      >
-                        <span className="flex items-center gap-2">
-                          {tool.isFavorite && <Star className="h-3.5 w-3.5 text-gray-400" />}
-                          {tool.name}
-                          {tool.hasCreateAction && (
-                            <Plus className="h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white ml-1" />
-                          )}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
+import Link from 'next/link'
+import { useMemo, useState } from 'react'
+import { ChevronDown, Plus, Star } from 'lucide-react'
 
-                {/* Financial Management Column */}
-                <div>
-                  <h3 className="mb-3 text-sm font-semibold text-gray-900">Financial Management</h3>
-                  <div className="space-y-1">
-                    {financialManagementTools.map((tool) => (
-                      <Link
-                        key={tool.name}
-                        href={tool.href}
-                        onClick={() => setCurrentTool(tool.name)}
-                        className="flex w-full items-center rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
-                      >
-                        <span className="flex items-center gap-2">
-                          {tool.name}
-                          {tool.hasCreateAction && (
-                            <Plus className="h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white ml-1" />
-                          )}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-                </div>
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+
+interface ToolLink {
+  name: string
+  href: string
+  badge?: string
+  isFavorite?: boolean
+  hasCreateAction?: boolean
+}
+
+const coreTools: ToolLink[] = [
+  { name: 'Dashboard', href: '/dashboard', badge: 'New' },
+  { name: 'Directory', href: '/directory/clients' },
+  { name: 'Meetings', href: '/meetings' },
+]
+
+const projectManagementTools: ToolLink[] = [
+  { name: 'Tasks', href: '/tasks', isFavorite: true },
+  { name: 'Schedule', href: '/schedule', hasCreateAction: true },
+  { name: 'Daily Logs', href: '/daily-logs' },
+]
+
+const financialManagementTools: ToolLink[] = [
+  { name: 'Commitments', href: '/commitments', hasCreateAction: true },
+  { name: 'Invoices', href: '/invoices' },
+  { name: 'Budget', href: '/budget', hasCreateAction: true },
+]
+
+export function DropdownTools() {
+  const defaultTool = useMemo(() => coreTools[0]?.name ?? 'Tools', [])
+  const [currentTool, setCurrentTool] = useState(defaultTool)
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="flex h-8 items-center gap-2 rounded px-2 text-[hsl(var(--procore-header-text))] transition-colors hover:bg-brand"
+        >
+          <span className="text-xs text-gray-400">Project Tools</span>
+          <span className="ml-2 text-sm font-medium">{currentTool}</span>
+          <ChevronDown className="ml-1 h-3 w-3" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-screen rounded-none border-x-0 p-6">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-12">
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-gray-900">Core Tools</h3>
+              <div className="space-y-1">
+                {coreTools.map((tool) => (
+                  <Link
+                    key={tool.name}
+                    href={tool.href}
+                    onClick={() => setCurrentTool(tool.name)}
+                    className="flex w-full items-center justify-between rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
+                  >
+                    <span>{tool.name}</span>
+                    {tool.badge && (
+                      <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                        {tool.badge}
+                      </span>
+                    )}
+                  </Link>
+                ))}
               </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-gray-900">Project Management</h3>
+              <div className="space-y-1">
+                {projectManagementTools.map((tool) => (
+                  <Link
+                    key={tool.name}
+                    href={tool.href}
+                    onClick={() => setCurrentTool(tool.name)}
+                    className="flex w-full items-center rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
+                  >
+                    <span className="flex items-center gap-2">
+                      {tool.isFavorite && <Star className="h-3.5 w-3.5 text-gray-400" />}
+                      {tool.name}
+                      {tool.hasCreateAction && (
+                        <Plus className="ml-1 h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white" />
+                      )}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-gray-900">Financial Management</h3>
+              <div className="space-y-1">
+                {financialManagementTools.map((tool) => (
+                  <Link
+                    key={tool.name}
+                    href={tool.href}
+                    onClick={() => setCurrentTool(tool.name)}
+                    className="flex w-full items-center rounded px-2 py-1.5 text-left text-sm hover:bg-gray-100"
+                  >
+                    <span className="flex items-center gap-2">
+                      {tool.name}
+                      {tool.hasCreateAction && (
+                        <Plus className="ml-1 h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white" />
+                      )}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+export default DropdownTools

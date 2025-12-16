@@ -505,9 +505,11 @@ export function SiteHeader({
                 {userName || 'User'}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <IconUserCircle className="mr-2 h-4 w-4" />
-                Profile
+              <DropdownMenuItem asChild>
+                <Link href="/profile" className="cursor-pointer">
+                  <IconUserCircle className="mr-2 h-4 w-4" />
+                  Profile
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconSettings className="mr-2 h-4 w-4" />

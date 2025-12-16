@@ -5,11 +5,12 @@ import { useInfiniteQuery, type SupabaseQueryHandler } from '@/hooks/use-infinit
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { format } from 'date-fns'
-import { FileText, Clock, Users, Calendar, ExternalLink, Filter } from 'lucide-react'
+import { Calendar, Clock, ExternalLink, FileText, Filter, Tag, Users } from 'lucide-react'
 
 interface DocumentMetadata {
   id: string

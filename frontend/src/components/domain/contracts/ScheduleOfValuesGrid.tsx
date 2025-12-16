@@ -100,7 +100,7 @@ export function ScheduleOfValuesGrid({
               {values.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                    No line items added yet. Click "Add Line Item" to get started.
+                    No line items added yet. Click &quot;Add Line Item&quot; to get started.
                   </td>
                 </tr>
               ) : (

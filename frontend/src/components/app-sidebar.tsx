@@ -21,6 +21,7 @@ import {
   IconPhoto,
   IconReportMoney,
   IconSettings,
+  IconUserCircle,
   IconUsers,
 } from "@tabler/icons-react"
 
@@ -130,6 +131,11 @@ const data = {
   ],
   // Secondary navigation - admin and settings
   navSecondary: [
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: IconUserCircle,
+    },
     {
       title: "Executive",
       url: "/executive",
