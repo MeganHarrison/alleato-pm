@@ -29,6 +29,12 @@ This plan assumes **Option A (UI First)**: build the component system first, the
 
 ## Recent Updates
 
+### 2025-12-17: UI Consistency Enforcement Plan
+
+- Authored `plans-ui-consistency.md` to operationalize the ComponentSystemConsistencySubagent charter
+- Defines audits, refactor streams (layout/table/form/token), milestones, and testing gates for enforcing shared components across all screens
+- Establishes backlog logging expectations in `PLANS_DOC.md` plus Playwright and visual regression evidence requirements
+
 ### 2025-12-16: Generic Table Editing Feature
 
 - **Added inline editing capability** to all generic table pages using a dialog-based interface
