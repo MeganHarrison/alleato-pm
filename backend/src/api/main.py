@@ -148,7 +148,7 @@ app = FastAPI(
 # CORS configuration (adjust as needed for deployment)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8080", "http://127.0.0.1:8080"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8080", "http://127.0.0.1:8080", "http://localhost:3001", "http://127.0.0.1:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -898,3 +898,13 @@ def ingest_fireflies_endpoint(
     """
     result = pipeline.ingest_file(payload.path, project_id=payload.project_id, dry_run=payload.dry_run)
     return {"result": result.__dict__}
+
+
+# === Admin Endpoints ===
+# Import and include admin routes
+try:
+    from src.api.admin_endpoints import router as admin_router
+    app.include_router(admin_router)
+    logger.info("Admin endpoints loaded successfully")
+except ImportError as e:
+    logger.warning(f"Admin endpoints not available: {e}")

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Plus, Search, Trash2, ChevronRight, ChevronDown } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
@@ -331,7 +332,7 @@ export function BudgetLineItemModal({
       const invalidRows = rows.filter((row) => !row.budgetCodeId || parseFloat(row.amount) === 0);
 
       if (invalidRows.length > 0) {
-        alert('All rows must have a budget code and a non-zero amount.');
+        toast.error('All rows must have a budget code and a non-zero amount.');
         setLoading(false);
         return;
       }
@@ -366,15 +367,17 @@ export function BudgetLineItemModal({
         throw new Error(error.details || error.error || 'Failed to create budget line items');
       }
 
-      const result = await response.json();
-      console.log('Budget line items created:', result);
-
-      // Close modal and notify parent to refresh data
+      await response.json();
+      toast.success('Budget line items created');
       onOpenChange(false);
       onSuccess?.();
     } catch (error) {
       console.error('Error creating budget line items:', error);
-      alert(`Failed to create budget line items: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(
+        `Failed to create budget line items: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      );
     } finally {
       setLoading(false);
     }

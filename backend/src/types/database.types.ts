@@ -1302,46 +1302,76 @@ export type Database = {
       }
       budget_items: {
         Row: {
+          approved_cos: number
+          budget_modifications: number
           calculation_method: string | null
+          committed_cost: number | null
           cost_code_id: string
           cost_type: string | null
           created_at: string
           created_by: string | null
+          direct_cost: number | null
+          forecast_to_complete: number | null
           id: string
+          original_amount: number | null
           original_budget_amount: number
           parent_cost_code: string | null
+          pending_cost_changes: number | null
           project_id: number
+          projected_cost: number | null
+          revised_budget: number | null
           unit_cost: number | null
           unit_qty: number | null
           uom: string | null
+          updated_at: string
         }
         Insert: {
+          approved_cos?: number
+          budget_modifications?: number
           calculation_method?: string | null
+          committed_cost?: number | null
           cost_code_id: string
           cost_type?: string | null
           created_at?: string
           created_by?: string | null
+          direct_cost?: number | null
+          forecast_to_complete?: number | null
           id?: string
+          original_amount?: number | null
           original_budget_amount?: number
           parent_cost_code?: string | null
+          pending_cost_changes?: number | null
           project_id: number
+          projected_cost?: number | null
+          revised_budget?: number | null
           unit_cost?: number | null
           unit_qty?: number | null
           uom?: string | null
+          updated_at?: string
         }
         Update: {
+          approved_cos?: number
+          budget_modifications?: number
           calculation_method?: string | null
+          committed_cost?: number | null
           cost_code_id?: string
           cost_type?: string | null
           created_at?: string
           created_by?: string | null
+          direct_cost?: number | null
+          forecast_to_complete?: number | null
           id?: string
+          original_amount?: number | null
           original_budget_amount?: number
           parent_cost_code?: string | null
+          pending_cost_changes?: number | null
           project_id?: number
+          projected_cost?: number | null
+          revised_budget?: number | null
           unit_cost?: number | null
           unit_qty?: number | null
           uom?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -1349,6 +1379,13 @@ export type Database = {
             columns: ["cost_code_id"]
             isOneToOne: false
             referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "app_users"
             referencedColumns: ["id"]
           },
           {
@@ -1837,6 +1874,7 @@ export type Database = {
       }
       change_orders: {
         Row: {
+          apply_vertical_markup: boolean | null
           approved_at: string | null
           approved_by: string | null
           co_number: string | null
@@ -1851,6 +1889,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          apply_vertical_markup?: boolean | null
           approved_at?: string | null
           approved_by?: string | null
           co_number?: string | null
@@ -1865,6 +1904,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          apply_vertical_markup?: boolean | null
           approved_at?: string | null
           approved_by?: string | null
           co_number?: string | null
@@ -2251,6 +2291,7 @@ export type Database = {
       }
       clients: {
         Row: {
+          code: string | null
           company_id: string | null
           created_at: string
           id: number
@@ -2258,6 +2299,7 @@ export type Database = {
           status: string | null
         }
         Insert: {
+          code?: string | null
           company_id?: string | null
           created_at?: string
           id?: number
@@ -2265,6 +2307,7 @@ export type Database = {
           status?: string | null
         }
         Update: {
+          code?: string | null
           company_id?: string | null
           created_at?: string
           id?: number
@@ -2355,13 +2398,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "commitment_changes_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "commitment_changes_commitment_id_fkey"
             columns: ["commitment_id"]
             isOneToOne: false
@@ -2378,6 +2414,7 @@ export type Database = {
           executed_at: string | null
           id: string
           project_id: number
+          retention_percentage: number | null
           status: string | null
           vendor_id: string | null
         }
@@ -2388,6 +2425,7 @@ export type Database = {
           executed_at?: string | null
           id?: string
           project_id: number
+          retention_percentage?: number | null
           status?: string | null
           vendor_id?: string | null
         }
@@ -2398,17 +2436,11 @@ export type Database = {
           executed_at?: string | null
           id?: string
           project_id?: number
+          retention_percentage?: number | null
           status?: string | null
           vendor_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "commitments_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "commitments_project_id_fkey"
             columns: ["project_id"]
@@ -2540,51 +2572,84 @@ export type Database = {
       }
       contacts: {
         Row: {
+          address: string | null
           birthday: string | null
+          city: string | null
+          company_id: string | null
+          company_name: string | null
+          country: string | null
           created_at: string
           department: string | null
           email: string | null
           first_name: string | null
           id: number
+          job_title: string | null
           last_name: string | null
           metadata: Json | null
           notes: string | null
           phone: string | null
           projects: string[] | null
-          role: string | null
+          state: string | null
+          type: string | null
+          zip: string | null
         }
         Insert: {
+          address?: string | null
           birthday?: string | null
+          city?: string | null
+          company_id?: string | null
+          company_name?: string | null
+          country?: string | null
           created_at?: string
           department?: string | null
           email?: string | null
           first_name?: string | null
           id?: number
+          job_title?: string | null
           last_name?: string | null
           metadata?: Json | null
           notes?: string | null
           phone?: string | null
           projects?: string[] | null
-          role?: string | null
+          state?: string | null
+          type?: string | null
+          zip?: string | null
         }
         Update: {
+          address?: string | null
           birthday?: string | null
+          city?: string | null
+          company_id?: string | null
+          company_name?: string | null
+          country?: string | null
           created_at?: string
           department?: string | null
           email?: string | null
           first_name?: string | null
           id?: number
+          job_title?: string | null
           last_name?: string | null
           metadata?: Json | null
           notes?: string | null
           phone?: string | null
           projects?: string[] | null
-          role?: string | null
+          state?: string | null
+          type?: string | null
+          zip?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "contacts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contracts: {
         Row: {
+          apply_vertical_markup: boolean | null
           approved_change_orders: number | null
           attachment_count: number | null
           client_id: number
@@ -2603,11 +2668,13 @@ export type Database = {
           private: boolean | null
           project_id: number
           remaining_balance: number | null
+          retention_percentage: number | null
           revised_contract_amount: number | null
           status: string | null
           title: string
         }
         Insert: {
+          apply_vertical_markup?: boolean | null
           approved_change_orders?: number | null
           attachment_count?: number | null
           client_id: number
@@ -2626,11 +2693,13 @@ export type Database = {
           private?: boolean | null
           project_id: number
           remaining_balance?: number | null
+          retention_percentage?: number | null
           revised_contract_amount?: number | null
           status?: string | null
           title: string
         }
         Update: {
+          apply_vertical_markup?: boolean | null
           approved_change_orders?: number | null
           attachment_count?: number | null
           client_id?: number
@@ -2649,6 +2718,7 @@ export type Database = {
           private?: boolean | null
           project_id?: number
           remaining_balance?: number | null
+          retention_percentage?: number | null
           revised_contract_amount?: number | null
           status?: string | null
           title?: string
@@ -2750,26 +2820,130 @@ export type Database = {
           },
         ]
       }
-      cost_codes: {
+      cost_code_division_updates_audit: {
         Row: {
-          created_at: string
-          description: string | null
+          changed_at: string | null
+          changed_by: string | null
+          division_id: string
           id: string
-          status: string | null
+          new_title: string | null
+          old_title: string | null
+          updated_count: number | null
         }
         Insert: {
-          created_at?: string
-          description?: string | null
-          id: string
-          status?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          division_id: string
+          id?: string
+          new_title?: string | null
+          old_title?: string | null
+          updated_count?: number | null
         }
         Update: {
-          created_at?: string
-          description?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          division_id?: string
           id?: string
-          status?: string | null
+          new_title?: string | null
+          old_title?: string | null
+          updated_count?: number | null
         }
         Relationships: []
+      }
+      cost_code_divisions: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string | null
+          sort_order: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cost_code_types: {
+        Row: {
+          category: string | null
+          code: string
+          created_at: string | null
+          description: string
+          id: string
+        }
+        Insert: {
+          category?: string | null
+          code: string
+          created_at?: string | null
+          description: string
+          id?: string
+        }
+        Update: {
+          category?: string | null
+          code?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      cost_codes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          division_id: string
+          division_title: string | null
+          id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          division_id: string
+          division_title?: string | null
+          id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          division_id?: string
+          division_title?: string | null
+          id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_codes_division_id_fkey"
+            columns: ["division_id"]
+            isOneToOne: false
+            referencedRelation: "cost_code_divisions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cost_factors: {
         Row: {
@@ -2830,13 +3004,6 @@ export type Database = {
           notes?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "cost_forecasts_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "cost_forecasts_created_by_fkey"
             columns: ["created_by"]
@@ -3336,13 +3503,6 @@ export type Database = {
           vendor_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "direct_costs_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "direct_costs_project_id_fkey"
             columns: ["project_id"]
@@ -5217,15 +5377,7 @@ export type Database = {
           id?: string
           projected_costs?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "forecasting_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       group_members: {
         Row: {
@@ -6296,15 +6448,7 @@ export type Database = {
           id?: string
           status?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "pending_budget_changes_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       prime_contract_change_orders: {
         Row: {
@@ -6905,6 +7049,176 @@ export type Database = {
         }
         Relationships: []
       }
+      project: {
+        Row: {
+          access: string | null
+          address: string | null
+          archived: boolean
+          archived_at: string | null
+          archived_by: string | null
+          budget: number | null
+          budget_locked: boolean | null
+          budget_locked_at: string | null
+          budget_locked_by: string | null
+          budget_used: number | null
+          category: string | null
+          client: string | null
+          client_id: number | null
+          completion_percentage: number | null
+          created_at: string
+          delivery_method: string | null
+          erp_last_direct_cost_sync: string | null
+          erp_last_job_cost_sync: string | null
+          erp_sync_status: string | null
+          erp_system: string | null
+          est_completion: string | null
+          est_profit: number | null
+          est_revenue: number | null
+          health_score: number | null
+          health_status: string | null
+          id: number
+          job_number: string | null
+          keywords: string[] | null
+          name: string | null
+          name_code: string | null
+          onedrive: string | null
+          phase: string | null
+          project_manager: number | null
+          project_number: string | null
+          project_sector: string | null
+          stakeholders: Json | null
+          start_date: string | null
+          state: string | null
+          summary: string | null
+          summary_metadata: Json | null
+          summary_updated_at: string | null
+          team_members: string[] | null
+          type: string | null
+          work_scope: string | null
+        }
+        Insert: {
+          access?: string | null
+          address?: string | null
+          archived?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          budget?: number | null
+          budget_locked?: boolean | null
+          budget_locked_at?: string | null
+          budget_locked_by?: string | null
+          budget_used?: number | null
+          category?: string | null
+          client?: string | null
+          client_id?: number | null
+          completion_percentage?: number | null
+          created_at?: string
+          delivery_method?: string | null
+          erp_last_direct_cost_sync?: string | null
+          erp_last_job_cost_sync?: string | null
+          erp_sync_status?: string | null
+          erp_system?: string | null
+          est_completion?: string | null
+          est_profit?: number | null
+          est_revenue?: number | null
+          health_score?: number | null
+          health_status?: string | null
+          id?: number
+          job_number?: string | null
+          keywords?: string[] | null
+          name?: string | null
+          name_code?: string | null
+          onedrive?: string | null
+          phase?: string | null
+          project_manager?: number | null
+          project_number?: string | null
+          project_sector?: string | null
+          stakeholders?: Json | null
+          start_date?: string | null
+          state?: string | null
+          summary?: string | null
+          summary_metadata?: Json | null
+          summary_updated_at?: string | null
+          team_members?: string[] | null
+          type?: string | null
+          work_scope?: string | null
+        }
+        Update: {
+          access?: string | null
+          address?: string | null
+          archived?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          budget?: number | null
+          budget_locked?: boolean | null
+          budget_locked_at?: string | null
+          budget_locked_by?: string | null
+          budget_used?: number | null
+          category?: string | null
+          client?: string | null
+          client_id?: number | null
+          completion_percentage?: number | null
+          created_at?: string
+          delivery_method?: string | null
+          erp_last_direct_cost_sync?: string | null
+          erp_last_job_cost_sync?: string | null
+          erp_sync_status?: string | null
+          erp_system?: string | null
+          est_completion?: string | null
+          est_profit?: number | null
+          est_revenue?: number | null
+          health_score?: number | null
+          health_status?: string | null
+          id?: number
+          job_number?: string | null
+          keywords?: string[] | null
+          name?: string | null
+          name_code?: string | null
+          onedrive?: string | null
+          phase?: string | null
+          project_manager?: number | null
+          project_number?: string | null
+          project_sector?: string | null
+          stakeholders?: Json | null
+          start_date?: string | null
+          state?: string | null
+          summary?: string | null
+          summary_metadata?: Json | null
+          summary_updated_at?: string | null
+          team_members?: string[] | null
+          type?: string | null
+          work_scope?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_budget_locked_by_fkey"
+            columns: ["budget_locked_by"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_project_manager_fkey"
+            columns: ["project_manager"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_project_manager_fkey"
+            columns: ["project_manager"]
+            isOneToOne: false
+            referencedRelation: "project_with_manager"
+            referencedColumns: ["manager_id"]
+          },
+        ]
+      }
       project_briefings: {
         Row: {
           briefing_content: string
@@ -6984,6 +7298,184 @@ export type Database = {
           },
           {
             foreignKeyName: "project_briefings_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "submittal_project_dashboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_cost_codes: {
+        Row: {
+          cost_code_id: string
+          cost_type_id: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          project_id: number
+        }
+        Insert: {
+          cost_code_id: string
+          cost_type_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          project_id: number
+        }
+        Update: {
+          cost_code_id?: string
+          cost_type_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          project_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_cost_codes_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_cost_type_id_fkey"
+            columns: ["cost_type_id"]
+            isOneToOne: false
+            referencedRelation: "cost_code_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_activity_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard_no_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_issue_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_with_manager"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "submittal_project_dashboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_directory: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          permissions: Json | null
+          project_id: number | null
+          role: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          permissions?: Json | null
+          project_id?: number | null
+          role: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          permissions?: Json | null
+          project_id?: number | null
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_directory_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_activity_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard_no_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_issue_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_with_manager"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_directory_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "submittal_project_dashboard"
@@ -7413,6 +7905,9 @@ export type Database = {
           archived_at: string | null
           archived_by: string | null
           budget: number | null
+          budget_locked: boolean | null
+          budget_locked_at: string | null
+          budget_locked_by: string | null
           budget_used: number | null
           category: string | null
           client: string | null
@@ -7420,6 +7915,7 @@ export type Database = {
           completion_percentage: number | null
           created_at: string
           current_phase: string | null
+          delivery_method: string | null
           erp_last_direct_cost_sync: string | null
           erp_last_job_cost_sync: string | null
           erp_sync_status: string | null
@@ -7433,10 +7929,12 @@ export type Database = {
           "job number": string | null
           keywords: string[] | null
           name: string | null
+          name_code: string | null
           onedrive: string | null
           phase: string | null
           project_manager: number | null
           project_number: string | null
+          project_sector: string | null
           stakeholders: Json | null
           "start date": string | null
           state: string | null
@@ -7445,6 +7943,7 @@ export type Database = {
           summary_updated_at: string | null
           team_members: string[] | null
           type: string | null
+          work_scope: string | null
         }
         Insert: {
           access?: string | null
@@ -7454,6 +7953,9 @@ export type Database = {
           archived_at?: string | null
           archived_by?: string | null
           budget?: number | null
+          budget_locked?: boolean | null
+          budget_locked_at?: string | null
+          budget_locked_by?: string | null
           budget_used?: number | null
           category?: string | null
           client?: string | null
@@ -7461,6 +7963,7 @@ export type Database = {
           completion_percentage?: number | null
           created_at?: string
           current_phase?: string | null
+          delivery_method?: string | null
           erp_last_direct_cost_sync?: string | null
           erp_last_job_cost_sync?: string | null
           erp_sync_status?: string | null
@@ -7474,10 +7977,12 @@ export type Database = {
           "job number"?: string | null
           keywords?: string[] | null
           name?: string | null
+          name_code?: string | null
           onedrive?: string | null
           phase?: string | null
           project_manager?: number | null
           project_number?: string | null
+          project_sector?: string | null
           stakeholders?: Json | null
           "start date"?: string | null
           state?: string | null
@@ -7486,6 +7991,7 @@ export type Database = {
           summary_updated_at?: string | null
           team_members?: string[] | null
           type?: string | null
+          work_scope?: string | null
         }
         Update: {
           access?: string | null
@@ -7495,6 +8001,9 @@ export type Database = {
           archived_at?: string | null
           archived_by?: string | null
           budget?: number | null
+          budget_locked?: boolean | null
+          budget_locked_at?: string | null
+          budget_locked_by?: string | null
           budget_used?: number | null
           category?: string | null
           client?: string | null
@@ -7502,6 +8011,7 @@ export type Database = {
           completion_percentage?: number | null
           created_at?: string
           current_phase?: string | null
+          delivery_method?: string | null
           erp_last_direct_cost_sync?: string | null
           erp_last_job_cost_sync?: string | null
           erp_sync_status?: string | null
@@ -7515,10 +8025,12 @@ export type Database = {
           "job number"?: string | null
           keywords?: string[] | null
           name?: string | null
+          name_code?: string | null
           onedrive?: string | null
           phase?: string | null
           project_manager?: number | null
           project_number?: string | null
+          project_sector?: string | null
           stakeholders?: Json | null
           "start date"?: string | null
           state?: string | null
@@ -7527,8 +8039,16 @@ export type Database = {
           summary_updated_at?: string | null
           team_members?: string[] | null
           type?: string | null
+          work_scope?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "projects_budget_locked_by_fkey"
+            columns: ["budget_locked_by"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "projects_client_id_fkey"
             columns: ["client_id"]
@@ -7551,6 +8071,42 @@ export type Database = {
             referencedColumns: ["manager_id"]
           },
         ]
+      }
+      projects_audit: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          changed_columns: string[] | null
+          id: string
+          metadata: Json | null
+          new_data: Json | null
+          old_data: Json | null
+          operation: string
+          project_id: number | null
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          changed_columns?: string[] | null
+          id?: string
+          metadata?: Json | null
+          new_data?: Json | null
+          old_data?: Json | null
+          operation: string
+          project_id?: number | null
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          changed_columns?: string[] | null
+          id?: string
+          metadata?: Json | null
+          new_data?: Json | null
+          old_data?: Json | null
+          operation?: string
+          project_id?: number | null
+        }
+        Relationships: []
       }
       prospects: {
         Row: {
@@ -8446,6 +9002,78 @@ export type Database = {
           },
         ]
       }
+      schedule_of_values: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          commitment_id: string | null
+          contract_id: number | null
+          created_at: string | null
+          id: string
+          status: string | null
+          total_amount: number
+          updated_at: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          commitment_id?: string | null
+          contract_id?: number | null
+          created_at?: string | null
+          id?: string
+          status?: string | null
+          total_amount?: number
+          updated_at?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          commitment_id?: string | null
+          contract_id?: number | null
+          created_at?: string | null
+          id?: string
+          status?: string | null
+          total_amount?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_of_values_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "app_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_of_values_commitment_id_fkey"
+            columns: ["commitment_id"]
+            isOneToOne: false
+            referencedRelation: "commitments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_of_values_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contract_financial_summary"
+            referencedColumns: ["contract_id"]
+          },
+          {
+            foreignKeyName: "schedule_of_values_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contract_financial_summary_mv"
+            referencedColumns: ["contract_id"]
+          },
+          {
+            foreignKeyName: "schedule_of_values_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       schedule_progress_updates: {
         Row: {
           actual_finish: string | null
@@ -8706,6 +9334,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      sov_line_items: {
+        Row: {
+          cost_code_id: string | null
+          created_at: string | null
+          description: string
+          id: string
+          line_number: number
+          scheduled_value: number
+          sov_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cost_code_id?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          line_number: number
+          scheduled_value?: number
+          sov_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cost_code_id?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          line_number?: number
+          scheduled_value?: number
+          sov_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sov_line_items_sov_id_fkey"
+            columns: ["sov_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_of_values"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       specifications: {
         Row: {
@@ -10063,6 +10732,89 @@ export type Database = {
         }
         Relationships: []
       }
+      vertical_markup: {
+        Row: {
+          calculation_order: number
+          compound: boolean | null
+          created_at: string | null
+          id: string
+          markup_type: string
+          percentage: number
+          project_id: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          calculation_order: number
+          compound?: boolean | null
+          created_at?: string | null
+          id?: string
+          markup_type: string
+          percentage: number
+          project_id?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          calculation_order?: number
+          compound?: boolean | null
+          created_at?: string | null
+          id?: string
+          markup_type?: string
+          percentage?: number
+          project_id?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_activity_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard_no_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_issue_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_with_manager"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vertical_markup_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "submittal_project_dashboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       actionable_insights: {
@@ -11093,6 +11845,28 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "project_with_manager"
             referencedColumns: ["manager_id"]
+          },
+        ]
+      }
+      sov_line_items_with_percentage: {
+        Row: {
+          cost_code_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          line_number: number | null
+          percentage: number | null
+          scheduled_value: number | null
+          sov_id: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sov_line_items_sov_id_fkey"
+            columns: ["sov_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_of_values"
+            referencedColumns: ["id"]
           },
         ]
       }

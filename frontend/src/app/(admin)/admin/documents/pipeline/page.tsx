@@ -35,7 +35,6 @@ interface Document {
   source: string
   date: string
   created_at: string
-  updated_at: string
   pipeline_stage: string
   attempt_count: number
   last_attempt_at: string
@@ -127,6 +126,12 @@ export default function DocumentPipelinePage() {
 
   const triggerPhase = async (phase: string) => {
     setTriggering(phase)
+
+    // Show immediate feedback
+    toast.loading(`Triggering ${phaseConfig[phase as keyof typeof phaseConfig]?.label || phase}...`, {
+      id: `trigger-${phase}`
+    })
+
     try {
       const response = await fetch('/api/documents/trigger-pipeline', {
         method: 'POST',
@@ -137,15 +142,21 @@ export default function DocumentPipelinePage() {
       const data = await response.json()
 
       if (response.ok) {
-        toast.success(data.message || 'Pipeline triggered successfully')
+        toast.success(data.message || 'Pipeline triggered successfully', {
+          id: `trigger-${phase}` // Replaces the loading toast
+        })
         // Refresh data to show updated status
         await loadData()
       } else {
-        toast.error(data.error || 'Failed to trigger pipeline')
+        toast.error(data.error || 'Failed to trigger pipeline', {
+          id: `trigger-${phase}` // Replaces the loading toast
+        })
       }
     } catch (error) {
       console.error('Error triggering phase:', error)
-      toast.error('Failed to trigger pipeline phase')
+      toast.error('Failed to trigger pipeline phase', {
+        id: `trigger-${phase}` // Replaces the loading toast
+      })
     } finally {
       setTriggering(null)
     }
@@ -201,15 +212,23 @@ export default function DocumentPipelinePage() {
         {Object.entries(phaseConfig).map(([phase, config]) => {
           const Icon = config.icon
           const count = getPhaseCount(phase)
+          const isProcessing = triggering === phase
           return (
-            <Card key={phase}>
+            <Card key={phase} className={isProcessing ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Icon className={`h-5 w-5 text-${config.color}-600`} />
+                    <Icon className={`h-5 w-5 text-${config.color}-600 ${isProcessing ? 'animate-pulse' : ''}`} />
                     <CardTitle className="text-lg">{config.label}</CardTitle>
                   </div>
-                  <Badge variant="secondary">{count} ready</Badge>
+                  {isProcessing ? (
+                    <Badge variant="default" className="bg-blue-500">
+                      <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
+                      Processing
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary">{count} ready</Badge>
+                  )}
                 </div>
                 <CardDescription className="text-sm">
                   {config.description}
@@ -222,7 +241,7 @@ export default function DocumentPipelinePage() {
                   disabled={count === 0 || triggering !== null}
                   onClick={() => triggerPhase(phase)}
                 >
-                  {triggering === phase ? (
+                  {isProcessing ? (
                     <>
                       <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                       Processing...

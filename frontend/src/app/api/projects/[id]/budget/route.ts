@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { BudgetLineItemsPayloadSchema } from '@/lib/schemas/budget';
 
 // GET /api/projects/[id]/budget - Fetch budget data for a project
 export async function GET(
@@ -126,14 +127,23 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { lineItems } = body;
+    const parsed = BudgetLineItemsPayloadSchema.safeParse(body);
 
-    if (!lineItems || !Array.isArray(lineItems) || lineItems.length === 0) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Line items are required' },
+        { error: 'Invalid payload', details: parsed.error.flatten().fieldErrors },
         { status: 400 }
       );
     }
+
+    const normalizedLineItems = parsed.data.lineItems.map((item) => ({
+      costCodeId: item.costCodeId,
+      costType: item.costType ?? null,
+      qty: item.qty && item.qty !== '' ? parseFloat(item.qty) : null,
+      uom: item.uom ?? null,
+      unitCost: item.unitCost && item.unitCost !== '' ? parseFloat(item.unitCost) : null,
+      amount: parseFloat(item.amount),
+    }));
 
     const supabase = await createClient();
 
@@ -141,7 +151,7 @@ export async function POST(
     const { data: { user } } = await supabase.auth.getUser();
 
     // Look up cost code IDs from the code strings or IDs
-    const costCodes = lineItems.map((item: any) => item.costCodeId);
+    const costCodes = normalizedLineItems.map((item) => item.costCodeId);
     const { data: costCodeData, error: codeError } = await supabase
       .from('cost_codes')
       .select('id')
@@ -159,8 +169,8 @@ export async function POST(
     const validCostCodeIds = new Set((costCodeData || []).map(cc => cc.id));
 
     // Prepare budget items for insertion
-    const budgetItemsToInsert = lineItems.map((item: any) => {
-      const originalAmount = parseFloat(item.amount) || 0;
+    const budgetItemsToInsert = normalizedLineItems.map((item) => {
+      const originalAmount = item.amount || 0;
 
       if (!validCostCodeIds.has(item.costCodeId)) {
         throw new Error(`Cost code not found: ${item.costCodeId}`);
@@ -171,11 +181,10 @@ export async function POST(
         cost_code_id: item.costCodeId,
         cost_type: item.costType || null,
         original_budget_amount: originalAmount,
-        unit_qty: item.qty ? parseFloat(item.qty) : null,
+        unit_qty: item.qty ?? null,
         uom: item.uom || null,
-        unit_cost: item.unitCost ? parseFloat(item.unitCost) : null,
+        unit_cost: item.unitCost ?? null,
         calculation_method: null,
-        created_by: user?.id || null,
       };
     });
 

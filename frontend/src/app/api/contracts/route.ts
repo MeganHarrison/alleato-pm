@@ -71,6 +71,7 @@ export async function POST(request: Request) {
       .from('contracts')
       .insert({
         contract_number: body.contract_number,
+        title: body.title,
         client_id: body.client_id,
         project_id: body.project_id,
         status: body.status || 'draft',

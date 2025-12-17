@@ -99,11 +99,17 @@ Always read .agents/PLANS.md and EXEC_PLAN.md
 
 5. Backend tests MUST NOT use Playwright. They live under `backend/tests/unit/` and `backend/tests/integration/` using Python testing tools.
 
-### 8. Testing (General)
+### 8. Testing (CRITICAL - NEVER SKIP)
+- **ALWAYS TEST YOUR FEATURES BEFORE CLAIMING COMPLETION**
+- **TEST EVERY BUTTON, EVERY API ENDPOINT, EVERY USER FLOW**
+- **CREATE E2E TESTS THAT VERIFY ACTUAL FUNCTIONALITY, NOT JUST UI**
+- **If you create an API endpoint, TEST IT WITH REAL REQUESTS**
+- **If you create a button that triggers an action, TEST THAT IT ACTUALLY WORKS**
 - **NEVER assume specific test frameworks**
 - **CHECK README or search codebase for testing approach**
 - **RUN tests after making changes**
 - Ensure all tests pass before marking task complete
+- **NO FEATURE IS COMPLETE WITHOUT TESTING**
 
 ### 9. Security
 - **NEVER introduce code that exposes or logs secrets**

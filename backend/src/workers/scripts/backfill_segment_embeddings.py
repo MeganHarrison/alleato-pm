@@ -26,8 +26,13 @@ from typing import List, Dict, Any, Optional
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+# Load env from root directory
 from dotenv import load_dotenv
-load_dotenv(Path(__file__).parent.parent / '.env')
+root_dir = Path(__file__).parent.parent.parent.parent
+env_path = root_dir / '.env'
+if not env_path.exists():
+    env_path = root_dir / '.env.local'
+load_dotenv(env_path)
 
 from openai import OpenAI
 from supabase import create_client, Client

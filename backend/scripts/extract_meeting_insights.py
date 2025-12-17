@@ -182,7 +182,7 @@ def extract_insights_with_ai(
     )
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-5.1",
         messages=[
             {
                 "role": "system",
@@ -191,7 +191,7 @@ def extract_insights_with_ai(
             {"role": "user", "content": prompt}
         ],
         response_format={"type": "json_object"},
-        max_tokens=4000,
+        max_completion_tokens=4000,
         temperature=0.3  # Lower temperature for more consistent extraction
     )
 

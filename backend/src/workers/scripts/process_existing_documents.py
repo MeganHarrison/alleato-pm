@@ -5,20 +5,16 @@ import os
 import sys
 from pathlib import Path
 
-# Add parent directory to Python path
-sys.path.insert(0, str(Path(__file__).parent))
+# Add parent directories to Python path
+sys.path.insert(0, str(Path(__file__).parent.parent))  # src/workers
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # src
 
-# Load environment variables
-try:
-    from dotenv import load_dotenv
-    env_path = Path(__file__).parent / '.env'
-    load_dotenv(env_path)
-    print(f"Loaded environment from: {env_path}")
-except ImportError:
-    print("Warning: python-dotenv not installed, using existing environment variables")
+# Load environment variables from root
+from services.env_loader import load_env
+load_env()
 
-from supabase_helpers import SupabaseRagStore, get_supabase_client, DocumentChunk
-from ingestion.fireflies_pipeline import ParsedTranscript, TranscriptSegment
+from services.supabase_helpers import SupabaseRagStore, get_supabase_client, DocumentChunk
+from services.ingestion.fireflies_pipeline import ParsedTranscript, TranscriptSegment
 import hashlib
 
 # Try to import OpenAI for embeddings

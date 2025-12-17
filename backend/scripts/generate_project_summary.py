@@ -99,12 +99,12 @@ def generate_summary_with_openai(project_name: str, transcripts: str) -> str:
     )
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-5.1",
         messages=[
             {"role": "system", "content": "You are an expert project analyst specializing in construction and engineering projects."},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=1000,
+        max_completion_tokens=1000,
         temperature=0.7
     )
 

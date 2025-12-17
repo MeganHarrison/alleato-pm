@@ -17,7 +17,6 @@ export async function GET() {
         source,
         date,
         created_at,
-        updated_at,
         fireflies_ingestion_jobs!inner (
           stage,
           attempt_count,
@@ -42,7 +41,6 @@ export async function GET() {
       source: doc.source,
       date: doc.date,
       created_at: doc.created_at,
-      updated_at: doc.updated_at,
       pipeline_stage: doc.fireflies_ingestion_jobs[0]?.stage || 'unknown',
       attempt_count: doc.fireflies_ingestion_jobs[0]?.attempt_count || 0,
       last_attempt_at: doc.fireflies_ingestion_jobs[0]?.last_attempt_at,

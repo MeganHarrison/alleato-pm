@@ -1,6 +1,8 @@
 import { getDecisions } from '@/lib/db/decisions'
 import { GenericDataTable, type GenericTableConfig } from '@/components/tables/generic-table-factory'
 
+export const dynamic = 'force-dynamic'
+
 const config: GenericTableConfig = {
   title: 'Decisions',
   description: 'Track important project and business decisions',

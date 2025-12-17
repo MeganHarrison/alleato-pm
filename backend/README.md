@@ -176,20 +176,91 @@ async def get_query_embedding_async(query: str) -> List[float]:
     return response.data[0].embedding
 ```
 
-```
+## Document Processing Pipeline
+
+The document processing pipeline consists of several scripts that handle different stages:
+
+### 1. Backfill Embeddings for Meeting Segments
+
+To generate embeddings for existing meeting segments:
+
+```bash
+cd backend
 source venv/bin/activate
+cd src/workers/scripts
 
-# Stage 1: Parse documents (raw_ingested → segmented) - Creates semantic segments from raw documents
-python backfill_pipeline.py --stage raw_ingested
+# Run the backfill script
+python backfill_segment_embeddings.py
 
-# Stage 2: Create embeddings (segmented → embedded) - Generates vector embeddings and stores chunks in documents table
-python backfill_pipeline.py --stage segmented --run-until-complete
+# Options:
+# --batch-size BATCH_SIZE    Number of segments to process per batch (default: 50)
+# --limit LIMIT              Maximum number of segments to process (default: all)
+# --dry-run                  Show what would be done without making changes
+# --project-id PROJECT_ID    Only process segments for a specific project ID
 
-# Stage 3: Extract structured data (embedded → done) - Extracts tasks, decisions, risks from embedded documents
-python backfill_pipeline.py --stage embedded --run-until-complete
+# Example: Dry run to see what would be processed
+python backfill_segment_embeddings.py --dry-run
+```
 
-# Monitor status
-python check_pipeline_status.py
+### 2. Process Existing Documents
+
+To process existing documents and create document chunks with embeddings:
+
+```bash
+cd backend/src/workers/scripts
+python process_existing_documents.py
+```
+
+This script:
+- Fetches all meeting documents from `document_metadata` table
+- Creates overlapping chunks from the document content
+- Generates embeddings for each chunk using OpenAI's text-embedding-3-small model
+- Stores chunks with embeddings in the `document_chunks` table
+
+### 3. Process New Documents
+
+To process new documents through the full pipeline:
+
+```bash
+cd backend/src/workers/scripts
+python process_documents.py --limit 10
+
+# Options:
+# --limit N              Process N documents
+# --skip-embedding       Skip embedding generation stage
+```
+
+### 4. Update Chunk Embeddings
+
+To update embeddings for existing document chunks:
+
+```bash
+cd backend/src/workers/scripts
+python update_chunk_embeddings.py
+```
+
+### 5. Backfill Missing Embeddings for Structured Data
+
+To generate embeddings for decisions, risks, and opportunities that are missing them:
+
+```bash
+cd backend/src/workers/scripts
+python backfill_missing_embeddings.py
+```
+
+This script:
+- Checks decisions, risks, and opportunities tables for missing embeddings
+- Generates embeddings using OpenAI's text-embedding-3-small model
+- Updates the records with the generated embeddings
+- Provides a summary of remaining records without embeddings
+
+### 6. Clean and Reingest Documents
+
+To clean and reingest specific Fireflies documents:
+
+```bash
+cd backend/src/workers/scripts
+python clean_and_reingest.py
 ```
 
 ### Vector Search Tools

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,6 +20,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { toast } from 'sonner';
 
 interface BudgetModificationModalProps {
   open: boolean;
@@ -36,6 +37,7 @@ export function BudgetModificationModal({
 }: BudgetModificationModalProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    budgetItemId: '',
     title: '',
     description: '',
     type: 'change_order',
@@ -43,21 +45,79 @@ export function BudgetModificationModal({
     reason: '',
     approver: '',
   });
+  const [budgetItems, setBudgetItems] = useState<Array<{ id: string; label: string }>>([]);
+  const [loadingItems, setLoadingItems] = useState(false);
+
+  useEffect(() => {
+    const fetchBudgetItems = async () => {
+      try {
+        setLoadingItems(true);
+        const response = await fetch(`/api/projects/${projectId}/budget`);
+        if (!response.ok) {
+          throw new Error('Failed to load budget items');
+        }
+        const data = await response.json();
+        const options =
+          data?.lineItems?.map((item: any) => ({
+            id: item.id,
+            label: item.description,
+          })) ?? [];
+        setBudgetItems(options);
+        if (options.length && !formData.budgetItemId) {
+          setFormData((prev) => ({ ...prev, budgetItemId: options[0].id }));
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error('Unable to load budget items for modifications');
+      } finally {
+        setLoadingItems(false);
+      }
+    };
+
+    if (open) {
+      fetchBudgetItems();
+    }
+  }, [open, projectId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // TODO: API call to create budget modification
-      console.log('Creating budget modification:', { projectId, ...formData });
+      if (!formData.budgetItemId) {
+        toast.error('Select a budget line item');
+        setLoading(false);
+        return;
+      }
 
-      // Close modal and notify parent
+      const payload = {
+        budgetItemId: formData.budgetItemId,
+        amount: formData.amount,
+        title: formData.title,
+        description: formData.description,
+        reason: formData.reason,
+        approver: formData.approver || null,
+        modificationType: formData.type,
+      };
+
+      const response = await fetch(`/api/projects/${projectId}/budget/modifications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.details || error.error || 'Failed to create budget modification');
+      }
+
+      toast.success('Budget modification created');
       onOpenChange(false);
       onSuccess?.();
 
       // Reset form
       setFormData({
+        budgetItemId: budgetItems[0]?.id || '',
         title: '',
         description: '',
         type: 'change_order',
@@ -67,6 +127,11 @@ export function BudgetModificationModal({
       });
     } catch (error) {
       console.error('Error creating budget modification:', error);
+      toast.error(
+        `Failed to create budget modification: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      );
     } finally {
       setLoading(false);
     }
@@ -89,6 +154,32 @@ export function BudgetModificationModal({
         <form onSubmit={handleSubmit} className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto">
             <div className="grid gap-4 py-4">
+              {/* Budget Item */}
+              <div className="grid gap-2">
+                <Label htmlFor="budgetItem">Budget Line Item*</Label>
+                <Select
+                  value={formData.budgetItemId}
+                  onValueChange={(value) => handleChange('budgetItemId', value)}
+                  disabled={loadingItems || !budgetItems.length}
+                >
+                  <SelectTrigger id="budgetItem">
+                    <SelectValue placeholder={loadingItems ? 'Loading items...' : 'Select a line item'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {budgetItems.map((item) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {!budgetItems.length && !loadingItems && (
+                  <p className="text-sm text-muted-foreground">
+                    No budget items available. Create a line item first.
+                  </p>
+                )}
+              </div>
+
               {/* Title */}
               <div className="grid gap-2">
                 <Label htmlFor="title">Title*</Label>
@@ -184,7 +275,7 @@ export function BudgetModificationModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || !formData.budgetItemId}>
               {loading ? 'Creating...' : 'Create Modification'}
             </Button>
           </SheetFooter>

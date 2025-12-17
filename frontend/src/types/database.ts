@@ -1302,8 +1302,8 @@ export type Database = {
       }
       budget_items: {
         Row: {
-          approved_cos: number | null
-          budget_modifications: number | null
+          approved_cos: number
+          budget_modifications: number
           calculation_method: string | null
           committed_cost: number | null
           cost_code_id: string
@@ -1323,10 +1323,11 @@ export type Database = {
           unit_cost: number | null
           unit_qty: number | null
           uom: string | null
+          updated_at: string
         }
         Insert: {
-          approved_cos?: number | null
-          budget_modifications?: number | null
+          approved_cos?: number
+          budget_modifications?: number
           calculation_method?: string | null
           committed_cost?: number | null
           cost_code_id: string
@@ -1346,10 +1347,11 @@ export type Database = {
           unit_cost?: number | null
           unit_qty?: number | null
           uom?: string | null
+          updated_at?: string
         }
         Update: {
-          approved_cos?: number | null
-          budget_modifications?: number | null
+          approved_cos?: number
+          budget_modifications?: number
           calculation_method?: string | null
           committed_cost?: number | null
           cost_code_id?: string
@@ -1369,6 +1371,7 @@ export type Database = {
           unit_cost?: number | null
           unit_qty?: number | null
           uom?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -1376,6 +1379,13 @@ export type Database = {
             columns: ["cost_code_id"]
             isOneToOne: false
             referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "app_users"
             referencedColumns: ["id"]
           },
           {
@@ -2388,13 +2398,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "commitment_changes_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "commitment_changes_commitment_id_fkey"
             columns: ["commitment_id"]
             isOneToOne: false
@@ -2438,13 +2441,6 @@ export type Database = {
           vendor_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "commitments_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "commitments_project_id_fkey"
             columns: ["project_id"]
@@ -2913,32 +2909,35 @@ export type Database = {
       }
       cost_codes: {
         Row: {
-          created_at: string
+          created_at: string | null
           description: string | null
-          division_id: string | null
+          division_id: string
           division_title: string | null
           id: string
           status: string | null
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
-          division_id?: string | null
+          division_id: string
           division_title?: string | null
           id: string
           status?: string | null
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
-          division_id?: string | null
+          division_id?: string
           division_title?: string | null
           id?: string
           status?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "cost_codes_division_fk"
+            foreignKeyName: "cost_codes_division_id_fkey"
             columns: ["division_id"]
             isOneToOne: false
             referencedRelation: "cost_code_divisions"
@@ -3005,13 +3004,6 @@ export type Database = {
           notes?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "cost_forecasts_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "cost_forecasts_created_by_fkey"
             columns: ["created_by"]
@@ -3511,13 +3503,6 @@ export type Database = {
           vendor_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "direct_costs_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "direct_costs_project_id_fkey"
             columns: ["project_id"]
@@ -5392,15 +5377,7 @@ export type Database = {
           id?: string
           projected_costs?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "forecasting_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       group_members: {
         Row: {
@@ -6471,15 +6448,7 @@ export type Database = {
           id?: string
           status?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "pending_budget_changes_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       prime_contract_change_orders: {
         Row: {
@@ -7338,28 +7307,28 @@ export type Database = {
       }
       project_cost_codes: {
         Row: {
-          cost_code_id: string | null
+          cost_code_id: string
           cost_type_id: string | null
           created_at: string | null
           id: string
           is_active: boolean | null
-          project_id: number | null
+          project_id: number
         }
         Insert: {
-          cost_code_id?: string | null
+          cost_code_id: string
           cost_type_id?: string | null
           created_at?: string | null
           id?: string
           is_active?: boolean | null
-          project_id?: number | null
+          project_id: number
         }
         Update: {
-          cost_code_id?: string | null
+          cost_code_id?: string
           cost_type_id?: string | null
           created_at?: string | null
           id?: string
           is_active?: boolean | null
-          project_id?: number | null
+          project_id?: number
         }
         Relationships: [
           {
@@ -9398,13 +9367,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "sov_line_items_cost_code_id_fkey"
-            columns: ["cost_code_id"]
-            isOneToOne: false
-            referencedRelation: "cost_codes"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "sov_line_items_sov_id_fkey"
             columns: ["sov_id"]
@@ -11899,13 +11861,6 @@ export type Database = {
           updated_at: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "sov_line_items_cost_code_id_fkey"
-            columns: ["cost_code_id"]
-            isOneToOne: false
-            referencedRelation: "cost_codes"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "sov_line_items_sov_id_fkey"
             columns: ["sov_id"]

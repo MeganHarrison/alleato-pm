@@ -52,7 +52,8 @@ def get_schema_fallback(supabase):
         'projects', 'tasks', 'risks', 'decisions', 'opportunities',
         'document_metadata', 'meeting_segments', 'contacts', 'app_users',
         'ingestion_jobs', 'chunks', 'commitments', 'document_chunks',
-        'documents', 'ai_tasks', 'project_insights', 'project_activity_view'
+        'documents', 'ai_tasks', 'project_insights', 'project_activity_view',
+        'fireflies_ingestion_jobs'
     ]
 
     schema = {}
