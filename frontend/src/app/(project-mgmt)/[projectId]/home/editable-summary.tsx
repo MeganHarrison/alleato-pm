@@ -1,10 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ChevronDown, ChevronUp, Pencil } from 'lucide-react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { ChevronDown, ChevronUp, Pencil, Check, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
 interface EditableSummaryProps {
@@ -42,83 +40,85 @@ export function EditableSummary({ summary, onSave }: EditableSummaryProps) {
   }
 
   return (
-    <Card className="border-0">
+    <div className="border border-neutral-200 bg-white">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="pb-4">
+        <div className="px-8 py-6 border-b border-neutral-100">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium text-gray-600">SUMMARY</CardTitle>
-            <div className="flex gap-1">
+            <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
+              Summary
+            </h3>
+            <div className="flex gap-3">
               {!isEditing ? (
                 <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0"
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-[#DB802D] transition-colors duration-200"
                     onClick={handleEdit}
                   >
-                    <Pencil className="h-4 w-4 text-gray-600" />
+                    <Pencil className="h-3.5 w-3.5" />
+                    Edit
                     <span className="sr-only">Edit summary</span>
-                  </Button>
+                  </button>
                   <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <button type="button" className="inline-flex items-center text-xs font-medium text-neutral-400 hover:text-neutral-600 transition-colors duration-200">
                       {isOpen ? (
-                        <ChevronUp className="h-4 w-4 text-gray-600" />
+                        <ChevronUp className="h-3.5 w-3.5" />
                       ) : (
-                        <ChevronDown className="h-4 w-4 text-gray-600" />
+                        <ChevronDown className="h-3.5 w-3.5" />
                       )}
                       <span className="sr-only">Toggle summary</span>
-                    </Button>
+                    </button>
                   </CollapsibleTrigger>
                 </>
               ) : (
                 <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0"
+                  <button
+                    type="button"
+                    className="px-3 py-1.5 text-xs font-medium bg-[#DB802D] text-white hover:bg-[#C4701F] transition-colors duration-200 disabled:opacity-50"
                     onClick={handleSave}
                     disabled={isSaving}
                   >
-                    <Check className="h-4 w-4 text-green-600" />
+                    Save
                     <span className="sr-only">Save changes</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0"
+                  </button>
+                  <button
+                    type="button"
+                    className="px-3 py-1.5 text-xs font-medium text-neutral-600 hover:text-neutral-900 transition-colors duration-200 disabled:opacity-50"
                     onClick={handleCancel}
                     disabled={isSaving}
                   >
-                    <X className="h-4 w-4 text-red-600" />
+                    Cancel
                     <span className="sr-only">Cancel editing</span>
-                  </Button>
+                  </button>
                 </>
               )}
             </div>
           </div>
-        </CardHeader>
+        </div>
         <CollapsibleContent>
-          <CardContent>
+          <div className="px-8 py-8">
             {isEditing ? (
               <Textarea
                 value={editedSummary}
                 onChange={(e) => setEditedSummary(e.target.value)}
-                className="min-h-[200px] text-sm"
+                className="min-h-[240px] text-sm leading-relaxed border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20 font-light"
                 disabled={isSaving}
               />
             ) : (
-              <div className="text-sm text-gray-700 leading-relaxed space-y-3">
+              <div className="text-sm text-neutral-700 leading-[1.75] space-y-4 font-light">
                 {summary
                   .split('\n')
                   .filter(paragraph => paragraph.trim())
-                  .map((paragraph, index) => (
-                    <p key={index}>{paragraph.trim()}</p>
+                  .map((paragraph) => (
+                    <p key={paragraph.substring(0, 50)} className="text-neutral-800">
+                      {paragraph.trim()}
+                    </p>
                   ))}
               </div>
             )}
-          </CardContent>
+          </div>
         </CollapsibleContent>
       </Collapsible>
-    </Card>
+    </div>
   )
 }

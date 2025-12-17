@@ -2,13 +2,7 @@
 
 import { format } from 'date-fns'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { MoreVertical, ChevronDown, Plus, Pencil } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { Plus, Pencil, Calendar, FileText, AlertCircle } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -19,31 +13,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { EditableCard } from './editable-card'
+import { HeroMetrics } from './hero-metrics'
 import { EditableSummary } from './editable-summary'
-import { FinancialToggles } from './financial-toggles'
 import { ProjectAccordions } from '@/components/project-accordions'
-import { Database } from '@/types/database.types'
+import type { Database } from '@/types/database.types'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Badge } from "@/components/ui/badge"
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
-
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 
 type Project = Database['public']['Tables']['projects']['Row']
 type Insight = Database['public']['Tables']['ai_insights']['Row']
@@ -126,40 +101,6 @@ export function ProjectHomeClient({
     await handleSaveProject({ summary })
   }
 
-  // Tool definitions for navigation
-  const financialTools = [
-    { name: "Prime Contracts", path: "contracts" },
-    { name: "Budget", path: "budget" },
-    { name: "Commitments", path: "commitments" },
-    { name: "Change Orders", path: "change-orders" },
-    { name: "Change Events", path: "change-events" },
-    { name: "Direct Costs", path: "direct-costs" },
-    { name: "Invoicing", path: "invoices" }
-  ]
-
-  const projectManagementTools = [
-    { name: "Emails", path: "emails" },
-    { name: "RFIs", path: "rfis" },
-    { name: "Submittals", path: "submittals" },
-    { name: "Transmittals", path: "transmittals" },
-    { name: "Punch List", path: "punch-list" },
-    { name: "Meetings", path: "meetings" },
-    { name: "Schedule", path: "schedule" },
-    { name: "Daily Log", path: "daily-log" },
-    { name: "Photos", path: "photos" },
-    { name: "Drawings", path: "drawings" },
-    { name: "Specifications", path: "specifications" }
-  ]
-
-  const coreTools = [
-    { name: "Home", path: "home" },
-    { name: "360 Reporting", path: "reporting" },
-    { name: "Documents", path: "documents" },
-    { name: "Directory", path: "directory" },
-    { name: "Tasks", path: "tasks" },
-    { name: "Admin", path: "admin" }
-  ]
-
   const handleEditField = (field: string, value: string) => {
     setIsEditing(field)
     setEditValue(value)
@@ -178,303 +119,377 @@ export function ProjectHomeClient({
     setNewTeamMember({ name: '', role: '', email: '', phone: '' })
   }
 
+  // Calculate financial metrics for hero section
+  const totalBudget = budget.reduce((sum, item) => sum + (item.original_budget_amount || 0), 0)
+  const committed = commitments.reduce((sum, c) => sum + (c.contract_amount || 0), 0)
+  const spent = budget.reduce((sum, item) => sum + (item.direct_cost || 0), 0)
+  const forecastedCost = budget.reduce((sum, item) => sum + (item.projected_cost || item.original_budget_amount || 0), 0)
+
+  // Change orders don't have an 'amount' field in the schema, so we'll count them instead
+  const changeOrdersTotal = changeOrders.filter(co => co.status === 'approved').length
+  const activeTasks = tasks.length
+
   return (
-    <div className="min-h-screen p-6">
-      {/* Client Pre-heading */}
-      <div className="mb-2">
-        <p className="text-sm text-muted-foreground">{project.client || 'No client assigned'}</p>
-      </div>
+    <div className="min-h-screen bg-neutral-50 px-6 md:px-10 lg:px-12 py-12 max-w-[1800px] mx-auto">
+      {/* Header Section - Refined Architectural Hierarchy */}
+      <header className="mb-20 pb-12 border-b border-neutral-200">
+        {/* Client Pre-heading */}
+        <div className="mb-4">
+          <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-neutral-400">
+            {project.client || 'No client assigned'}
+          </p>
+        </div>
 
-      {/* Project Title */}
-      <div className="mb-4">
-        <h1 className="text-3xl font-bold text-brand">
-          {project.name || project['job number']}
-        </h1>
-      </div>
+        {/* Project Title - Editorial Typography with Enhanced Scale */}
+        <div className="mb-10">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-serif font-light tracking-tight text-neutral-900 leading-[1.05] mb-4">
+            {project.name || project['job number']}
+          </h1>
+        </div>
 
-      {/* Status Row - Editable on hover/click */}
-      <div className="flex items-center gap-6 mb-6 pb-4 border-b">
-        {/* Status */}
-        <button
-          type="button"
-          className="group cursor-pointer hover:bg-muted/50 px-3 py-2 rounded transition-colors border-0 bg-transparent"
-          onClick={() => handleEditField('phase', project.phase || project.state || 'Active')}
-        >
-          {isEditing === 'phase' ? (
-            <div className="flex items-center gap-2">
-              <Input
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                onBlur={() => handleSaveField('phase')}
-                onKeyDown={(e) => e.key === 'Enter' && handleSaveField('phase')}
-                className="h-8 w-32"
-                autoFocus
-              />
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground uppercase">Status:</span>
-              <span className="text-sm font-medium">{project.phase || project.state || 'Active'}</span>
-              <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-          )}
-        </button>
-
-        {/* Start Date */}
-        <button
-          type="button"
-          className="group cursor-pointer hover:bg-muted/50 px-3 py-2 rounded transition-colors border-0 bg-transparent"
-          onClick={() => handleEditField('start date', project['start date'] ? format(new Date(project['start date']), 'yyyy-MM-dd') : '')}
-        >
-          {isEditing === 'start date' ? (
-            <div className="flex items-center gap-2">
-              <Input
-                type="date"
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                onBlur={() => handleSaveField('start date')}
-                onKeyDown={(e) => e.key === 'Enter' && handleSaveField('start date')}
-                className="h-8 w-40"
-                autoFocus
-              />
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground uppercase">Start Date:</span>
-              <span className="text-sm font-medium">
-                {project['start date'] ? format(new Date(project['start date']), 'MMM d, yyyy') : 'Not set'}
-              </span>
-              <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-          )}
-        </button>
-
-        {/* Est Completion */}
-        <button
-          type="button"
-          className="group cursor-pointer hover:bg-muted/50 px-3 py-2 rounded transition-colors border-0 bg-transparent"
-          onClick={() => handleEditField('est completion', project['est completion'] ? format(new Date(project['est completion']), 'yyyy-MM-dd') : '')}
-        >
-          {isEditing === 'est completion' ? (
-            <div className="flex items-center gap-2">
-              <Input
-                type="date"
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                onBlur={() => handleSaveField('est completion')}
-                onKeyDown={(e) => e.key === 'Enter' && handleSaveField('est completion')}
-                className="h-8 w-40"
-                autoFocus
-              />
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground uppercase">Est. Completion:</span>
-              <span className="text-sm font-medium">
-                {project['est completion'] ? format(new Date(project['est completion']), 'MMM d, yyyy') : 'Not set'}
-              </span>
-              <Pencil className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-          )}
-        </button>
-      </div>
-
-      {/* Project Tools Dropdown */}
-      <div className="mb-8">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="w-auto">
-              Project Tools <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[800px] max-w-[95vw] p-6 bg-gradient-to-br from-white to-gray-50"
-            align="start"
-            sideOffset={8}
+        {/* Status Row - Clean, Aligned Data Points with Better Spacing */}
+        <div className="flex flex-wrap items-center gap-8 md:gap-16">
+          {/* Status */}
+          <button
+            type="button"
+            className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+            onClick={() => handleEditField('phase', project.phase || project.state || 'Active')}
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Finance Column */}
-              <div>
-                <h3 className="text-sm font-semibold text-brand uppercase tracking-wide mb-4 pb-2 border-b-2 border-brand/20">
-                  Finance
-                </h3>
-                <nav className="space-y-2">
-                  {financialTools.map((tool) => (
-                    <Link
-                      key={tool.path}
-                      href={`/${project.id}/${tool.path}`}
-                      className="block text-sm text-gray-700 hover:text-brand hover:translate-x-1 transition-all duration-200 py-1"
-                    >
-                      {tool.name}
-                    </Link>
-                  ))}
-                </nav>
+            {isEditing === 'phase' ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onBlur={() => handleSaveField('phase')}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveField('phase')}
+                  className="h-9 w-36 border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
+                  autoFocus
+                />
               </div>
-
-              {/* Project Management Column */}
-              <div>
-                <h3 className="text-sm font-semibold text-orange-600 uppercase tracking-wide mb-4 pb-2 border-b-2 border-orange-600/20">
-                  Project Management
-                </h3>
-                <nav className="space-y-2">
-                  {projectManagementTools.map((tool) => (
-                    <Link
-                      key={tool.path}
-                      href={`/${project.id}/${tool.path}`}
-                      className="block text-sm text-gray-700 hover:text-orange-600 hover:translate-x-1 transition-all duration-200 py-1"
-                    >
-                      {tool.name}
-                    </Link>
-                  ))}
-                </nav>
+            ) : (
+              <div className="space-y-1.5">
+                <span className="block text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-400">
+                  Status
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-neutral-900 tabular-nums">
+                    {project.phase || project.state || 'Active'}
+                  </span>
+                  <Pencil className="h-3 w-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
               </div>
+            )}
+          </button>
 
-              {/* Core Tools Column */}
-              <div>
-                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 pb-2 border-b-2 border-gray-300">
-                  Core Tools
-                </h3>
-                <nav className="space-y-2">
-                  {coreTools.map((tool) => (
-                    <Link
-                      key={tool.path}
-                      href={`/${project.id}/${tool.path}`}
-                      className="block text-sm text-gray-700 hover:text-gray-900 hover:translate-x-1 transition-all duration-200 py-1"
-                    >
-                      {tool.name}
-                    </Link>
-                  ))}
-                </nav>
+          {/* Start Date */}
+          <button
+            type="button"
+            className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+            onClick={() => handleEditField('start date', project['start date'] ? format(new Date(project['start date']), 'yyyy-MM-dd') : '')}
+          >
+            {isEditing === 'start date' ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  type="date"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onBlur={() => handleSaveField('start date')}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveField('start date')}
+                  className="h-9 w-44 border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
+                  autoFocus
+                />
               </div>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+            ) : (
+              <div className="space-y-1.5">
+                <span className="block text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-400">
+                  Start Date
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-neutral-900 tabular-nums">
+                    {project['start date'] ? format(new Date(project['start date']), 'MMM d, yyyy') : 'Not set'}
+                  </span>
+                  <Pencil className="h-3 w-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </div>
+            )}
+          </button>
 
-      {/* Two Column Layout - Summary and Team */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Left Column - Summary */}
-        <div>
+          {/* Est Completion */}
+          <button
+            type="button"
+            className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+            onClick={() => handleEditField('est completion', project['est completion'] ? format(new Date(project['est completion']), 'yyyy-MM-dd') : '')}
+          >
+            {isEditing === 'est completion' ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  type="date"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onBlur={() => handleSaveField('est completion')}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveField('est completion')}
+                  className="h-9 w-44 border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                <span className="block text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-400">
+                  Est. Completion
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-neutral-900 tabular-nums">
+                    {project['est completion'] ? format(new Date(project['est completion']), 'MMM d, yyyy') : 'Not set'}
+                  </span>
+                  <Pencil className="h-3 w-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </div>
+            )}
+          </button>
+        </div>
+      </header>
+
+      {/* Hero Metrics - Executive Dashboard KPIs */}
+      <HeroMetrics
+        totalBudget={totalBudget}
+        committed={committed}
+        spent={spent}
+        forecastedCost={forecastedCost}
+        changeOrdersTotal={changeOrdersTotal}
+        activeTasks={activeTasks}
+      />
+
+      {/* Project Overview Grid - Summary, Team, and Quick Stats */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-20">
+        {/* Project Summary - Takes 2 columns */}
+        <div className="lg:col-span-2">
           <EditableSummary
             summary={project.summary || 'No project summary available.'}
             onSave={handleSaveSummary}
           />
         </div>
 
-        {/* Right Column - Project Team */}
-        <div className="border rounded-lg p-6 bg-white">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Project Team</h3>
+        {/* Project Team */}
+        <div className="border border-neutral-200 bg-white p-8">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-100">
+            <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
+              Project Team
+            </h3>
             <Dialog open={isAddTeamMemberOpen} onOpenChange={setIsAddTeamMemberOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Plus className="h-4 w-4 mr-1" />
-                  Add Member
-                </Button>
+                <button type="button" className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-[#DB802D] transition-colors duration-200">
+                  <Plus className="h-3.5 w-3.5" />
+                  Add
+                </button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="border border-neutral-200">
                 <DialogHeader>
-                  <DialogTitle>Add Team Member</DialogTitle>
+                  <DialogTitle className="text-2xl font-serif font-light">Add Team Member</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4 py-4">
+                <div className="space-y-5 py-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Name</Label>
+                    <Label htmlFor="name" className="text-xs font-semibold tracking-[0.1em] uppercase text-neutral-500">Name</Label>
                     <Input
                       id="name"
                       value={newTeamMember.name}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, name: e.target.value })}
                       placeholder="John Doe"
+                      className="border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="role">Role</Label>
+                    <Label htmlFor="role" className="text-xs font-semibold tracking-[0.1em] uppercase text-neutral-500">Role</Label>
                     <Input
                       id="role"
                       value={newTeamMember.role}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, role: e.target.value })}
                       placeholder="Project Manager"
+                      className="border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email" className="text-xs font-semibold tracking-[0.1em] uppercase text-neutral-500">Email</Label>
                     <Input
                       id="email"
                       type="email"
                       value={newTeamMember.email}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, email: e.target.value })}
                       placeholder="john@example.com"
+                      className="border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
+                    <Label htmlFor="phone" className="text-xs font-semibold tracking-[0.1em] uppercase text-neutral-500">Phone</Label>
                     <Input
                       id="phone"
                       value={newTeamMember.phone}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, phone: e.target.value })}
                       placeholder="(555) 123-4567"
+                      className="border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
                     />
                   </div>
                 </div>
-                <div className="flex justify-end gap-3">
-                  <Button variant="outline" onClick={() => setIsAddTeamMemberOpen(false)}>
+                <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100">
+                  <button type="button" onClick={() => setIsAddTeamMemberOpen(false)} className="px-5 py-2.5 text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">
                     Cancel
-                  </Button>
-                  <Button onClick={handleAddTeamMember}>
+                  </button>
+                  <button type="button" onClick={handleAddTeamMember} className="px-5 py-2.5 text-sm font-medium bg-[#DB802D] text-white hover:bg-[#C4701F] transition-colors">
                     Add Member
-                  </Button>
+                  </button>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {project.team_members && Array.isArray(project.team_members) && project.team_members.length > 0 ? (
               project.team_members.map((member, index) => {
-                const memberName = typeof member === 'string' ? member : (member as any)?.name || 'Team Member'
-                const memberRole = typeof member === 'object' && member !== null && (member as any)?.role ? (member as any).role : 'Role not specified'
+                const memberName = typeof member === 'string' ? member : (member as Record<string, unknown>)?.name || 'Team Member'
+                const memberRole = typeof member === 'object' && member !== null && (member as Record<string, unknown>)?.role ? (member as Record<string, unknown>).role : 'Role not specified'
                 const initials = typeof member === 'string' ? member.substring(0, 2).toUpperCase() : 'TM'
 
                 return (
-                  <div key={`team-member-${index}`} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                    <Avatar>
-                      <AvatarFallback>{initials}</AvatarFallback>
+                  <div key={`team-${project.id}-${index}`} className="flex items-center gap-4 pb-4 border-b border-neutral-100 last:border-0 last:pb-0">
+                    <Avatar className="h-10 w-10 border border-neutral-200">
+                      <AvatarFallback className="bg-neutral-100 text-neutral-600 text-xs font-medium">
+                        {initials}
+                      </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{memberName}</p>
-                      <p className="text-xs text-muted-foreground">{memberRole}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm text-neutral-900 truncate">{String(memberName)}</p>
+                      <p className="text-xs text-neutral-500 truncate">{String(memberRole)}</p>
                     </div>
                   </div>
                 )
               })
             ) : (
-              <div className="text-center py-8">
-                <p className="text-sm text-muted-foreground mb-3">No team members assigned yet</p>
-                <p className="text-xs text-muted-foreground">Click &quot;Add Member&quot; to get started</p>
+              <div className="text-center py-12">
+                <p className="text-sm text-neutral-400 mb-2">No team members</p>
+                <p className="text-xs text-neutral-400">Click "Add" to assign team</p>
               </div>
             )}
           </div>
         </div>
       </div>
 
-            {/* Project Accordions Section */}
+      {/* Recent Activity Section */}
+      <div className="mb-20">
+        <div className="mb-8">
+          <h2 className="text-2xl md:text-3xl font-serif font-light tracking-tight text-neutral-900 mb-2">
+            Recent Activity
+          </h2>
+          <p className="text-sm text-neutral-500">Latest updates and project events</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Recent Meetings */}
+          <Link
+            href={`/${project.id}/meetings`}
+            className="group border border-neutral-200 bg-white p-8 transition-all duration-300 hover:border-[#DB802D] hover:shadow-sm"
+          >
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <Calendar className="h-5 w-5 text-[#DB802D] mb-3" />
+                <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
+                  Recent Meetings
+                </h3>
+              </div>
+              <span className="text-2xl font-light tabular-nums text-neutral-900">
+                {meetings.length}
+              </span>
+            </div>
+            <div className="space-y-3">
+              {meetings.slice(0, 3).map((meeting) => (
+                <div key={meeting.id} className="text-sm text-neutral-700 truncate">
+                  {meeting.title || 'Untitled Meeting'}
+                </div>
+              ))}
+              {meetings.length === 0 && (
+                <p className="text-sm text-neutral-400">No recent meetings</p>
+              )}
+            </div>
+          </Link>
+
+          {/* Active RFIs */}
+          <Link
+            href={`/${project.id}/rfis`}
+            className="group border border-neutral-200 bg-white p-8 transition-all duration-300 hover:border-[#DB802D] hover:shadow-sm"
+          >
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <FileText className="h-5 w-5 text-[#DB802D] mb-3" />
+                <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
+                  Active RFIs
+                </h3>
+              </div>
+              <span className="text-2xl font-light tabular-nums text-neutral-900">
+                {rfis.filter(r => r.status !== 'closed').length}
+              </span>
+            </div>
+            <div className="space-y-3">
+              {rfis.slice(0, 3).map((rfi) => (
+                <div key={rfi.id} className="text-sm text-neutral-700 truncate">
+                  RFI #{rfi.number || rfi.id}
+                </div>
+              ))}
+              {rfis.length === 0 && (
+                <p className="text-sm text-neutral-400">No active RFIs</p>
+              )}
+            </div>
+          </Link>
+
+          {/* Critical Items */}
+          <div className="border border-neutral-200 bg-white p-8">
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <AlertCircle className="h-5 w-5 text-[#DB802D] mb-3" />
+                <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
+                  Requires Attention
+                </h3>
+              </div>
+              <span className="text-2xl font-light tabular-nums text-neutral-900">
+                {tasks.filter(t => t.priority === 'high').length}
+              </span>
+            </div>
+            <div className="space-y-3">
+              {tasks.filter(t => t.priority === 'high').slice(0, 3).map((task) => (
+                <div key={task.id} className="text-sm text-neutral-700 truncate">
+                  {task.task_description}
+                </div>
+              ))}
+              {tasks.filter(t => t.priority === 'high').length === 0 && (
+                <p className="text-sm text-neutral-400">No critical items</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Project Information Section - Architectural Layout */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-brand mb-4">Project Information</h2>
-        <ProjectAccordions
-          projectId={project.id.toString()}
-          meetings={meetings}
-          budget={budget}
-          primeContracts={contracts}
-          changeOrders={changeOrders}
-          changeEvents={changeEvents}
-          schedule={schedule}
-          sov={sov}
-          rfis={rfis}
-          tasks={tasks}
-          insights={insights}
-          submittals={[]}
-          documents={[]}
-          drawings={[]}
-        />
+        <div className="mb-8">
+          <h2 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500 mb-6">
+            Project Information
+          </h2>
+        </div>
+        <div className="border border-neutral-200 bg-white">
+          <ProjectAccordions
+            projectId={project.id.toString()}
+            meetings={meetings}
+            budget={budget}
+            primeContracts={contracts}
+            changeOrders={changeOrders}
+            changeEvents={changeEvents}
+            schedule={schedule}
+            sov={sov}
+            rfis={rfis}
+            tasks={tasks}
+            insights={insights}
+            submittals={[]}
+            documents={[]}
+            drawings={[]}
+          />
+        </div>
       </div>
 
     </div>

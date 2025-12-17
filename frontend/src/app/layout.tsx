@@ -6,6 +6,7 @@ import { HeaderProvider } from "@/components/layout/header-context";
 import { ProjectProvider } from "@/contexts/project-context";
 import { SiteHeader } from "@/components/site-header"
 import { Toaster } from "@/components/ui/sonner"
+import { Playfair_Display, Inter } from 'next/font/google'
 
 import { AppSidebar } from "@/components/app-sidebar";
 import {
@@ -14,6 +15,18 @@ import {
 } from "@/components/ui/sidebar"
 import { AIChatWidget } from "@/components/chat/ai-chat-widget";
 import "./globals.css";
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  display: 'swap',
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+})
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -31,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans antialiased bg-background text-foreground" suppressHydrationWarning>
         <QueryProvider>
           <ThemeProvider

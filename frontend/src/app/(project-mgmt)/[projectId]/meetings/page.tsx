@@ -1,23 +1,154 @@
-'use client';
+import { createClient } from '@/lib/supabase/server'
+import { format } from 'date-fns'
+import { Calendar, Clock, User, FileText, Video } from 'lucide-react'
+import { PageHeader, ContentCard, EmptyState, StatCard } from '@/components/design-system'
+import { notFound } from 'next/navigation'
 
-import { useParams } from 'next/navigation';
-import { ProjectToolPage } from '@/components/layout/project-tool-page';
-import { Card } from '@/components/ui/card';
+interface PageProps {
+  params: Promise<{ projectId: string }>
+}
 
-export default function ProjectMeetingsPage() {
-  const params = useParams();
-  const projectId = params.projectId as string;
+export default async function ProjectMeetingsPage({ params }: PageProps) {
+  const { projectId } = await params
+  const supabase = await createClient()
+
+  // Fetch project info for header
+  const { data: project } = await supabase
+    .from('projects')
+    .select('name, client')
+    .eq('id', projectId)
+    .single()
+
+  if (!project) {
+    notFound()
+  }
+
+  // Fetch meetings for this project
+  const { data: meetings, error } = await supabase
+    .from('document_metadata')
+    .select('*')
+    .eq('project_id', projectId)
+    .eq('type', 'meeting')
+    .order('date', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching meetings:', error)
+  }
+
+  // Calculate meeting statistics
+  const totalMeetings = meetings?.length || 0
+  const thisMonth = meetings?.filter(m => {
+    if (!m.date) return false
+    const meetingDate = new Date(m.date)
+    const now = new Date()
+    return meetingDate.getMonth() === now.getMonth() &&
+           meetingDate.getFullYear() === now.getFullYear()
+  }).length || 0
+
+  const withRecordings = meetings?.filter(m => m.fireflies_link).length || 0
+  const totalParticipants = meetings?.reduce((acc, m) => {
+    if (!m.participants) return acc
+    return acc + m.participants.split(',').length
+  }, 0) || 0
+  const avgParticipants = totalMeetings > 0 ? Math.round(totalParticipants / totalMeetings) : 0
 
   return (
-    <ProjectToolPage
-      title="Meetings"
-      description="Meeting minutes and schedules"
-    >
-      <Card className="p-6">
-        <p className="text-muted-foreground">
-          Meetings for project {projectId} - Coming soon
-        </p>
-      </Card>
-    </ProjectToolPage>
-  );
+    <div className="min-h-screen bg-neutral-50 px-6 md:px-10 lg:px-12 py-12 max-w-[1800px] mx-auto">
+      <PageHeader
+        client={project.client || undefined}
+        title="Meetings"
+        description="Project meeting notes, recordings, and transcripts"
+      />
+
+      {/* Meeting Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <StatCard
+          label="Total Meetings"
+          value={totalMeetings}
+          icon={Calendar}
+        />
+        <StatCard
+          label="This Month"
+          value={thisMonth}
+          icon={Clock}
+        />
+        <StatCard
+          label="With Recordings"
+          value={withRecordings}
+          icon={Video}
+        />
+        <StatCard
+          label="Avg. Participants"
+          value={avgParticipants}
+          icon={User}
+        />
+      </div>
+
+      {/* Meetings List */}
+      {!meetings || meetings.length === 0 ? (
+        <EmptyState
+          icon={Calendar}
+          title="No meetings found"
+          description="No meeting records for this project yet. Meetings will appear here once they are uploaded or synced from your meeting platform."
+        />
+      ) : (
+        <div className="space-y-6">
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl font-serif font-light tracking-tight text-neutral-900 mb-2">
+              Meeting History
+            </h2>
+            <p className="text-sm text-neutral-500">
+              {totalMeetings} {totalMeetings === 1 ? 'meeting' : 'meetings'} recorded
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {meetings.map((meeting) => {
+              const metadata = []
+
+              if (meeting.date) {
+                metadata.push({
+                  icon: Calendar,
+                  label: format(new Date(meeting.date), 'MMM d, yyyy')
+                })
+              }
+
+              if (meeting.duration) {
+                metadata.push({
+                  icon: Clock,
+                  label: `${meeting.duration} min`
+                })
+              }
+
+              if (meeting.participants) {
+                const participantCount = meeting.participants.split(',').length
+                metadata.push({
+                  icon: User,
+                  label: `${participantCount} ${participantCount === 1 ? 'participant' : 'participants'}`
+                })
+              }
+
+              if (meeting.fireflies_link) {
+                metadata.push({
+                  icon: FileText,
+                  label: 'Recording available'
+                })
+              }
+
+              return (
+                <ContentCard
+                  key={meeting.id}
+                  title={meeting.title || 'Untitled Meeting'}
+                  description={meeting.summary || undefined}
+                  metadata={metadata}
+                  badge={meeting.type || undefined}
+                  href={`/${projectId}/meetings/${meeting.id}`}
+                />
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
