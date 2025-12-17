@@ -4,7 +4,6 @@
  */
 
 import React, { createContext, useContext } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { createClient } from '@/lib/supabase/client';
 import type { HookContext } from '@/types/plugin.types';
 
@@ -27,24 +26,21 @@ const AppPluginContext = createContext<AppContextForPlugins | null>(null);
 /**
  * Provider that shares app context with plugins
  */
-export function AppPluginContextProvider({ 
+export function AppPluginContextProvider({
   children,
   projectId,
-  projectName 
-}: { 
+  projectName,
+  user: providedUser,
+}: {
   children: React.ReactNode;
   projectId?: string;
   projectName?: string;
+  user?: { id: string; email: string; role: string };
 }) {
-  const { user } = useUser();
   const supabase = createClient();
 
   const context: AppContextForPlugins = {
-    user: user ? {
-      id: user.id,
-      email: user.emailAddresses[0]?.emailAddress || '',
-      role: user.publicMetadata?.role as string || 'user',
-    } : null,
+    user: providedUser || null,
     currentProject: projectId ? {
       id: projectId,
       name: projectName || '',

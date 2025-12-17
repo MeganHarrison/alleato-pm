@@ -3,7 +3,8 @@
  * Handles safe loading and execution of plugin code
  */
 
-import type { Plugin, PluginManifest, PluginError } from '@/types/plugin.types';
+import { PluginError } from '@/types/plugin.types';
+import type { Plugin, PluginManifest } from '@/types/plugin.types';
 
 export interface LoaderOptions {
   timeout?: number; // Max execution time in ms

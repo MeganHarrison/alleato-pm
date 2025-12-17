@@ -71,15 +71,17 @@ export async function GET(
       type ProjectCostCodeRow = {
         cost_code_id: string | null;
         cost_type_id: string | null;
-        cost_codes?: { id: string; description: string | null } | null;
-        cost_code_types?: { id: string; code: string | null; description: string | null } | null;
+        cost_codes?: { id: string; description: string | null }[] | null;
+        cost_code_types?: { id: string; code: string | null; description: string | null }[] | null;
       };
 
       budgetCodes = (projectCostCodes as ProjectCostCodeRow[]).map((item) => {
-        const code = item.cost_codes?.id || item.cost_code_id || '';
-        const description = item.cost_codes?.description;
-        const costType = item.cost_code_types?.code || item.cost_type_id || null;
-        const costTypeDescription = item.cost_code_types?.description;
+        const costCode = item.cost_codes?.[0];
+        const costTypeEntry = item.cost_code_types?.[0];
+        const code = costCode?.id || item.cost_code_id || '';
+        const description = costCode?.description;
+        const costType = costTypeEntry?.code || item.cost_type_id || null;
+        const costTypeDescription = costTypeEntry?.description;
 
         return {
           id: code,

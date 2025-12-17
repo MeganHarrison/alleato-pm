@@ -365,7 +365,7 @@ export function ProjectHomeClient({
             ) : (
               <div className="text-center py-12">
                 <p className="text-sm text-neutral-400 mb-2">No team members</p>
-                <p className="text-xs text-neutral-400">Click "Add" to assign team</p>
+                <p className="text-xs text-neutral-400">Click “Add” to assign team</p>
               </div>
             )}
           </div>

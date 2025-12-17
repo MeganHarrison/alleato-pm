@@ -13,7 +13,7 @@ async function testAPIs() {
     });
     
     console.log(`   Status: ${statusRes.status}`);
-    console.log(`   Headers:`, statusRes.headers.raw());
+    console.log(`   Headers:`, Object.fromEntries(statusRes.headers.entries()));
     
     if (statusRes.status === 307) {
       console.log('   ❌ FAIL: API redirects to login - needs authentication middleware fix');

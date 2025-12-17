@@ -12,13 +12,12 @@ import type {
   PluginStatus,
   HookType,
   HookContext,
-  PluginError,
   PluginValidationResult,
   MenuItem,
   DashboardWidget,
   ProjectTab,
 } from '@/types/plugin.types';
-import { pluginManifestSchema } from '@/types/plugin.types';
+import { pluginManifestSchema, PluginError } from '@/types/plugin.types';
 import { EventEmitter } from 'events';
 
 export class PluginManager extends EventEmitter {

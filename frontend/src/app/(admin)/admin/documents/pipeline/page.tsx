@@ -35,6 +35,7 @@ interface Document {
   source: string
   date: string
   created_at: string
+  updated_at?: string
   pipeline_stage: string
   attempt_count: number
   last_attempt_at: string

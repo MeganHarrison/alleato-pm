@@ -24,35 +24,36 @@ interface TranscriptEntry {
  */
 export function FormattedTranscript({ content }: FormattedTranscriptProps) {
   const renderMarkdown = (value: string) => (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      className="prose prose-sm max-w-none text-gray-700"
-      components={{
-        p: ({ node, ...props }) => (
-          <p {...props} className="leading-relaxed text-gray-700 last:mb-0" />
-        ),
-        ul: ({ node, ...props }) => (
-          <ul
-            {...props}
-            className="list-disc pl-6 text-gray-700 space-y-1 last:mb-0"
-          />
-        ),
-        ol: ({ node, ...props }) => (
-          <ol
-            {...props}
-            className="list-decimal pl-6 text-gray-700 space-y-1 last:mb-0"
-          />
-        ),
-        li: ({ node, ...props }) => (
-          <li {...props} className="leading-relaxed text-gray-700" />
-        ),
-        strong: ({ node, ...props }) => (
-          <strong {...props} className="text-gray-900" />
-        ),
-      }}
-    >
-      {value}
-    </ReactMarkdown>
+    <div className="prose prose-sm max-w-none text-gray-700">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          p: ({ node, ...props }) => (
+            <p {...props} className="leading-relaxed text-gray-700 last:mb-0" />
+          ),
+          ul: ({ node, ...props }) => (
+            <ul
+              {...props}
+              className="list-disc pl-6 text-gray-700 space-y-1 last:mb-0"
+            />
+          ),
+          ol: ({ node, ...props }) => (
+            <ol
+              {...props}
+              className="list-decimal pl-6 text-gray-700 space-y-1 last:mb-0"
+            />
+          ),
+          li: ({ node, ...props }) => (
+            <li {...props} className="leading-relaxed text-gray-700" />
+          ),
+          strong: ({ node, ...props }) => (
+            <strong {...props} className="text-gray-900" />
+          ),
+        }}
+      >
+        {value}
+      </ReactMarkdown>
+    </div>
   )
 
   // Parse the transcript content into structured entries

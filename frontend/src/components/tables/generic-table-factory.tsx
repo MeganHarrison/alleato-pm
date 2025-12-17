@@ -513,12 +513,12 @@ export function GenericDataTable({ data: initialData, config }: GenericDataTable
       {config.editConfig && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Edit {config.title.slice(0, -1)}</DialogTitle>
-              <DialogDescription>
-                Make changes to this record. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Edit {config.title.slice(0, -1)}</DialogTitle>
+            <DialogDescription>
+              Make changes to this record. Click save when you are done.
+            </DialogDescription>
+          </DialogHeader>
             <div className="grid gap-4 py-4">
               {editingRow && config.columns
                 .filter(col => col.id !== 'id' && col.id !== 'created_at' && col.id !== 'updated_at')
