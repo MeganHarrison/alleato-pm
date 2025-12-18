@@ -210,13 +210,14 @@ export default function TablesDirectoryPage() {
   const categories = ['Core Data', 'Project Management', 'Financial', 'Directory', 'AI Insights'] as const
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">Data Tables Directory</h1>
-        <p className="text-gray-600 mt-2">
-          Browse and access all data tables in the system. Click on any card to view the table.
-        </p>
-      </div>
+    <div className="min-h-screen bg-neutral-50">
+      <div className="max-w-[1800px] mx-auto px-6 md:px-10 lg:px-12 py-12 space-y-8">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-serif font-light tracking-tight text-neutral-900">Data Tables Directory</h1>
+          <p className="text-sm text-neutral-500 mt-3">
+            Browse and access all data tables in the system. Click on any card to view the table.
+          </p>
+        </div>
 
       {/* Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -310,6 +311,7 @@ export default function TablesDirectoryPage() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   )
 }

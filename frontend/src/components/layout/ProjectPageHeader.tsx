@@ -12,6 +12,7 @@ interface BreadcrumbItem {
 
 interface ProjectPageHeaderProps {
   title: string
+  titleContent?: React.ReactNode
   description?: string
   breadcrumbs?: BreadcrumbItem[]
   actions?: React.ReactNode
@@ -21,6 +22,7 @@ interface ProjectPageHeaderProps {
 
 export function ProjectPageHeader({
   title,
+  titleContent,
   description,
   breadcrumbs,
   actions,
@@ -86,7 +88,11 @@ export function ProjectPageHeader({
             )}
 
             {/* Page Title */}
-            <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+            {titleContent ? (
+              titleContent
+            ) : (
+              <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+            )}
 
             {/* Description */}
             {description && (

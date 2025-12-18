@@ -1,23 +1,24 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import { format } from 'date-fns'
 import {
-  Calendar,
   User,
   FileText,
   ExternalLink,
   ArrowLeft,
   Clock,
   Tag,
-  FolderOpen,
+  Calendar,
   CheckCircle,
   AlertTriangle,
   ListTodo,
   Sparkles
 } from 'lucide-react'
-import { PageHeader } from '@/components/design-system'
+import { PageHeader, SectionHeader } from '@/components/design-system'
 import Link from 'next/link'
-import { FormattedTranscript } from '@/app/(project-mgmt)/meetings/[id]/formatted-transcript'
+import { FormattedTranscript } from '../formatted-transcript'
+import { parseTranscriptSections } from './parse-transcript-sections'
+import { MarkdownSummary } from './markdown-summary'
+import { format } from 'date-fns'
 
 interface PageProps {
   params: Promise<{ projectId: string; id: string }>
@@ -86,161 +87,142 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
   })
 
   // Fetch transcript content
+  // Priority: Storage URL > documents table > meeting.content (as fallback)
   let transcriptContent = null
+  const storageUrl = meeting.url || meeting.source
 
-  if (meeting.content) {
-    transcriptContent = meeting.content
-  } else {
-    const storageUrl = meeting.url || meeting.source
-
-    if (storageUrl && storageUrl.includes('supabase.co/storage')) {
-      try {
-        const response = await fetch(storageUrl)
-        if (response.ok) {
-          transcriptContent = await response.text()
-        }
-      } catch (error) {
-        console.error('Error fetching transcript:', error)
+  if (storageUrl && storageUrl.includes('supabase.co/storage')) {
+    // Try to fetch from Supabase Storage first
+    try {
+      console.log('Fetching transcript from storage:', storageUrl)
+      const response = await fetch(storageUrl)
+      if (response.ok) {
+        transcriptContent = await response.text()
+        console.log('Successfully fetched transcript from storage, length:', transcriptContent.length)
+      } else {
+        console.error('Failed to fetch from storage, status:', response.status)
       }
-    } else {
-      const { data: document } = await supabase
-        .from('documents')
-        .select('content')
-        .eq('metadata_id', id)
-        .single()
-
-      transcriptContent = document?.content
+    } catch (error) {
+      console.error('Error fetching transcript from storage:', error)
     }
   }
 
-  const participantsList = meeting.participants?.split(',').map((p: string) => p.trim()) || []
+  // Fallback to documents table if storage fetch failed
+  if (!transcriptContent) {
+    const { data: document } = await supabase
+      .from('documents')
+      .select('content')
+      .eq('metadata_id', id)
+      .single()
+
+    transcriptContent = document?.content
+    if (transcriptContent) {
+      console.log('Using transcript from documents table, length:', transcriptContent.length)
+    }
+  }
+
+  // Last resort: use meeting.content
+  if (!transcriptContent && meeting.content) {
+    transcriptContent = meeting.content
+    console.log('Using transcript from meeting.content, length:', transcriptContent.length)
+  }
+
+  const participantsList = [...new Set<string>(meeting.participants?.split(',').map((p: string) => p.trim()) || [])]
+
+  // Parse the transcript content into sections
+  const parsedSections = transcriptContent ? parseTranscriptSections(transcriptContent) : null
 
   return (
-    <div className="min-h-screen bg-neutral-50 px-6 md:px-10 lg:px-12 py-12 max-w-[1800px] mx-auto">
-      {/* Back Button */}
-      <Link
-        href={`/${projectId}/meetings`}
-        className="inline-flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-[#DB802D] transition-colors mb-8"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Meetings
-      </Link>
+    <div className="min-h-screen bg-neutral-50">
+      <div className="max-w-[1800px] mx-auto px-6 md:px-10 lg:px-12 py-12">
+        {/* Back Button */}
+        <Link
+          href={`/${projectId}/meetings`}
+          className="inline-flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-brand transition-colors mb-8"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Meetings
+        </Link>
 
-      <PageHeader
-        client={project?.client || undefined}
-        title={meeting.title || 'Untitled Meeting'}
-        description={meeting.summary || undefined}
-      />
+        <PageHeader
+          client={project?.client || undefined}
+          title={meeting.title || 'Untitled Meeting'}
+          description={meeting.summary || undefined}
+        />
 
-      {/* Metadata Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-        {meeting.date && (
-          <div className="border border-neutral-200 bg-white p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <Calendar className="h-4 w-4 text-[#DB802D]" />
-              <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
-                Date
-              </p>
-            </div>
-            <p className="text-lg font-light text-neutral-900">
-              {format(new Date(meeting.date), 'EEEE, MMMM d, yyyy')}
-            </p>
-          </div>
-        )}
-
-        {meeting.duration && (
-          <div className="border border-neutral-200 bg-white p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <Clock className="h-4 w-4 text-[#DB802D]" />
-              <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
-                Duration
-              </p>
-            </div>
-            <p className="text-lg font-light text-neutral-900">
-              {meeting.duration} minutes
-            </p>
-          </div>
-        )}
-
-        {meeting.type && (
-          <div className="border border-neutral-200 bg-white p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <Tag className="h-4 w-4 text-[#DB802D]" />
-              <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
-                Type
-              </p>
-            </div>
-            <p className="text-lg font-light text-neutral-900">
-              {meeting.type}
-            </p>
-          </div>
-        )}
-
-        {participantsList.length > 0 && (
-          <div className="border border-neutral-200 bg-white p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <User className="h-4 w-4 text-[#DB802D]" />
-              <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
-                Participants
-              </p>
-            </div>
-            <p className="text-lg font-light text-neutral-900">
-              {participantsList.length} {participantsList.length === 1 ? 'person' : 'people'}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Participants List */}
-      {participantsList.length > 0 && (
-        <div className="border border-neutral-200 bg-white p-8 mb-16">
-          <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500 mb-6">
-            Attendees
-          </h3>
-          <div className="flex flex-wrap gap-3">
-            {participantsList.map((participant, index) => (
-              <span
-                key={index}
-                className="px-4 py-2 text-sm bg-neutral-50 border border-neutral-200 text-neutral-700"
-              >
-                {participant}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* External Links */}
-      {(meeting.url || meeting.source || meeting.fireflies_link) && (
-        <div className="flex flex-wrap gap-3 mb-16">
-          {(meeting.url || meeting.source) && (
-            <a
-              href={meeting.url || meeting.source}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 bg-white hover:border-[#DB802D] hover:bg-[#DB802D]/5 transition-all duration-300 text-sm font-medium text-neutral-900"
-            >
-              <FileText className="h-4 w-4" />
-              View Source Document
-            </a>
-          )}
-          {meeting.fireflies_link && (
+        {/* External Links */}
+        {meeting.fireflies_link && (
+          <div className="flex flex-wrap gap-8 mb-12">
             <a
               href={meeting.fireflies_link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 bg-white hover:border-[#DB802D] hover:bg-[#DB802D]/5 transition-all duration-300 text-sm font-medium text-neutral-900"
+              className="inline-flex items-center gap-2 text-sm font-medium text-brand"
             >
               <ExternalLink className="h-4 w-4" />
               Fireflies Recording
             </a>
-          )}
-        </div>
-      )}
+          </div>
+        )}
 
-      {/* Meeting Outcomes */}
-      {(allDecisions.length > 0 || allTasks.length > 0 || allRisks.length > 0 || allOpportunities.length > 0) && (
-        <div className="mb-20">
+        {/* Metadata Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+
+        {/* Type */}
+        {meeting.type && (
+          <div className="border border-neutral-200 bg-white p-6">
+            <div className="flex items-center gap-3">
+              <Tag className="h-4 w-4 text-brand" />
+              <SectionHeader>{meeting.type}</SectionHeader>
+            </div>
+          </div>
+        )}
+
+        {/* Date */}
+        {meeting.date && (
+          <div className="border border-neutral-200 bg-white p-6">
+            <div className="flex items-center gap-3">
+              <Calendar className="h-4 w-4 text-brand" />
+              <SectionHeader>{format(new Date(meeting.date), 'EEEE, MMMM d, yyyy')}</SectionHeader>
+            </div>
+          </div>
+        )}
+
+        {/* Duration */}
+        {meeting.duration && (
+          <div className="border border-neutral-200 bg-white p-6">
+            <div className="flex items-center gap-3">
+              <Clock className="h-4 w-4 text-brand" />
+              <SectionHeader>{meeting.duration} minutes</SectionHeader>
+            </div>
+          </div>
+        )}
+
+
+        </div>
+
+        {/* Gist Section */}
+        {parsedSections?.gist && (
+          <div className="border border-neutral-200 bg-white p-6 mb-6">
+            <SectionHeader className="mb-4">Meeting Overview</SectionHeader>
+            <p className="text-sm text-neutral-700 leading-relaxed">
+              {parsedSections.gist}
+            </p>
+          </div>
+        )}
+
+        {/* Summary Section */}
+        {parsedSections?.summary && (
+          <div className="border border-neutral-200 bg-white p-6 mb-6">
+            <SectionHeader className="mb-4">Summary</SectionHeader>
+            <MarkdownSummary content={parsedSections.summary} />
+          </div>
+        )}
+
+
+        {/* Meeting Outcomes */}
+        {(allDecisions.length > 0 || allTasks.length > 0 || allRisks.length > 0 || allOpportunities.length > 0) && (
+          <div className="mb-20">
           <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-serif font-light tracking-tight text-neutral-900 mb-2">
               Meeting Outcomes
@@ -330,13 +312,13 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
                 </ul>
               </div>
             )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Meeting Topics/Segments */}
-      {segments && segments.length > 0 && (
-        <div className="mb-20">
+        {/* Meeting Topics/Segments */}
+        {segments && segments.length > 0 && (
+          <div className="mb-20">
           <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-serif font-light tracking-tight text-neutral-900 mb-2">
               Discussion Topics
@@ -368,9 +350,7 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-neutral-100">
                   {segment.decisions && Array.isArray(segment.decisions) && segment.decisions.length > 0 && (
                     <div>
-                      <h4 className="text-xs font-semibold tracking-[0.1em] uppercase text-neutral-500 mb-3">
-                        Decisions
-                      </h4>
+                      <SectionHeader className="text-xs mb-3">Decisions</SectionHeader>
                       <ul className="space-y-2">
                         {segment.decisions.map((decision: unknown, idx: number) => {
                           const text = typeof decision === 'string' ? decision : (decision as Record<string, unknown>)?.description
@@ -387,9 +367,7 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
 
                   {segment.tasks && Array.isArray(segment.tasks) && segment.tasks.length > 0 && (
                     <div>
-                      <h4 className="text-xs font-semibold tracking-[0.1em] uppercase text-neutral-500 mb-3">
-                        Action Items
-                      </h4>
+                      <SectionHeader className="text-xs mb-3">Action Items</SectionHeader>
                       <ul className="space-y-2">
                         {segment.tasks.map((task: unknown, idx: number) => {
                           const text = typeof task === 'string' ? task : (task as Record<string, unknown>)?.description
@@ -406,9 +384,7 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
 
                   {segment.risks && Array.isArray(segment.risks) && segment.risks.length > 0 && (
                     <div>
-                      <h4 className="text-xs font-semibold tracking-[0.1em] uppercase text-neutral-500 mb-3">
-                        Risks
-                      </h4>
+                      <SectionHeader className="text-xs mb-3">Risks</SectionHeader>
                       <ul className="space-y-2">
                         {segment.risks.map((risk: unknown, idx: number) => {
                           const text = typeof risk === 'string' ? risk : (risk as Record<string, unknown>)?.description
@@ -425,9 +401,7 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
 
                   {segment.opportunities && Array.isArray(segment.opportunities) && segment.opportunities.length > 0 && (
                     <div>
-                      <h4 className="text-xs font-semibold tracking-[0.1em] uppercase text-neutral-500 mb-3">
-                        Opportunities
-                      </h4>
+                      <SectionHeader className="text-xs mb-3">Opportunities</SectionHeader>
                       <ul className="space-y-2">
                         {segment.opportunities.map((opportunity: unknown, idx: number) => {
                           const text = typeof opportunity === 'string' ? opportunity : (opportunity as Record<string, unknown>)?.description
@@ -444,13 +418,13 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
                 </div>
               </div>
             ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Full Transcript */}
-      {transcriptContent && (
-        <div className="mb-20">
+        {/* Full Transcript */}
+        {parsedSections?.transcript && (
+          <div className="mb-20 pt-12 border-t border-neutral-200">
           <div className="mb-8">
             <h2 className="text-2xl md:text-3xl font-serif font-light tracking-tight text-neutral-900 mb-2">
               Full Transcript
@@ -459,13 +433,13 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
               Complete meeting recording transcript
             </p>
           </div>
-          <FormattedTranscript content={transcriptContent} />
-        </div>
-      )}
+            <FormattedTranscript content={parsedSections.transcript} />
+          </div>
+        )}
 
-      {/* Empty State */}
-      {!transcriptContent && (!segments || segments.length === 0) && (
-        <div className="border border-neutral-200 bg-white p-12 md:p-16 text-center">
+        {/* Empty State */}
+        {!transcriptContent && (!segments || segments.length === 0) && (
+          <div className="border border-neutral-200 bg-white p-12 md:p-16 text-center">
           <FileText className="h-16 w-16 text-neutral-300 mx-auto mb-6" strokeWidth={1.5} />
           <h3 className="text-2xl font-serif font-light text-neutral-900 tracking-tight mb-3">
             No transcript available
@@ -473,8 +447,53 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
           <p className="text-sm text-neutral-500 leading-relaxed max-w-md mx-auto">
             The full transcript for this meeting has not been processed yet.
           </p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* Attendees - Moved to bottom, more compact */}
+        {participantsList.length > 0 && (
+          <div className="border border-neutral-200 bg-white p-6">
+            <SectionHeader count={participantsList.length} className="mb-4">
+              Attendees
+            </SectionHeader>
+            <div className="flex flex-wrap gap-2">
+              {participantsList.map((participant, index) => (
+                <span
+                  key={`attendee-${meeting.id}-${participant}-${index}`}
+                  className="px-3 py-1.5 text-xs bg-neutral-50 border border-neutral-200 text-neutral-700 rounded-sm"
+                >
+                  {participant}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Keywords Section */}
+        {parsedSections?.keywords && (
+          <div className="border border-neutral-200 bg-white p-6">
+            <SectionHeader className="mb-4">Topics</SectionHeader>
+            <div className="flex flex-wrap gap-2">
+              {parsedSections.keywords.split(',').map((keyword, index) => {
+                const trimmedKeyword = keyword.trim()
+                return (
+                  <span
+                    key={`keyword-${trimmedKeyword}-${index}`}
+                    className="px-3 py-1.5 text-xs bg-neutral-50 border border-neutral-200 text-neutral-700 rounded-sm"
+                  >
+                    {trimmedKeyword}
+                  </span>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         </div>
-      )}
+
+      </div>
     </div>
   )
 }

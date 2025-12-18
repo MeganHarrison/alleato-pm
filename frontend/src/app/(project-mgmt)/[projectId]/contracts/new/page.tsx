@@ -1,155 +1,125 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+// ✅ Client component because it uses hooks, router, state, etc.
+import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { PageHeader, PageContainer } from '@/components/layout';
+import { Button } from '@/components/ui/button';
+
+// ✅ This is the UI form component.
+// It owns inputs + validation + onSubmit/onCancel calls.
 import { ContractForm } from '@/components/domain/contracts';
+
+// ✅ This is the TypeScript shape of what the form returns to you on submit.
+// IMPORTANT: This is NOT your DB table schema.
 import type { ContractFormData } from '@/components/domain/contracts/ContractForm';
 
-interface Contract {
-  id: string;
-  contract_number: string;
-  title?: string;
-  client_id: number | null;
-  project_id: number | null;
-  status: string;
-  original_contract_amount: number | null;
-  revised_contract_amount: number | null;
-  retention_percentage: number | null;
-  executed: boolean | null;
-  private: boolean | null;
-  notes: string | null;
-  client?: { id: number; name: string | null } | null;
-  project?: { id: number; name: string; project_number: string | null } | null;
-}
-
-export default function EditContractPage() {
+export default function NewProjectContractPage() {
   const router = useRouter();
+
+  // ✅ Pulls route params from URL: /[projectId]/contracts/new
   const params = useParams();
-  const contractId = params.id as string;
 
-  const [contract, setContract] = useState<Contract | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // ✅ Derives the projectId the contract must be attached to.
+  // This is how "every form must be assigned to a project" works.
+  const projectId = parseInt(params.projectId as string, 10);
+
+  // ✅ UI state only (spinner/disabled button)
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchContract = async () => {
-      try {
-        const response = await fetch(`/api/contracts/${contractId}`);
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.error || 'Failed to fetch contract');
-        }
-        const data = await response.json();
-        setContract(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load contract');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (contractId) {
-      fetchContract();
-    }
-  }, [contractId]);
-
+  // ✅ This is the bridge: FORM MODEL -> API/DB MODEL
+  // data is ContractFormData (form shape)
+  // you map to the backend contract shape (snake_case fields etc)
   const handleSubmit = async (data: ContractFormData) => {
     setIsSaving(true);
+
     try {
-      const response = await fetch(`/api/contracts/${contractId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      // ✅ This calls your Next.js API route.
+      // The table is NOT identified here — the API route identifies it.
+      const response = await fetch('/api/contracts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+
+        // ✅ Field mapping happens RIGHT HERE.
+        // Left side = API/DB field name
+        // Right side = form field
         body: JSON.stringify({
           contract_number: data.number,
           title: data.title,
-          client_id: data.contractCompanyId ? parseInt(data.contractCompanyId) : null,
           status: data.status,
+
+          // ✅ Convert string -> number for FK, or null if empty.
+          client_id: data.contractCompanyId ? parseInt(data.contractCompanyId, 10) : null,
+
+          // ✅ This is the critical project assignment.
+          // Without this, your row is not tied to /24104/...
+          project_id: projectId,
+
+          // ⚠️ These are the fields you’re questioning.
+          // They are being sent to the backend right now.
           original_contract_amount: data.originalAmount,
           revised_contract_amount: data.revisedAmount,
           retention_percentage: data.retentionPercent,
+
+          // ✅ Derived field (business logic)
           executed: data.status === 'executed',
-          private: data.isPrivate,
+
+          private: data.isPrivate ?? false,
+
+          // ⚠️ This looks suspicious: notes is being set to title
+          // Probably should be: notes: data.notes (if you have it)
+          notes: data.title,
         }),
       });
 
+      // ✅ Handle API errors
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update contract');
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create contract');
       }
 
-      router.push('/contracts');
-    } catch (err) {
-      console.error('Error updating contract:', err);
-      alert(err instanceof Error ? err.message : 'Failed to update contract');
+      // ✅ UX: success + redirect back to contracts list for that project
+      toast.success('Prime contract created');
+      router.push(`/${projectId}/contracts`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to create contract');
     } finally {
       setIsSaving(false);
     }
   };
 
+  // ✅ Cancel just navigates away (no DB touch)
   const handleCancel = () => {
-    router.push('/contracts');
+    router.push(`/${projectId}/contracts`);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (error || !contract) {
-    return (
-      <PageContainer>
-        <div className="text-center py-12">
-          <h2 className="text-lg font-semibold text-red-600">Error Loading Contract</h2>
-          <p className="text-muted-foreground mt-2">{error || 'Contract not found'}</p>
-          <Button
-            variant="outline"
-            onClick={() => router.push('/contracts')}
-            className="mt-4"
-          >
-            Back to Contracts
-          </Button>
-        </div>
-      </PageContainer>
-    );
-  }
-
+  // ✅ Default form values (form model, not DB model)
   const initialData: Partial<ContractFormData> = {
-    number: contract.contract_number || '',
-    title: contract.title || contract.notes || '',
-    status: contract.status || 'draft',
-    contractCompanyId: contract.client_id?.toString() || '',
-    originalAmount: contract.original_contract_amount || 0,
-    revisedAmount: contract.revised_contract_amount || undefined,
-    retentionPercent: contract.retention_percentage || 10,
-    isPrivate: contract.private || false,
+    number: '',
+    title: '',
+    status: 'draft',
+    contractCompanyId: undefined,
+    originalAmount: 0,
+    retentionPercent: 10,
+    isPrivate: false,
   };
 
   return (
     <>
+      {/* ✅ Header chrome + breadcrumbs + back button */}
       <PageHeader
-        title="Edit Contract"
-        description={`Editing contract ${contract.contract_number}`}
+        title="Create Prime Contract"
+        description="Set up the prime contract for this project, including owner, status, and financials."
         breadcrumbs={[
-          { label: 'Financial', href: '/financial' },
-          { label: 'Contracts', href: '/contracts' },
-          { label: contract.contract_number || 'Edit' },
+          { label: 'Projects', href: '/' },
+          { label: 'Contracts', href: `/${projectId}/contracts` },
+          { label: 'New Contract' },
         ]}
         actions={
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.back()}
-            className="gap-2"
-          >
+          <Button variant="ghost" size="sm" onClick={() => router.back()} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
@@ -157,12 +127,13 @@ export default function EditContractPage() {
       />
 
       <PageContainer>
+        {/* ✅ The form renders inputs and calls handleSubmit with ContractFormData */}
         <ContractForm
           initialData={initialData}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isSubmitting={isSaving}
-          mode="edit"
+          mode="create"
         />
       </PageContainer>
     </>

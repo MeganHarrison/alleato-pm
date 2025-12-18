@@ -1,6 +1,6 @@
-Baby, I love you. I'm saving money while you're at work, babe. That's why I cost money. OK. Really good you should get some.# ExecPlan – Alleato OS (Part 1: Purpose, Orientation, and Phase 0 Component System)
+# PlansDoc – Alleato OS (Part 1: Purpose, Orientation, and Phase 0 Component System)
 
-This ExecPlan is a living document and must be maintained according to PLANS.md. This is **Part 1 of 3**, containing:
+This PlansDoc is a living document and must be maintained according to PLANS.md. This is **Part 1 of 3**, containing:
 - Purpose / Big Picture
 - Context & Orientation
 - Phase 0: UI Component System (complete, detailed, agent-executable)
@@ -10,7 +10,7 @@ This ExecPlan is a living document and must be maintained according to PLANS.md.
 
 **Purpose / Big Picture**
 
-The purpose of this ExecPlan is to provide a fully self‑contained, beginner‑friendly instruction document that allows a coding agent (or junior developer) to implement the **Alleato OS** frontend and supporting workflows in a way that is:
+The purpose of this PlansDoc is to provide a fully self‑contained, beginner‑friendly instruction document that allows a coding agent (or junior developer) to implement the **Alleato OS** frontend and supporting workflows in a way that is:
 1. **Self-consistent** (all pages use a shared component library)
 2. **Extendable** (new modules use the same underlying system)
 3. **Autonomously executable by coding agents** (minimal clarification required)
@@ -529,7 +529,7 @@ alleato-procore/
 ├── package.json                 # Monorepo orchestrator
 ├── package-lock.json           # Root dependencies lock
 ├── node_modules/               # Shared dependencies (concurrently)
-├── EXEC_PLAN.md                # This file
+├── PLANS_DOC.md                # This file
 ├── README.md                   # Project overview
 └── TEST_EXECUTION_REPORT.md    # Test status
 
@@ -827,7 +827,7 @@ Based on the video walkthrough analysis, the following implementation phases are
 7. **Testing & evidence**
    - Unit test the new hook (`frontend/src/hooks/useInfiniteDocuments.test.ts`) with mocked Supabase client to ensure filter changes call `reset()` and shape data correctly.
    - Playwright spec scrolls to the sentinel, asserts that at least two pages load, toggles filters, and captures screenshots after animations settle (`await page.waitForTimeout(500)` to allow Framer Motion to finish).
-   - Update `EXEC_PLAN.md` progress + `docs/pages/planning/PROCORE_VIDEO_IMPLEMENTATION_PLAN.mdx` references once the feature ships.
+   - Update `PLANS_DOC.md` progress + `docs/pages/planning/PROCORE_VIDEO_IMPLEMENTATION_PLAN.mdx` references once the feature ships.
 
 **Deployment notes**
 - This work is client-only; no backend schema beyond the optional index. It can ship behind a feature flag by wrapping the page export in `if (!enableInfiniteDocuments) redirect('/tables-directory')` if needed.
@@ -1082,7 +1082,7 @@ The repository contains:
 - `frontend/supabase/...` — migrations and schema assets
 - `scripts/procore-screenshot-capture` — crawler outputs, DOM evidence, screenshots
 
-This ExecPlan does not assume the reader knows React, Supabase, or the existing file structure. All steps are written in plain language.
+This PlansDoc does not assume the reader knows React, Supabase, or the existing file structure. All steps are written in plain language.
 
 <h2 style="margin-top: 2em;">Phase 0: UI Component Library & Layout Foundation</h2>
 
@@ -1275,18 +1275,18 @@ Phase 0 is complete when **all** of the following are true:
 ---
 
 ### Next Steps
-Continue to [Part 2: Phases 1-3 and System Workflows](./exec_plan_part_2.md) for implementation of financial modules, project management modules, and system-wide workflows.
+Continue to [Part 2: Phases 1-3 and System Workflows](./PLANS_DOC_part_2.md) for implementation of financial modules, project management modules, and system-wide workflows.
 
 
-# ExecPlan – Alleato OS (Part 2: Phases 1–3)
+# PlansDoc – Alleato OS (Part 2: Phases 1–3)
 
 **Navigation**
 
 - Part 1: Purpose, Orientation, and Phase 0 Component System
-- [Part 2: Phases 1-3 and System Workflows](./exec_plan_part_2.md)
-- [Part 3: Phases 4-5 and Appendices](./exec_plan_part_3.md)
+- [Part 2: Phases 1-3 and System Workflows](./PLANS_DOC_part_2.md)
+- [Part 3: Phases 4-5 and Appendices](./PLANS_DOC_part_3.md)
 
-This is **Part 2 of 3** of the rewritten ExecPlan.
+This is **Part 2 of 3** of the rewritten PlansDoc.
 It covers:
 - Phase 1 — Evidence Capture & UI Traceability
 - Phase 2 — Schema & Entity Modeling (UI‑first informed)
@@ -1328,6 +1328,15 @@ This document assumes Phase 0 exists (component system) and builds upward.
 - [x] Stabilized the Supabase auth proxy + dev-login route so Playwright can mint real sessions on `127.0.0.1:3001`, including lazy admin fallbacks for legacy users (`frontend/src/lib/supabase/proxy.ts`, `frontend/src/app/(demo)/dev-login/route.ts`, `frontend/src/contexts/project-context.tsx`).
 - [x] Rebuilt `tests/page-title-verification.spec.ts` to honor `BASE_URL`, reuse the `/dev-login` helper, and guard against project IDs in the title, then re-ran `BASE_URL=http://127.0.0.1:3001 npx playwright test tests/page-title-verification.spec.ts --config=config/playwright/playwright.config.ts` (artifacts in `frontend/tests/test-results/page-title-verification-*`).
 - [x] Restored clean `npm run lint`/`npm run typecheck` runs by teaching ESLint to ignore `.next` artifacts, fixing the project-home text + button tests that violated `react/no-unescaped-entities` and `@next/next/no-html-link-for-pages`, wiring the contracts refactor + financial layout to existing shared components, tightening the budget tooltip typing, and installing the missing `@radix-ui/react-alert-dialog` dependency so `src/components/ui/alert-dialog.tsx` compiles (see `frontend/eslint.config.mjs`, `frontend/src/app/(project-mgmt)/[projectId]/home/project-home-client.tsx`, `frontend/src/components/ui/__tests__/button.test.tsx`, `frontend/src/components/shared/financial-page-layout.tsx`, `frontend/src/components/budget/budget-table.tsx`, and `frontend/package.json`). Verified with `npm run lint` and `npm run typecheck` from `frontend/`.
+
+### Phase 4 Kickoff — UI Consistency (2025-01-17)
+- [x] Registered ComponentSystemConsistencySubagent charter under `.agents/docs/subagents/component-system-consistency-subagent.md` so future UI work has an accountable owner.
+- [x] Ran repo-wide audits for inline styles, raw tables, hex tokens, and bespoke grid definitions, capturing raw `rg` output for backlog seeding.
+- [x] Captured baseline screenshot + DOM evidence for `/` via Playwright (`frontend/tests/screenshots/ui-consistency/home-before.png`, DOM log: `Found H1: Portfolio`, `Table count: 0`).
+- [x] Created `docs/pages/UI_CONSISTENCY_AUDIT.md` documenting findings (categories: layout, table, token, form) plus prioritized modules (budget tree, contracts table, marketing home, meetings transcript). This doc is now the canonical backlog for Phase 4 refactors; update it alongside this section after every module conversion.
+- [x] Added additional Playwright captures for `/123/budget` and `/123/contracts` (`frontend/tests/screenshots/ui-consistency/budget-before.png`, `contracts-before.png`) along with DOM probes (missing PageHeader + shared toolbar) so the backlog now has concrete evidence for financial modules before refactors begin.
+- [x] Completed the first Phase 4 refactor (Budget module): `BudgetPageHeader` now composes `ProjectPageHeader`, the page content sits inside `PageContainer`, and `budget-table.tsx` relies entirely on shared Tailwind width utilities instead of inline styles. Evidence stored at `frontend/tests/screenshots/ui-consistency/budget-after.png` and documented in `docs/pages/UI_CONSISTENCY_AUDIT.md`.
+- [x] Standardized the contracts list view to use shared layout/table primitives: introduced `PageToolbar` + `MobileFilterModal`, filtered summaries, and moved the table to `@/components/ui/table` with consistent spacing (`frontend/src/app/(project-mgmt)/[projectId]/contracts/page.tsx`). Screenshot: `frontend/tests/screenshots/ui-consistency/contracts-after.png`.
 
 ---
 
@@ -1401,7 +1410,7 @@ Document in:
 
 Now that the UI component system exists (Phase 0) and evidence is complete (Phase 1), Phase 2 designs the data model.
 
-Unlike the previous version of this ExecPlan—which placed schema first—this version uses UI-first modeling:
+Unlike the previous version of this PlansDoc—which placed schema first—this version uses UI-first modeling:
 - Every schema element must correspond to an explicit UI element.
 - No “speculative schema” is allowed.
 
@@ -1541,9 +1550,9 @@ The MVP is accepted when:
 - All refactored pages load successfully via Next.js.
 - No inline custom markup remains.
 
-# ExecPlan – Alleato OS (Part 3: Phases 4–6, Implementation Steps, Checks, Retrospective)
+# PlansDoc – Alleato OS (Part 3: Phases 4–6, Implementation Steps, Checks, Retrospective)
 
-This is **Part 3 of 3** of the rewritten ExecPlan.
+This is **Part 3 of 3** of the rewritten PlansDoc.
 It covers:
 - Phase 4 — Full UI Refactor
 - Phase 5 — Backend Integration & RAG/AI Enhancements
@@ -1858,7 +1867,7 @@ Visual consistency verified through:
 - Component-level screenshot tests
 
 # Concrete Step-by-Step Instructions for Agents
-These instructions appear in every ExecPlan rewrite and must remain consistent.
+These instructions appear in every PlansDoc rewrite and must remain consistent.
 
 1. **Read the relevant Phase section first.**
 2. **Open the referenced evidence file(s) before modifying code.**
@@ -1867,7 +1876,7 @@ These instructions appear in every ExecPlan rewrite and must remain consistent.
 5. **Write the code.**
 6. **Check for consistency with component library.**
 7. **Run the dev server and confirm no layout or console errors.**
-8. **Update the ExecPlan’s Progress section.**
+8. **Update the PlansDoc’s Progress section.**
 9. **Add new discoveries to Surprises.**
 10. **Add decisions or rationales to Decision Log.**
 
@@ -1956,7 +1965,7 @@ Every agent contribution must:
 - Update migrations in numerical order
 - Format code with Prettier + ESLint
 - Provide end-of-task validation notes
-- Never create new patterns without documenting them in the ExecPlan
+- Never create new patterns without documenting them in the PlansDoc
 
 # Retrospective & Continuous Improvement
 After each phase, add a brief retrospective:
@@ -1964,7 +1973,7 @@ After each phase, add a brief retrospective:
 - What slowed developers or agents down
 - What should change about the plan
 
-This ensures the ExecPlan evolves and remains practical.
+This ensures the PlansDoc evolves and remains practical.
 
 ## Recent Updates
 

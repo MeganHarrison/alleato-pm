@@ -142,6 +142,76 @@ const data = {
       icon: IconChartLine,
     },
     {
+      title: "Style Guide",
+      url: "/style-guide",
+      icon: IconChartLine,
+    },
+    {
+      title: "Sitemap",
+      url: "/sitemap-view",
+      icon: IconChartLine,
+    },
+    {
+      title: "Stats",
+      url: "/stats",
+      icon: IconChartLine,
+    },
+    {
+      title: "Simple Chat",
+      url: "/simple-chat",
+      icon: IconChartLine,
+    },
+    {
+      title: "Projects",
+      url: "/projects",
+      icon: IconChartLine,
+    },
+    {
+      title: "Logs",
+      url: "/daily-log",
+      icon: IconChartLine,
+    },
+    {
+      title: "Daily Logs",
+      url: "/daily-logs",
+      icon: IconChartLine,
+    },
+    {
+      title: "Daily Report",
+      url: "/daily-report",
+      icon: IconChartLine,
+    },
+    {
+      title: "Decision",
+      url: "/decisions",
+      icon: IconChartLine,
+    },
+    {
+      title: "Insights",
+      url: "/insights",
+      icon: IconChartLine,
+    },
+    {
+      title: "Issues",
+      url: "/issues",
+      icon: IconChartLine,
+    },
+    {
+      title: "Meeting Segmeents",
+      url: "/meeting-segments",
+      icon: IconChartLine,
+    },
+    {
+      title: "Notes",
+      url: "/notes",
+      icon: IconChartLine,
+    },
+    {
+      title: "Opportunities",
+      url: "/opportunities",
+      icon: IconChartLine,
+    },
+    {
       title: "Settings",
       url: "/settings",
       icon: IconSettings,

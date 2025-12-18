@@ -97,14 +97,31 @@ export function useClients(options: UseClientsOptions = {}): UseClientsReturn {
     fetchClients()
   }, [fetchClients])
 
-  const createClientRecord = useCallback(async (client: Partial<Client>): Promise<Client | null> => {
+  const createClientRecord = useCallback(async (client: Partial<Client> & { company_name?: string }): Promise<Client | null> => {
     try {
       const supabase = createClient()
+      let companyId = client.company_id || null
+
+      if (!companyId && client.company_name) {
+        const { data: company, error: companyError } = await supabase
+          .from('companies')
+          .insert({
+            name: client.company_name,
+          })
+          .select('id')
+          .single()
+
+        if (companyError) {
+          throw new Error(companyError.message)
+        }
+        companyId = company?.id || null
+      }
+
       const { data, error: insertError } = await supabase
         .from('clients')
         .insert({
           name: client.name || '',
-          company_id: client.company_id,
+          company_id: companyId,
           status: client.status || 'active',
         })
         .select(`

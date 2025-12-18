@@ -9,6 +9,7 @@ import { ContractPrivacySection } from "./ContractPrivacySection"
 import { ScheduleOfValuesGrid } from "./ScheduleOfValuesGrid"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DevAutoFillButton } from "@/hooks/use-dev-autofill"
 
 export interface ContractFormData {
   // General Info
@@ -116,22 +117,28 @@ export function ContractForm({
         </TabsContent>
       </Tabs>
 
-      <div className="flex justify-end gap-3 pt-6">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <span className="mr-2">Saving...</span>
-              <span className="animate-spin">⏳</span>
-            </>
-          ) : mode === "create" ? (
-            "Create Contract"
-          ) : (
-            "Update Contract"
-          )}
-        </Button>
+      <div className="flex justify-between items-center gap-3 pt-6">
+        <DevAutoFillButton
+          formType="contract"
+          onAutoFill={(data) => updateFormData(data as Partial<ContractFormData>)}
+        />
+        <div className="flex gap-3">
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <span className="mr-2">Saving...</span>
+                <span className="animate-spin">⏳</span>
+              </>
+            ) : mode === "create" ? (
+              "Create Contract"
+            ) : (
+              "Update Contract"
+            )}
+          </Button>
+        </div>
       </div>
     </Form>
   )

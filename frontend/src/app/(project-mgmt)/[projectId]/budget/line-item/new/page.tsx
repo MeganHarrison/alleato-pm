@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, Search, Trash2, ChevronRight, ChevronDown } from 'luci
 
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
+import { DevAutoFillButton } from '@/hooks/use-dev-autofill';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -221,33 +222,49 @@ export default function NewBudgetLineItemPage() {
         return;
       }
 
-      // TODO: API call to create project budget code (project_cost_codes table)
-      // const response = await fetch(`/api/projects/${projectId}/budget-codes`, {
-      //   method: 'POST',
-      //   body: JSON.stringify({
-      //     cost_code_id: newCodeData.costCodeId,
-      //     cost_type_id: newCodeData.costType,
-      //     project_id: projectId,
-      //   }),
-      // });
-      // const createdCode = await response.json();
-
-      // Mock: Add the new code to the list
-      const newCode: BudgetCode = {
-        id: Date.now().toString(),
-        code: selectedCostCode.id,
-        costType: newCodeData.costType,
-        description: selectedCostCode.description || '',
-        fullLabel: `${selectedCostCode.id}.${newCodeData.costType} – ${selectedCostCode.description} – ${getCostTypeLabel(newCodeData.costType)}`,
+      // Get the cost_type_id from cost_code_types table
+      // For now, we'll use a simple lookup. In production, this should query the cost_code_types table
+      const costTypeMap: Record<string, string> = {
+        L: 'labor',
+        M: 'material',
+        E: 'equipment',
+        S: 'subcontract',
+        O: 'other',
       };
 
-      setBudgetCodes([...budgetCodes, newCode]);
+      // API call to create budget code
+      const response = await fetch(`/api/projects/${projectId}/budget-codes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cost_code_id: newCodeData.costCodeId,
+          cost_type_id: costTypeMap[newCodeData.costType] || null,
+          description: selectedCostCode.description,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.details || error.error || 'Failed to create budget code');
+      }
+
+      const { budgetCode: createdCode } = await response.json();
+
+      // Add the new code to the list
+      setBudgetCodes([...budgetCodes, createdCode]);
 
       // Reset modal
       setShowCreateCodeModal(false);
       setNewCodeData({ costCodeId: '', costType: 'L' });
     } catch (error) {
       console.error('Error creating budget code:', error);
+      alert(
+        `Failed to create budget code: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      );
     } finally {
       setLoading(false);
     }
@@ -585,13 +602,29 @@ export default function NewBudgetLineItemPage() {
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center justify-end gap-4 mt-6">
-          <Button type="button" variant="outline" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : `Create ${rows.length} Line Item${rows.length > 1 ? 's' : ''}`}
-          </Button>
+        <div className="flex items-center justify-between gap-4 mt-6">
+          <DevAutoFillButton
+            formType="budgetLineItem"
+            onAutoFill={(data) => {
+              setRows([{
+                id: '1',
+                budgetCodeId: '',
+                budgetCodeLabel: '',
+                qty: data.quantity?.toString() || '',
+                uom: data.unit || '',
+                unitCost: data.unit_cost?.toString() || '',
+                amount: data.amount?.toString() || '0.00',
+              }]);
+            }}
+          />
+          <div className="flex gap-4">
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Creating...' : `Create ${rows.length} Line Item${rows.length > 1 ? 's' : ''}`}
+            </Button>
+          </div>
         </div>
       </form>
 

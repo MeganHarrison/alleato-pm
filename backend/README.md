@@ -263,6 +263,74 @@ cd backend/src/workers/scripts
 python clean_and_reingest.py
 ```
 
+### 7. Generate Project Summaries with GPT-5.1
+
+To generate AI-powered project summaries from meeting documents:
+
+```bash
+cd backend
+source venv/bin/activate
+PYTHONPATH="src/services:src/workers" python scripts/generate_project_summaries_batch.py
+
+# Options:
+# --project-id ID        Process specific project only
+# --update               Save summaries to database
+# --max-documents N      Limit documents per project (default: 30)
+# --dry-run              Preview without saving
+
+# Examples:
+# Generate summary for specific project (preview only)
+PYTHONPATH="src/services:src/workers" python scripts/generate_project_summaries_batch.py --project-id 67
+
+# Generate and save summaries for all projects
+PYTHONPATH="src/services:src/workers" python scripts/generate_project_summaries_batch.py --update
+
+# Preview summaries for all projects without saving
+PYTHONPATH="src/services:src/workers" python scripts/generate_project_summaries_batch.py --dry-run
+```
+
+This script:
+
+- Fetches all projects with associated meeting documents
+- Aggregates meeting content (transcripts, summaries, action items, bullet points)
+- Uses GPT-5.1 to generate comprehensive project summaries
+- Provides executive-level insights: overview, stakeholders, status, issues, decisions, next steps
+- Optionally updates project summary field in database
+
+### 8. Extract Tasks from Meeting Documents with GPT-5.1
+
+To extract actionable tasks from meeting documents:
+
+```bash
+cd backend
+source venv/bin/activate
+PYTHONPATH="src/services:src/workers" python scripts/extract_tasks_from_meetings.py
+
+# Options:
+# --project-id ID        Process specific project only
+# --save                 Save tasks to JSON files
+# --days-back N          Days to look back (default: 90)
+# --max-documents N      Limit documents per project (default: 20)
+
+# Examples:
+# Extract tasks for specific project
+PYTHONPATH="src/services:src/workers" python scripts/extract_tasks_from_meetings.py --project-id 67
+
+# Extract and save tasks for all projects
+PYTHONPATH="src/services:src/workers" python scripts/extract_tasks_from_meetings.py --save
+
+# Extract tasks from last 30 days only
+PYTHONPATH="src/services:src/workers" python scripts/extract_tasks_from_meetings.py --days-back 30 --save
+```
+
+This script:
+
+- Analyzes meeting documents to extract actionable tasks
+- Uses GPT-5.1 to parse action items, decisions, and commitments
+- Extracts structured task data: title, assignee, due date, priority, status, context
+- Outputs tasks as JSON with source attribution
+- Can save to files for import into task management systems
+
 ### Vector Search Tools
 
 | Tool | Purpose | Query |

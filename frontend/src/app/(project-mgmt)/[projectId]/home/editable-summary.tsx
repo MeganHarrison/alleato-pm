@@ -52,7 +52,7 @@ export function EditableSummary({ summary, onSave }: EditableSummaryProps) {
                 <>
                   <button
                     type="button"
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-[#DB802D] transition-colors duration-200"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-brand transition-colors duration-200"
                     onClick={handleEdit}
                   >
                     <Pencil className="h-3.5 w-3.5" />
@@ -74,7 +74,7 @@ export function EditableSummary({ summary, onSave }: EditableSummaryProps) {
                 <>
                   <button
                     type="button"
-                    className="px-3 py-1.5 text-xs font-medium bg-[#DB802D] text-white hover:bg-[#C4701F] transition-colors duration-200 disabled:opacity-50"
+                    className="px-3 py-1.5 text-xs font-medium bg-brand text-white hover:bg-brand-dark transition-colors duration-200 disabled:opacity-50"
                     onClick={handleSave}
                     disabled={isSaving}
                   >
@@ -101,7 +101,7 @@ export function EditableSummary({ summary, onSave }: EditableSummaryProps) {
               <Textarea
                 value={editedSummary}
                 onChange={(e) => setEditedSummary(e.target.value)}
-                className="min-h-[240px] text-sm leading-relaxed border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20 font-light"
+                className="min-h-[240px] text-sm leading-relaxed border-neutral-300 focus:border-brand focus:ring-brand/20 font-light"
                 disabled={isSaving}
               />
             ) : (

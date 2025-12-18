@@ -6,15 +6,16 @@ import Link from 'next/link';
 
 export default function DirectoryPage() {
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Directory</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage companies, clients, contacts, and users across your organization
-        </p>
-      </div>
+    <div className="min-h-screen bg-neutral-50">
+      <div className="max-w-[1800px] mx-auto px-6 md:px-10 lg:px-12 py-12">
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-serif font-light tracking-tight text-neutral-900 mb-3">Directory</h1>
+          <p className="text-sm text-neutral-500">
+            Manage companies, clients, contacts, and users across your organization
+          </p>
+        </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Link href="/directory/companies">
           <Card className="cursor-pointer transition-all hover:shadow-lg">
             <CardHeader>
@@ -78,6 +79,7 @@ export default function DirectoryPage() {
             </CardHeader>
           </Card>
         </Link>
+        </div>
       </div>
     </div>
   );

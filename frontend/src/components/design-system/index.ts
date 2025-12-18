@@ -13,6 +13,7 @@
  */
 
 export { PageHeader } from './page-header'
+export { SectionHeader } from './section-header'
 export { StatCard } from './stat-card'
 export { ContentCard } from './content-card'
 export { EmptyState } from './empty-state'

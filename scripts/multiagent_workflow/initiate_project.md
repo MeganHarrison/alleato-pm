@@ -43,24 +43,24 @@ Review the outputs from the procore capture script, and add tasks to make change
 
 My end goals:
 
-1. I want the Exec Plan to tell Codex CLI how to use these files as “source evidence” to extract entities, fields, and relationships.
+1. I want the Plans Doc to tell Codex CLI how to use these files as “source evidence” to extract entities, fields, and relationships.
 2. I want a complete, correct Supabase schema that is logically equivalent to the actual Procore financial backend.
-3. I want the Exec Plan to break down the steps for:
+3. I want the Plans Doc to break down the steps for:
 
    * Understanding the UI evidence (DOM + screenshots).
    * Inferring all tables, columns, enums, relationships, constraints, and views.
    * Designing normalized tables: budgets, budget line items, commitments, commitment items, prime contracts, prime contract line items, all change event and change order tables, invoicing, billing periods, direct costs, cost codes, vendors, and all relational glue.
    * Identifying derived/reporting views (like Budgeting Report or Committed Cost Summaries).
    * Writing migrations and ensuring foreign keys are consistent and designed intelligently.
-4. I want the Exec Plan to explicitly map page → underlying schema entities.
+4. I want the Plans Doc to explicitly map page → underlying schema entities.
    The PM should build a traceable connection between UI pages and database structures.
 5. I want downstream developers to be able to build every page, form, and financial workflow using this schema alone.
-6. The Exec Plan should end with a development implementation plan but NOT implement any code at this stage.
+6. The Plans Doc should end with a development implementation plan but NOT implement any code at this stage.
 7. The result must be something a coding agent can turn into full migrations and an actual working schema.
 
 Additional constraints and details:
 
-* I want the Exec Plan anchored in the Codex cookbook methodology.
+* I want the Plans Doc anchored in the Codex cookbook methodology.
 * I want it broken down into a structured multi-section plan exactly how PLANS.md requires.
 * The Project Manager should reference the DOM and screenshots as the authoritative truth for discovering:
 
@@ -85,17 +85,17 @@ Additional constraints and details:
 
 Success looks like:
 
-* The Exec Plan helps Codex generate an accurate database schema and all necessary migrations.
+* The Plans Doc helps Codex generate an accurate database schema and all necessary migrations.
 * The schema supports real-world construction finance workflows.
 * The developer experience is clean: one can instantly understand the database, build endpoints, and render each page.
 * No missing tables, no circular relationships, thoughtful normalization, meaningful indexes, and clear naming conventions.
 * Everything is grounded in the scraped DOM + screenshots, not guesses.
 
-This is the full scope I want the Project Manager to turn into EXEC_PLAN.md.
+This is the full scope I want the Project Manager to turn into PLANS_DOC.md.
 
 ---
 
-If you want, I can also produce an expanded or more chaotic “stream of consciousness” version — but the above is clean, direct, and optimized for the PM agent to translate into a perfect Exec Plan.
+If you want, I can also produce an expanded or more chaotic “stream of consciousness” version — but the above is clean, direct, and optimized for the PM agent to translate into a perfect Plans Doc.
 
 # TO DO
 

@@ -37,13 +37,13 @@ export function HeroMetrics({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
       {/* Primary Metric - Budget Remaining */}
-      <div className="lg:col-span-2 border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-[#DB802D] hover:shadow-sm">
+      <div className="lg:col-span-2 border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-brand hover:shadow-sm">
         <div className="space-y-3">
           <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
             Budget Remaining
           </p>
           <div className="space-y-1">
-            <p className="text-6xl md:text-7xl font-light tabular-nums tracking-tight text-[#DB802D]">
+            <p className="text-6xl md:text-7xl font-light tabular-nums tracking-tight text-brand">
               {formatCurrency(remainingBudget)}
             </p>
             <div className="flex items-baseline gap-3 text-sm text-neutral-600">
@@ -60,7 +60,7 @@ export function HeroMetrics({
       </div>
 
       {/* Forecast Variance */}
-      <div className="border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-[#DB802D] hover:shadow-sm">
+      <div className="border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-brand hover:shadow-sm">
         <div className="space-y-3">
           <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
             Forecast Variance
@@ -93,7 +93,7 @@ export function HeroMetrics({
       </div>
 
       {/* Change Orders */}
-      <div className="border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-[#DB802D] hover:shadow-sm">
+      <div className="border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-brand hover:shadow-sm">
         <div className="space-y-3">
           <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
             Change Orders
@@ -109,39 +109,7 @@ export function HeroMetrics({
         </div>
       </div>
 
-      {/* Committed Costs */}
-      <div className="border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-[#DB802D] hover:shadow-sm">
-        <div className="space-y-3">
-          <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
-            Committed
-          </p>
-          <div className="space-y-1">
-            <p className="text-4xl md:text-5xl font-light tabular-nums tracking-tight text-neutral-900">
-              {formatCurrency(committed)}
-            </p>
-            <p className="text-xs text-neutral-500 tabular-nums">
-              {totalBudget > 0 ? ((committed / totalBudget) * 100).toFixed(1) : 0}% of budget
-            </p>
-          </div>
-        </div>
-      </div>
 
-      {/* Active Tasks */}
-      <div className="border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-[#DB802D] hover:shadow-sm">
-        <div className="space-y-3">
-          <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
-            Active Tasks
-          </p>
-          <div className="space-y-1">
-            <p className="text-4xl md:text-5xl font-light tabular-nums tracking-tight text-neutral-900">
-              {activeTasks}
-            </p>
-            <p className="text-xs text-neutral-500">
-              In progress
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

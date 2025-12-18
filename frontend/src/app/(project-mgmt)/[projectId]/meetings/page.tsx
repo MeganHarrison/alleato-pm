@@ -1,8 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
-import { format } from 'date-fns'
-import { Calendar, Clock, User, FileText, Video } from 'lucide-react'
-import { PageHeader, ContentCard, EmptyState, StatCard } from '@/components/design-system'
 import { notFound } from 'next/navigation'
+import { Calendar, Clock, User, Video } from 'lucide-react'
+
+import { EmptyState, PageHeader, StatCard } from '@/components/design-system'
+import { PageContainer } from '@/components/layout/PageContainer'
+
+import { MeetingsTableWrapper } from './meetings-table-wrapper'
 
 interface PageProps {
   params: Promise<{ projectId: string }>
@@ -45,7 +48,7 @@ export default async function ProjectMeetingsPage({ params }: PageProps) {
            meetingDate.getFullYear() === now.getFullYear()
   }).length || 0
 
-  const withRecordings = meetings?.filter(m => m.fireflies_link).length || 0
+  const withRecordings = meetings?.filter(m => m.fireflies_link || m.video || m.audio).length || 0
   const totalParticipants = meetings?.reduce((acc, m) => {
     if (!m.participants) return acc
     return acc + m.participants.split(',').length
@@ -53,7 +56,7 @@ export default async function ProjectMeetingsPage({ params }: PageProps) {
   const avgParticipants = totalMeetings > 0 ? Math.round(totalParticipants / totalMeetings) : 0
 
   return (
-    <div className="min-h-screen bg-neutral-50 px-6 md:px-10 lg:px-12 py-12 max-w-[1800px] mx-auto">
+    <PageContainer>
       <PageHeader
         client={project.client || undefined}
         title="Meetings"
@@ -84,7 +87,7 @@ export default async function ProjectMeetingsPage({ params }: PageProps) {
         />
       </div>
 
-      {/* Meetings List */}
+      {/* Meetings Table */}
       {!meetings || meetings.length === 0 ? (
         <EmptyState
           icon={Calendar}
@@ -102,53 +105,9 @@ export default async function ProjectMeetingsPage({ params }: PageProps) {
             </p>
           </div>
 
-          <div className="space-y-4">
-            {meetings.map((meeting) => {
-              const metadata = []
-
-              if (meeting.date) {
-                metadata.push({
-                  icon: Calendar,
-                  label: format(new Date(meeting.date), 'MMM d, yyyy')
-                })
-              }
-
-              if (meeting.duration) {
-                metadata.push({
-                  icon: Clock,
-                  label: `${meeting.duration} min`
-                })
-              }
-
-              if (meeting.participants) {
-                const participantCount = meeting.participants.split(',').length
-                metadata.push({
-                  icon: User,
-                  label: `${participantCount} ${participantCount === 1 ? 'participant' : 'participants'}`
-                })
-              }
-
-              if (meeting.fireflies_link) {
-                metadata.push({
-                  icon: FileText,
-                  label: 'Recording available'
-                })
-              }
-
-              return (
-                <ContentCard
-                  key={meeting.id}
-                  title={meeting.title || 'Untitled Meeting'}
-                  description={meeting.summary || undefined}
-                  metadata={metadata}
-                  badge={meeting.type || undefined}
-                  href={`/${projectId}/meetings/${meeting.id}`}
-                />
-              )
-            })}
-          </div>
+          <MeetingsTableWrapper meetings={meetings || []} projectId={projectId} />
         </div>
       )}
-    </div>
+    </PageContainer>
   )
 }

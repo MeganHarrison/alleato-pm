@@ -2,7 +2,7 @@
 
 import { format } from 'date-fns'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Plus, Pencil, Calendar, FileText, AlertCircle } from 'lucide-react'
+import { Plus, Pencil, Calendar, FileText, AlertCircle, ChevronDown, Star } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -10,6 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from 'react'
@@ -49,6 +55,33 @@ interface ProjectHomeClientProps {
   sov?: SOV[]
 }
 
+// Project Tools Links - matching the dropdown in the header
+interface ToolLink {
+  name: string
+  href: string
+  badge?: string
+  isFavorite?: boolean
+  hasCreateAction?: boolean
+}
+
+const coreTools: ToolLink[] = [
+  { name: 'Dashboard', href: '/dashboard'},
+  { name: 'Directory', href: '/directory', },
+  { name: 'Meetings', href: '/meetings' },
+]
+
+const projectManagementTools: ToolLink[] = [
+  { name: 'Tasks', href: '/tasks' },
+  { name: 'Schedule', href: '/schedule', hasCreateAction: true },
+  { name: 'Daily Logs', href: '/daily-logs' },
+]
+
+const financialManagementTools: ToolLink[] = [
+  { name: 'Commitments', href: '/commitments', hasCreateAction: true },
+  { name: 'Invoices', href: '/invoices' },
+  { name: 'Budget', href: '/budget', hasCreateAction: true },
+]
+
 export function ProjectHomeClient({
   project,
   insights,
@@ -74,6 +107,7 @@ export function ProjectHomeClient({
     email: '',
     phone: ''
   })
+  const [currentTool, setCurrentTool] = useState('Tools')
 
   // Handle saving project updates
   const handleSaveProject = async (updates: Record<string, string>) => {
@@ -107,9 +141,15 @@ export function ProjectHomeClient({
   }
 
   const handleSaveField = async (field: string) => {
-    await handleSaveProject({ [field]: editValue })
-    setIsEditing(null)
-    setEditValue('')
+    try {
+      await handleSaveProject({ [field]: editValue })
+      setIsEditing(null)
+      setEditValue('')
+    } catch (error) {
+      console.error(`Error saving field ${field}:`, error)
+      // Keep the field in edit mode if save fails
+      // Optionally, you could show an error message to the user here
+    }
   }
 
   const handleAddTeamMember = async () => {
@@ -132,23 +172,113 @@ export function ProjectHomeClient({
   return (
     <div className="min-h-screen bg-neutral-50 px-6 md:px-10 lg:px-12 py-12 max-w-[1800px] mx-auto">
       {/* Header Section - Refined Architectural Hierarchy */}
-      <header className="mb-20 pb-12 border-b border-neutral-200">
+      <header className="mb-8 pb-8">
         {/* Client Pre-heading */}
         <div className="mb-4">
           <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-neutral-400">
-            {project.client || 'No client assigned'}
+            {project.client || ''}
           </p>
         </div>
 
         {/* Project Title - Editorial Typography with Enhanced Scale */}
-        <div className="mb-10">
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-serif font-light tracking-tight text-neutral-900 leading-[1.05] mb-4">
+        <div className="mb-10 flex items-center justify-between gap-4">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-light tracking-tight text-neutral-900 leading-[1.05]">
             {project.name || project['job number']}
           </h1>
+
+          {/* Project Tools Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="h-10 flex items-center gap-2 px-4 border-neutral-300 hover:border-brand hover:bg-neutral-50 transition-colors"
+              >
+                <span className="text-sm font-medium text-neutral-700">{currentTool}</span>
+                <ChevronDown className="h-4 w-4 text-neutral-500" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-screen max-w-4xl rounded-lg border-neutral-200 p-8 shadow-lg">
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-12">
+                {/* Core Tools */}
+                <div>
+                  <h3 className="mb-4 text-xs font-semibold tracking-[0.15em] uppercase text-neutral-500">
+                    Core Tools
+                  </h3>
+                  <div className="space-y-1">
+                    {coreTools.map((tool) => (
+                      <Link
+                        key={tool.name}
+                        href={`/${project.id}${tool.href}`}
+                        onClick={() => setCurrentTool(tool.name)}
+                        className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm hover:bg-neutral-100 transition-colors"
+                      >
+                        <span className="text-neutral-900">{tool.name}</span>
+                        {tool.badge && (
+                          <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                            {tool.badge}
+                          </span>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Project Management */}
+                <div>
+                  <h3 className="mb-4 text-xs font-semibold tracking-[0.15em] uppercase text-neutral-500">
+                    Project Management
+                  </h3>
+                  <div className="space-y-1">
+                    {projectManagementTools.map((tool) => (
+                      <Link
+                        key={tool.name}
+                        href={`/${project.id}${tool.href}`}
+                        onClick={() => setCurrentTool(tool.name)}
+                        className="flex w-full items-center rounded px-3 py-2 text-left text-sm hover:bg-neutral-100 transition-colors"
+                      >
+                        <span className="flex items-center gap-2 text-neutral-900">
+                          {tool.isFavorite && <Star className="h-3.5 w-3.5 text-neutral-400" />}
+                          {tool.name}
+                          {tool.hasCreateAction && (
+                            <Plus className="ml-1 h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white" />
+                          )}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Financial Management */}
+                <div>
+                  <h3 className="mb-4 text-xs font-semibold tracking-[0.15em] uppercase text-neutral-500">
+                    Financial Management
+                  </h3>
+                  <div className="space-y-1">
+                    {financialManagementTools.map((tool) => (
+                      <Link
+                        key={tool.name}
+                        href={`/${project.id}${tool.href}`}
+                        onClick={() => setCurrentTool(tool.name)}
+                        className="flex w-full items-center rounded px-3 py-2 text-left text-sm hover:bg-neutral-100 transition-colors"
+                      >
+                        <span className="flex items-center gap-2 text-neutral-900">
+                          {tool.name}
+                          {tool.hasCreateAction && (
+                            <Plus className="ml-1 h-4 w-4 rounded-full bg-orange-500 p-0.5 text-white" />
+                          )}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Status Row - Clean, Aligned Data Points with Better Spacing */}
         <div className="flex flex-wrap items-center gap-8 md:gap-16">
+          
           {/* Status */}
           <button
             type="button"
@@ -162,7 +292,7 @@ export function ProjectHomeClient({
                   onChange={(e) => setEditValue(e.target.value)}
                   onBlur={() => handleSaveField('phase')}
                   onKeyDown={(e) => e.key === 'Enter' && handleSaveField('phase')}
-                  className="h-9 w-36 border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
+                  className="h-9 w-36 border-neutral-300 focus:border-brand focus:ring-brand/20"
                   autoFocus
                 />
               </div>
@@ -195,7 +325,7 @@ export function ProjectHomeClient({
                   onChange={(e) => setEditValue(e.target.value)}
                   onBlur={() => handleSaveField('start date')}
                   onKeyDown={(e) => e.key === 'Enter' && handleSaveField('start date')}
-                  className="h-9 w-44 border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
+                  className="h-9 w-44 border-neutral-300 focus:border-brand focus:ring-brand/20"
                   autoFocus
                 />
               </div>
@@ -228,7 +358,7 @@ export function ProjectHomeClient({
                   onChange={(e) => setEditValue(e.target.value)}
                   onBlur={() => handleSaveField('est completion')}
                   onKeyDown={(e) => e.key === 'Enter' && handleSaveField('est completion')}
-                  className="h-9 w-44 border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
+                  className="h-9 w-44 border-neutral-300 focus:border-brand focus:ring-brand/20"
                   autoFocus
                 />
               </div>
@@ -246,6 +376,140 @@ export function ProjectHomeClient({
               </div>
             )}
           </button>
+
+          {/* Category */}
+            <button
+              type="button"
+              className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+              onClick={() => handleEditField('category', project.category || '')}
+            >
+              {isEditing === 'category' ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={() => handleSaveField('category')}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSaveField('category')}
+                    className="h-9 w-44 border-neutral-300 focus:border-brand focus:ring-brand/20"
+                    placeholder="Commercial, Residential, etc."
+                    autoFocus
+                  />
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  <span className="block text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-400">
+                    Category
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-neutral-900">
+                      {project.category || 'Not set'}
+                    </span>
+                    <Pencil className="h-3 w-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+              )}
+            </button>
+
+            {/* State */}
+            <button
+              type="button"
+              className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+              onClick={() => handleEditField('state', project.state || '')}
+            >
+              {isEditing === 'state' ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={() => handleSaveField('state')}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSaveField('state')}
+                    className="h-9 w-28 border-neutral-300 focus:border-brand focus:ring-brand/20"
+                    placeholder="CA, NY, TX, etc."
+                    maxLength={2}
+                    autoFocus
+                  />
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  <span className="block text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-400">
+                    State
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-neutral-900">
+                      {project.state || 'Not set'}
+                    </span>
+                    <Pencil className="h-3 w-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+              )}
+            </button>
+
+            {/* Delivery Method */}
+            <button
+              type="button"
+              className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+              onClick={() => handleEditField('delivery_method', project.delivery_method || '')}
+            >
+              {isEditing === 'delivery_method' ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={() => handleSaveField('delivery_method')}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSaveField('delivery_method')}
+                    className="h-9 w-48 border-neutral-300 focus:border-brand focus:ring-brand/20"
+                    placeholder="Design-Bid-Build, CM at Risk, etc."
+                    autoFocus
+                  />
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  <span className="block text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-400">
+                    Delivery Method
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-neutral-900">
+                      {project.delivery_method || 'Not set'}
+                    </span>
+                    <Pencil className="h-3 w-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+              )}
+            </button>
+
+            {/* Type */}
+            <button
+              type="button"
+              className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+              onClick={() => handleEditField('type', project.type || '')}
+            >
+              {isEditing === 'type' ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={() => handleSaveField('type')}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSaveField('type')}
+                    className="h-9 w-44 border-neutral-300 focus:border-brand focus:ring-brand/20"
+                    placeholder="New Construction, Renovation, etc."
+                    autoFocus
+                  />
+                </div>
+              ) : (
+                <div className="space-y-1.5">
+                  <span className="block text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-400">
+                    Type
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-neutral-900">
+                      {project.type || 'Not set'}
+                    </span>
+                    <Pencil className="h-3 w-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+              )}
+            </button>
+
         </div>
       </header>
 
@@ -256,11 +520,10 @@ export function ProjectHomeClient({
         spent={spent}
         forecastedCost={forecastedCost}
         changeOrdersTotal={changeOrdersTotal}
-        activeTasks={activeTasks}
       />
 
       {/* Project Overview Grid - Summary, Team, and Quick Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-20">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
         {/* Project Summary - Takes 2 columns */}
         <div className="lg:col-span-2">
           <EditableSummary
@@ -277,7 +540,7 @@ export function ProjectHomeClient({
             </h3>
             <Dialog open={isAddTeamMemberOpen} onOpenChange={setIsAddTeamMemberOpen}>
               <DialogTrigger asChild>
-                <button type="button" className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-[#DB802D] transition-colors duration-200">
+                <button type="button" className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600 hover:text-brand transition-colors duration-200">
                   <Plus className="h-3.5 w-3.5" />
                   Add
                 </button>
@@ -294,7 +557,7 @@ export function ProjectHomeClient({
                       value={newTeamMember.name}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, name: e.target.value })}
                       placeholder="John Doe"
-                      className="border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
+                      className="border-neutral-300 focus:border-brand focus:ring-brand/20"
                     />
                   </div>
                   <div className="space-y-2">
@@ -304,7 +567,7 @@ export function ProjectHomeClient({
                       value={newTeamMember.role}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, role: e.target.value })}
                       placeholder="Project Manager"
-                      className="border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
+                      className="border-neutral-300 focus:border-brand focus:ring-brand/20"
                     />
                   </div>
                   <div className="space-y-2">
@@ -315,7 +578,7 @@ export function ProjectHomeClient({
                       value={newTeamMember.email}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, email: e.target.value })}
                       placeholder="john@example.com"
-                      className="border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
+                      className="border-neutral-300 focus:border-brand focus:ring-brand/20"
                     />
                   </div>
                   <div className="space-y-2">
@@ -325,7 +588,7 @@ export function ProjectHomeClient({
                       value={newTeamMember.phone}
                       onChange={(e) => setNewTeamMember({ ...newTeamMember, phone: e.target.value })}
                       placeholder="(555) 123-4567"
-                      className="border-neutral-300 focus:border-[#DB802D] focus:ring-[#DB802D]/20"
+                      className="border-neutral-300 focus:border-brand focus:ring-brand/20"
                     />
                   </div>
                 </div>
@@ -333,7 +596,7 @@ export function ProjectHomeClient({
                   <button type="button" onClick={() => setIsAddTeamMemberOpen(false)} className="px-5 py-2.5 text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">
                     Cancel
                   </button>
-                  <button type="button" onClick={handleAddTeamMember} className="px-5 py-2.5 text-sm font-medium bg-[#DB802D] text-white hover:bg-[#C4701F] transition-colors">
+                  <button type="button" onClick={handleAddTeamMember} className="px-5 py-2.5 text-sm font-medium bg-brand text-white hover:bg-brand-dark transition-colors">
                     Add Member
                   </button>
                 </div>
@@ -365,7 +628,7 @@ export function ProjectHomeClient({
             ) : (
               <div className="text-center py-12">
                 <p className="text-sm text-neutral-400 mb-2">No team members</p>
-                <p className="text-xs text-neutral-400">Click "Add" to assign team</p>
+                <p className="text-xs text-neutral-400">Click &quot;Add&quot; to assign team</p>
               </div>
             )}
           </div>
@@ -383,41 +646,52 @@ export function ProjectHomeClient({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Recent Meetings */}
-          <Link
-            href={`/${project.id}/meetings`}
-            className="group border border-neutral-200 bg-white p-8 transition-all duration-300 hover:border-[#DB802D] hover:shadow-sm"
-          >
+          <div className="border border-neutral-200 bg-white p-8">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <Calendar className="h-5 w-5 text-[#DB802D] mb-3" />
+                <Calendar className="h-5 w-5 text-brand mb-3" />
                 <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
                   Recent Meetings
                 </h3>
               </div>
-              <span className="text-2xl font-light tabular-nums text-neutral-900">
-                {meetings.length}
-              </span>
+              <Link
+                href={`/${project.id}/meetings`}
+                className="text-xs font-medium text-brand hover:underline"
+              >
+                View All
+              </Link>
             </div>
             <div className="space-y-3">
               {meetings.slice(0, 3).map((meeting) => (
-                <div key={meeting.id} className="text-sm text-neutral-700 truncate">
-                  {meeting.title || 'Untitled Meeting'}
-                </div>
+                <Link
+                  key={meeting.id}
+                  href={`/${project.id}/meetings/${meeting.id}`}
+                  className="block group"
+                >
+                  <div className="text-sm font-medium text-neutral-900 group-hover:text-brand truncate transition-colors">
+                    {meeting.title || 'Untitled Meeting'}
+                  </div>
+                  {meeting.date && (
+                    <div className="text-xs text-neutral-500 mt-0.5">
+                      {format(new Date(meeting.date), 'MMM d, yyyy')}
+                    </div>
+                  )}
+                </Link>
               ))}
               {meetings.length === 0 && (
                 <p className="text-sm text-neutral-400">No recent meetings</p>
               )}
             </div>
-          </Link>
+          </div>
 
           {/* Active RFIs */}
           <Link
             href={`/${project.id}/rfis`}
-            className="group border border-neutral-200 bg-white p-8 transition-all duration-300 hover:border-[#DB802D] hover:shadow-sm"
+            className="group border border-neutral-200 bg-white p-8 transition-all duration-300 hover:border-brand hover:shadow-sm"
           >
             <div className="flex items-start justify-between mb-6">
               <div>
-                <FileText className="h-5 w-5 text-[#DB802D] mb-3" />
+                <FileText className="h-5 w-5 text-brand mb-3" />
                 <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
                   Active RFIs
                 </h3>
@@ -442,7 +716,7 @@ export function ProjectHomeClient({
           <div className="border border-neutral-200 bg-white p-8">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <AlertCircle className="h-5 w-5 text-[#DB802D] mb-3" />
+                <AlertCircle className="h-5 w-5 text-brand mb-3" />
                 <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
                   Requires Attention
                 </h3>
@@ -468,11 +742,11 @@ export function ProjectHomeClient({
       {/* Project Information Section - Architectural Layout */}
       <div className="mb-6">
         <div className="mb-8">
-          <h2 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500 mb-6">
+          <h2 className="text-[12px] font-semibold tracking-[0.15em] uppercase text-neutral-500 mb-6">
             Project Information
           </h2>
         </div>
-        <div className="border border-neutral-200 bg-white">
+        <div className="gap-2">
           <ProjectAccordions
             projectId={project.id.toString()}
             meetings={meetings}

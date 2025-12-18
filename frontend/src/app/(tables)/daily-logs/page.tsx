@@ -68,17 +68,21 @@ export default async function DailyLogsPage() {
   if (error) {
     console.error('Error fetching daily logs:', error)
     return (
-      <div className="container mx-auto py-10">
-        <div className="text-center text-red-600">
-          Error loading daily logs. Please try again later.
+      <div className="min-h-screen bg-neutral-50">
+        <div className="max-w-[1800px] mx-auto px-6 md:px-10 lg:px-12 py-12">
+          <div className="text-center text-red-600">
+            Error loading daily logs. Please try again later.
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <GenericDataTable data={dailyLogs || []} config={config} />
+    <div className="min-h-screen bg-neutral-50">
+      <div className="max-w-[1800px] mx-auto px-6 md:px-10 lg:px-12 py-12">
+        <GenericDataTable data={dailyLogs || []} config={config} />
+      </div>
     </div>
   )
 }

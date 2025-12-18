@@ -6,7 +6,7 @@ import { TextField } from "@/components/forms/TextField"
 import { SelectField } from "@/components/forms/SelectField"
 import { TextareaField } from "@/components/forms/TextareaField"
 import { NumberField } from "@/components/forms/NumberField"
-import { useCompanies } from "@/hooks/use-companies"
+import { useClients } from "@/hooks/use-clients"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -31,15 +31,13 @@ export function ContractGeneralSection({
   data,
   onChange,
 }: ContractGeneralSectionProps) {
-  // Fetch companies from Supabase
-  const { options: companyOptions, isLoading: companiesLoading, createCompany } = useCompanies()
+  // Fetch clients (owners) from Supabase
+  const { options: clientOptions, isLoading: clientsLoading, createClient } = useClients()
 
-  // State for "Add New Company" dialog
-  const [showAddCompany, setShowAddCompany] = React.useState(false)
-  const [newCompanyName, setNewCompanyName] = React.useState("")
-  const [newCompanyAddress, setNewCompanyAddress] = React.useState("")
-  const [newCompanyCity, setNewCompanyCity] = React.useState("")
-  const [newCompanyState, setNewCompanyState] = React.useState("")
+  // State for "Add New Client" dialog
+  const [showAddClient, setShowAddClient] = React.useState(false)
+  const [newClientName, setNewClientName] = React.useState("")
+  const [newClientCompany, setNewClientCompany] = React.useState("")
   const [isCreating, setIsCreating] = React.useState(false)
 
   // Standard status options (keep hardcoded - these are enums)
@@ -50,26 +48,21 @@ export function ContractGeneralSection({
     { value: "closed", label: "Closed" },
   ]
 
-  const handleCreateCompany = async () => {
-    if (!newCompanyName.trim()) return
+  const handleCreateClient = async () => {
+    if (!newClientName.trim()) return
 
     setIsCreating(true)
-    const newCompany = await createCompany({
-      name: newCompanyName.trim(),
-      address: newCompanyAddress.trim() || null,
-      city: newCompanyCity.trim() || null,
-      state: newCompanyState.trim() || null,
+    const newClient = await createClient({
+      name: newClientName.trim(),
+      company_name: newClientCompany.trim() || undefined,
+      status: "active",
     })
 
-    if (newCompany) {
-      // Select the newly created company
-      onChange({ contractCompanyId: newCompany.id })
-      // Reset form and close dialog
-      setNewCompanyName("")
-      setNewCompanyAddress("")
-      setNewCompanyCity("")
-      setNewCompanyState("")
-      setShowAddCompany(false)
+    if (newClient) {
+      onChange({ contractCompanyId: newClient.id.toString() })
+      setNewClientName("")
+      setNewClientCompany("")
+      setShowAddClient(false)
     }
     setIsCreating(false)
   }
@@ -82,93 +75,77 @@ export function ContractGeneralSection({
       >
         <TextField
           label="Contract Number"
+          name="contract_number"
           value={data.number || ""}
           onChange={(e) => onChange({ number: e.target.value })}
           required
           placeholder="PC-001"
+          data-testid="contract-number-input"
         />
 
         <TextField
           label="Contract Title"
+          name="title"
           value={data.title || ""}
           onChange={(e) => onChange({ title: e.target.value })}
           required
           fullWidth
           placeholder="Main Building Construction"
+          data-testid="contract-title-input"
         />
 
         <div className="space-y-2">
           <div className="flex items-end gap-2">
             <div className="flex-1">
               <SelectField
-                label="Contract Company"
-                options={companyOptions}
+                label="Contract Owner"
+                options={clientOptions}
                 value={data.contractCompanyId}
                 onValueChange={(value) => onChange({ contractCompanyId: value })}
                 required
-                placeholder={companiesLoading ? "Loading companies..." : "Select a company"}
-                disabled={companiesLoading}
+                placeholder={clientsLoading ? "Loading clients..." : "Select a client"}
+                disabled={clientsLoading}
               />
             </div>
-            <Dialog open={showAddCompany} onOpenChange={setShowAddCompany}>
+            <Dialog open={showAddClient} onOpenChange={setShowAddClient}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="icon" className="shrink-0" title="Add new company">
+                <Button variant="outline" size="icon" className="shrink-0" title="Add new client">
                   <Plus className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Add New Company</DialogTitle>
+                  <DialogTitle>Add New Client</DialogTitle>
                   <DialogDescription>
-                    Create a new company to use in contracts.
+                    Create a new client to use in contracts.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="company-name">Company Name *</Label>
+                    <Label htmlFor="client-name">Client Name *</Label>
                     <Input
-                      id="company-name"
-                      value={newCompanyName}
-                      onChange={(e) => setNewCompanyName(e.target.value)}
-                      placeholder="Enter company name"
+                      id="client-name"
+                      value={newClientName}
+                      onChange={(e) => setNewClientName(e.target.value)}
+                      placeholder="Enter client name"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="company-address">Address</Label>
+                    <Label htmlFor="client-company">Company (optional)</Label>
                     <Input
-                      id="company-address"
-                      value={newCompanyAddress}
-                      onChange={(e) => setNewCompanyAddress(e.target.value)}
-                      placeholder="Street address"
+                      id="client-company"
+                      value={newClientCompany}
+                      onChange={(e) => setNewClientCompany(e.target.value)}
+                      placeholder="Enter company name"
                     />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="company-city">City</Label>
-                      <Input
-                        id="company-city"
-                        value={newCompanyCity}
-                        onChange={(e) => setNewCompanyCity(e.target.value)}
-                        placeholder="City"
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="company-state">State</Label>
-                      <Input
-                        id="company-state"
-                        value={newCompanyState}
-                        onChange={(e) => setNewCompanyState(e.target.value)}
-                        placeholder="State"
-                      />
-                    </div>
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setShowAddCompany(false)}>
+                  <Button variant="outline" onClick={() => setShowAddClient(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={handleCreateCompany} disabled={!newCompanyName.trim() || isCreating}>
-                    {isCreating ? "Creating..." : "Create Company"}
+                  <Button onClick={handleCreateClient} disabled={!newClientName.trim() || isCreating}>
+                    {isCreating ? "Creating..." : "Create Client"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -178,10 +155,12 @@ export function ContractGeneralSection({
 
         <SelectField
           label="Status"
+          name="contract_type"
           options={statuses}
           value={data.status || "draft"}
           onValueChange={(value) => onChange({ status: value })}
           required
+          data-testid="contract-type-select"
         />
       </FormSection>
 
@@ -191,11 +170,13 @@ export function ContractGeneralSection({
       >
         <NumberField
           label="Original Contract Amount"
+          name="contract_value"
           value={data.originalAmount}
           onChange={(value) => onChange({ originalAmount: value || 0 })}
           required
           prefix="$"
           placeholder="0.00"
+          data-testid="contract-value-input"
         />
 
         <NumberField

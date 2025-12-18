@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { useDevAutoFill } from '@/hooks/use-dev-autofill';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -63,6 +64,8 @@ export function CommitmentForm({
       private: commitment?.private || false,
     },
   });
+
+  const { DevAutoFillButton } = useDevAutoFill('contract', setValue);
 
   const handleFormSubmit = async (data: CommitmentFormData) => {
     setIsSubmitting(true);
@@ -302,14 +305,17 @@ export function CommitmentForm({
         </Label>
       </div>
 
-      <div className="flex justify-end space-x-4">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {commitment ? 'Update' : 'Create'} Commitment
-        </Button>
+      <div className="flex justify-between items-center space-x-4">
+        <DevAutoFillButton />
+        <div className="flex space-x-4">
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {commitment ? 'Update' : 'Create'} Commitment
+          </Button>
+        </div>
       </div>
     </form>
   );

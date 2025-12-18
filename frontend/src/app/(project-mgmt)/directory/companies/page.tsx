@@ -136,31 +136,34 @@ export default function CompanyDirectoryPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Error Loading Companies</h1>
-          <p className="text-red-600">{error.message}</p>
+      <div className="min-h-screen bg-neutral-50">
+        <div className="max-w-[1800px] mx-auto px-6 md:px-10 lg:px-12 py-12">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Error Loading Companies</h1>
+            <p className="text-red-600">{error.message}</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Company Directory</h1>
-          <p className="text-gray-500">Manage your companies and contractors</p>
+    <div className="min-h-screen bg-neutral-50">
+      <div className="max-w-[1800px] mx-auto px-6 md:px-10 lg:px-12 py-12 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-serif font-light tracking-tight text-neutral-900">Company Directory</h1>
+            <p className="text-sm text-neutral-500 mt-3">Manage your companies and contractors</p>
+          </div>
+          <Button
+            onClick={handleAddCompany}
+            className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Company
+          </Button>
         </div>
-        <Button
-          onClick={handleAddCompany}
-          className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange))]/90"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Company
-        </Button>
-      </div>
 
       {/* Count */}
       {isSuccess && (
@@ -228,6 +231,7 @@ export default function CompanyDirectoryPage() {
         company={editingCompany}
         onSuccess={handleDialogSuccess}
       />
+      </div>
     </div>
   );
 }

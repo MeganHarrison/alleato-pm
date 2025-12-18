@@ -150,14 +150,15 @@ export function DocumentUploadSetup({ projectId, onNext, onSkip }: StepComponent
         setUploadedDocuments(prev => [...prev, document])
         
       } catch (err) {
-        console.error("Upload error:", err)
+        const errorMessage = err instanceof Error ? err.message : 'Upload failed';
+        console.error("Upload error:", errorMessage, err);
         setUploadingFiles(prev =>
           prev.map(f =>
             f.id === uploadFile.id
-              ? { 
-                  ...f, 
-                  status: "error" as const, 
-                  error: err instanceof Error ? err.message : "Upload failed" 
+              ? {
+                  ...f,
+                  status: "error" as const,
+                  error: errorMessage
                 }
               : f
           )

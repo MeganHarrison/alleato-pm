@@ -37,7 +37,7 @@ npx supabase init
 Generate types for your project to produce the `database.types.ts` file in the types folder:
 
 ```bash
-npx supabase gen types typescript --project-id "lgveqfnpkxvzbnnwuled" --schema public > src/types/database.types.ts
+npx supabase gen types typescript --project-id "lgveqfnpkxvzbnnwuled" --schema public > frontend/src/types/database.types.ts
 ```
 
 or in case of local development:

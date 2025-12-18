@@ -32,7 +32,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useProject } from '@/contexts/project-context';
+import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 interface BudgetPageHeaderProps {
   title?: string;
@@ -41,6 +41,7 @@ interface BudgetPageHeaderProps {
   lockedAt?: string | null;
   lockedBy?: string | null;
   onCreateClick?: () => void;
+  onModificationClick?: () => void;
   onResendToERP?: () => void;
   onLockBudget?: () => void;
   onUnlockBudget?: () => void;
@@ -54,12 +55,12 @@ export function BudgetPageHeader({
   lockedAt,
   lockedBy,
   onCreateClick,
+  onModificationClick,
   onResendToERP,
   onLockBudget,
   onUnlockBudget,
   onExport,
 }: BudgetPageHeaderProps) {
-  const { selectedProject, isLoading } = useProject();
   const [showLockDialog, setShowLockDialog] = React.useState(false);
   const [showUnlockDialog, setShowUnlockDialog] = React.useState(false);
 
@@ -84,138 +85,138 @@ export function BudgetPageHeader({
     });
   };
 
-  return (
-    <div className="flex items-center justify-between px-6 pb-4 border-b bg-white">
-      {/* Left side - Title and Status */}
-      <div className="flex items-center gap-3">
-        <div className="flex flex-col">
-          {/* Project Name - Displayed above page title */}
-          {isLoading ? (
-            <div className="h-4 w-40 bg-gray-200 animate-pulse rounded mb-1" />
-          ) : selectedProject ? (
-            <div className="text-sm font-medium text-muted-foreground mb-1">
-              {selectedProject.number && (
-                <span className="text-gray-600">
-                  {selectedProject.number}
-                  {' · '}
-                </span>
-              )}
-              <span className="text-orange-600">{selectedProject.name}</span>
-            </div>
-          ) : null}
+  const titleContent = (
+    <div className="flex items-center gap-2">
+      <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+      {isLocked && (
+        <Badge variant="secondary" className="flex items-center gap-1">
+          <Lock className="w-3 h-3" />
+          Locked
+        </Badge>
+      )}
+    </div>
+  );
 
-          {/* Page Title with Lock Status */}
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold">{title}</h1>
-            {isLocked && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <Lock className="w-3 h-3" />
-                Locked
-              </Badge>
-            )}
-          </div>
-          {isLocked && lockedAt && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Locked {formatDate(lockedAt)}{lockedBy ? ` by ${lockedBy}` : ''}
-            </p>
-          )}
-        </div>
+  const statusDescription = isLocked && lockedAt
+    ? `Locked ${formatDate(lockedAt)}${lockedBy ? ` by ${lockedBy}` : ''}`
+    : isSynced
+      ? 'Synced with ERP'
+      : 'Out of sync · Review before exporting';
 
-      </div>
+  const actionButtons = (
+    <div className="flex flex-wrap items-center gap-2 justify-end">
+      {/* Add Line Item Button - direct action */}
+      <Button
+        className="bg-primary hover:bg-primary/90 text-primary-foreground"
+        onClick={onCreateClick}
+      >
+        <Plus className="w-4 h-4 mr-1" />
+        Add Line Item
+      </Button>
 
-      {/* Right side - Action buttons */}
-      <div className="flex items-center gap-2">
-        {/* Create Button */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Plus className="w-4 h-4 mr-1" />
-              Create
-              <ChevronDown className="w-4 h-4 ml-1" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onCreateClick}>
-              Budget Line Item
-            </DropdownMenuItem>
-            <DropdownMenuItem>Budget Modification</DropdownMenuItem>
-            <DropdownMenuItem>Change Order</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      {/* Create Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="text-gray-700">
+            <Plus className="w-4 h-4 mr-1" />
+            Create
+            <ChevronDown className="w-4 h-4 ml-1" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={onCreateClick}>
+            Budget Line Item
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onModificationClick}>
+            Budget Modification
+          </DropdownMenuItem>
+          <DropdownMenuItem>Change Order</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-        {/* Resend to ERP Button */}
+      {/* Resend to ERP Button */}
+      <Button
+        variant="outline"
+        onClick={onResendToERP}
+        className="text-gray-700"
+      >
+        <ArrowRight className="w-4 h-4 mr-1" />
+        Resend to ERP
+      </Button>
+
+      {/* Lock/Unlock Budget Button */}
+      {isLocked ? (
         <Button
           variant="outline"
-          onClick={onResendToERP}
+          onClick={() => setShowUnlockDialog(true)}
           className="text-gray-700"
         >
-          <ArrowRight className="w-4 h-4 mr-1" />
-          Resend to ERP
+          <Unlock className="w-4 h-4 mr-1" />
+          Unlock Budget
         </Button>
-
-        {/* Lock/Unlock Budget Button */}
-        {isLocked ? (
-          <Button
-            variant="outline"
-            onClick={() => setShowUnlockDialog(true)}
-            className="text-gray-700"
-          >
-            <Unlock className="w-4 h-4 mr-1" />
-            Unlock Budget
-          </Button>
-        ) : (
-          <Button
-            variant="outline"
-            onClick={() => setShowLockDialog(true)}
-            className="text-gray-700"
-          >
-            <Lock className="w-4 h-4 mr-1" />
-            Lock Budget
-          </Button>
-        )}
-
-        {/* Export Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="text-gray-700">
-              <Download className="w-4 h-4 mr-1" />
-              Export
-              <ChevronDown className="w-4 h-4 ml-1" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onExport?.('pdf')}>
-              Export to PDF
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onExport?.('excel')}>
-              Export to Excel
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onExport?.('csv')}>
-              Export to CSV
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* More Options */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-gray-500">
-              <MoreVertical className="w-5 h-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>Configure Columns</DropdownMenuItem>
-            <DropdownMenuItem>Budget Settings</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View Audit Log</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Chat/Converse Icon */}
-        <Button variant="ghost" size="icon" className="text-gray-500">
-          <MessageSquare className="w-5 h-5" />
+      ) : (
+        <Button
+          variant="outline"
+          onClick={() => setShowLockDialog(true)}
+          className="text-gray-700"
+        >
+          <Lock className="w-4 h-4 mr-1" />
+          Lock Budget
         </Button>
-      </div>
+      )}
+
+      {/* Export Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="text-gray-700">
+            <Download className="w-4 h-4 mr-1" />
+            Export
+            <ChevronDown className="w-4 h-4 ml-1" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => onExport?.('pdf')}>
+            Export to PDF
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onExport?.('excel')}>
+            Export to Excel
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onExport?.('csv')}>
+            Export to CSV
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* More Options */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="text-gray-500">
+            <MoreVertical className="w-5 h-5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem>Configure Columns</DropdownMenuItem>
+          <DropdownMenuItem>Budget Settings</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>View Audit Log</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Chat/Converse Icon */}
+      <Button variant="ghost" size="icon" className="text-gray-500">
+        <MessageSquare className="w-5 h-5" />
+      </Button>
+    </div>
+  );
+
+  return (
+    <>
+      <ProjectPageHeader
+        title={title}
+        titleContent={titleContent}
+        description={statusDescription}
+        actions={actionButtons}
+      />
 
       {/* Lock Budget Confirmation Dialog */}
       <AlertDialog open={showLockDialog} onOpenChange={setShowLockDialog}>
@@ -290,6 +291,6 @@ export function BudgetPageHeader({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 }

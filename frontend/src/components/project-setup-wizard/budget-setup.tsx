@@ -214,8 +214,9 @@ export function BudgetSetup({ projectId, onNext, onSkip }: StepComponentProps) {
       onNext()
 
     } catch (err) {
-      console.error("Error saving budget:", err)
-      setError(err instanceof Error ? err.message : "Failed to save budget")
+      const errorMessage = err instanceof Error ? err.message : "Failed to save budget";
+      console.error("Error saving budget:", errorMessage, err);
+      setError(errorMessage);
     } finally {
       setSaving(false)
     }

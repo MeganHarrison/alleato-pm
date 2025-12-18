@@ -5,7 +5,7 @@
 - https://developers.procore.com/documentation/introduction
 - https://v2.support.procore.com
 - https://procore.com
-- https://cookbook.openai.com/articles/codex_exec_plans
+- https://cookbook.openai.com/articles/codex_PLANS_DOCs
 - /Users/meganharrison/Documents/github/alleato-procore/.agents/PLANS.md
 
 ## Folder Structure
@@ -30,7 +30,7 @@ See [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md) for the full breakdown and plac
 
 ### Docs
 
-- `docs/` – architectural/process documentation referenced by CLAUDE.md and the Exec Plan.
+- `docs/` – architectural/process documentation referenced by CLAUDE.md and the Plans Doc.
 
 ## How to use
 

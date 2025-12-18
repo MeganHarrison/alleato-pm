@@ -189,6 +189,9 @@ export async function POST(
       // Don't fail the request, modification was created
     }
 
+    // Refresh materialized view to reflect new modification
+    await supabase.rpc('refresh_budget_rollup', { p_project_id: projectId });
+
     return NextResponse.json({
       success: true,
       data: modification,

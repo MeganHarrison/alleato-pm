@@ -5,7 +5,6 @@ import { Suspense } from 'react';
 import {
   BudgetPageHeader,
   BudgetTabs,
-  BudgetStatusBanner,
   BudgetFilters,
   BudgetTable,
   BudgetLineItemModal,
@@ -19,11 +18,13 @@ import {
   budgetSyncStatus,
   budgetGrandTotals,
 } from '@/config/budget';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useProjectTitle } from '@/hooks/useProjectTitle';
 import { toast } from 'sonner';
+import { PageContainer } from '@/components/layout/PageContainer';
 
 export default function ProjectBudgetPage() {
+  const router = useRouter();
   const params = useParams();
   const projectId = params.projectId as string;
   useProjectTitle('Budget');
@@ -93,7 +94,17 @@ export default function ProjectBudgetPage() {
       return;
     }
     console.log('Create clicked for project:', projectId);
-    setShowLineItemModal(true);
+    // Navigate to line item creation page instead of modal
+    router.push(`/${projectId}/budget/line-item/new`);
+  };
+
+  const handleModificationClick = () => {
+    if (isLocked) {
+      toast.error('Budget is locked. Unlock to create modifications.');
+      return;
+    }
+    console.log('Modification clicked for project:', projectId);
+    setShowModificationModal(true);
   };
 
   const handleResendToERP = () => {
@@ -186,71 +197,62 @@ export default function ProjectBudgetPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-48px)]">
-      {/* Page Header */}
-      <div>
-        <BudgetPageHeader
-          title="Budget"
-          isSynced={budgetSyncStatus.isSynced}
-          isLocked={isLocked}
-          lockedAt={lockedAt}
-          lockedBy={lockedBy}
-          onCreateClick={handleCreateClick}
-          onResendToERP={handleResendToERP}
-          onLockBudget={handleLockBudget}
-          onUnlockBudget={handleUnlockBudget}
-          onExport={handleExport}
-        />
+    <div className="flex flex-1 flex-col bg-muted/30">
+      <BudgetPageHeader
+        title="Budget"
+        isSynced={budgetSyncStatus.isSynced}
+        isLocked={isLocked}
+        lockedAt={lockedAt}
+        lockedBy={lockedBy}
+        onCreateClick={handleCreateClick}
+        onModificationClick={handleModificationClick}
+        onResendToERP={handleResendToERP}
+        onLockBudget={handleLockBudget}
+        onUnlockBudget={handleUnlockBudget}
+        onExport={handleExport}
+      />
 
-        {/* Tab Navigation */}
-        <BudgetTabs activeTab={activeTab} onTabChange={handleTabChange} />
-      </div>
+      <BudgetTabs activeTab={activeTab} onTabChange={handleTabChange} />
 
-      {/* Tab Content */}
-      {activeTab === 'settings' ? (
-        // Settings Tab - Vertical Markup Configuration
-        <div className="flex-1 overflow-auto mx-6 mt-4 mb-6">
-          <VerticalMarkupSettings projectId={projectId} />
-        </div>
-      ) : (
-        <>
-          {/* Filter Controls */}
-          <div className="mx-6 mt-4 bg-white rounded-md">
-            <BudgetFilters
-              views={budgetViews}
-              snapshots={budgetSnapshots}
-              groups={budgetGroups}
-              selectedView={selectedView}
-              selectedSnapshot={selectedSnapshot}
-              selectedGroup={selectedGroup}
-              onViewChange={setSelectedView}
-              onSnapshotChange={setSelectedSnapshot}
-              onGroupChange={setSelectedGroup}
-              onAddFilter={handleAddFilter}
-              onAnalyzeVariance={handleAnalyzeVariance}
-              onToggleFullscreen={handleToggleFullscreen}
-            />
+      <PageContainer className="flex flex-1 flex-col gap-4 py-6" maxWidth="full">
+        {activeTab === 'settings' ? (
+          <div className="flex-1 rounded-lg border bg-white shadow-sm">
+            <VerticalMarkupSettings projectId={projectId} />
           </div>
+        ) : (
+          <>
+            <div className="rounded-lg border bg-white shadow-sm">
+              <BudgetFilters
+                views={budgetViews}
+                snapshots={budgetSnapshots}
+                groups={budgetGroups}
+                selectedView={selectedView}
+                selectedSnapshot={selectedSnapshot}
+                selectedGroup={selectedGroup}
+                onViewChange={setSelectedView}
+                onSnapshotChange={setSelectedSnapshot}
+                onGroupChange={setSelectedGroup}
+                onAddFilter={handleAddFilter}
+                onAnalyzeVariance={handleAnalyzeVariance}
+                onToggleFullscreen={handleToggleFullscreen}
+              />
+            </div>
 
-          {/* Budget Table */}
-          <div className="flex-1 overflow-hidden mx-6 mt-4 mb-6 bg-white rounded-md border border-gray-200">
-            <Suspense fallback={<div className="flex items-center justify-center h-full">Loading...</div>}>
-              {loading ? (
-                <div className="flex items-center justify-center h-full">
-                  Loading budget data for project {projectId}...
-                </div>
-              ) : (
-                <BudgetTable
-                  data={budgetData}
-                  grandTotals={grandTotals}
-                />
-              )}
-            </Suspense>
-          </div>
-        </>
-      )}
+            <div className="flex-1 rounded-lg border bg-white shadow-sm">
+              <Suspense fallback={<div className="flex items-center justify-center h-full">Loading...</div>}>
+                {loading ? (
+                  <div className="flex items-center justify-center h-full">
+                    Loading budget data for project {projectId}...
+                  </div>
+                ) : (
+                  <BudgetTable data={budgetData} grandTotals={grandTotals} />
+                )}
+              </Suspense>
+            </div>
+          </>
+        )}
+      </PageContainer>
 
-      {/* Modals */}
       <BudgetLineItemModal
         open={showLineItemModal}
         onOpenChange={setShowLineItemModal}

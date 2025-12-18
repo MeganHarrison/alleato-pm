@@ -67,15 +67,26 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const body = await request.json();
 
+    const projectId = body.project_id ? parseInt(body.project_id, 10) : null;
+
+    if (!projectId) {
+      return NextResponse.json({ error: 'project_id is required' }, { status: 400 });
+    }
+
+    const clientId = body.client_id ? parseInt(body.client_id, 10) : null;
+
     const { data, error } = await supabase
       .from('contracts')
       .insert({
         contract_number: body.contract_number,
         title: body.title,
-        client_id: body.client_id,
-        project_id: body.project_id,
+        client_id: clientId,
+        project_id: projectId,
         status: body.status || 'draft',
-        original_contract_amount: body.original_contract_amount,
+        original_contract_amount: body.original_contract_amount ?? 0,
+        revised_contract_amount: body.revised_contract_amount ?? body.original_contract_amount ?? 0,
+        retention_percentage: body.retention_percentage ?? null,
+        private: body.private ?? false,
         executed: body.executed || false,
         notes: body.notes,
       })

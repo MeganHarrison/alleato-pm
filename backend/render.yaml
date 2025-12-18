@@ -1,0 +1,23 @@
+# Render deployment configuration
+services:
+  - type: web
+    name: alleato-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: USE_UNIFIED_AGENT
+        value: true
+      - key: CORS_ORIGINS
+        value: https://alleato-procore.vercel.app,https://www.alleato-procore.vercel.app

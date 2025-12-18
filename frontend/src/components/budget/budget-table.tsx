@@ -190,6 +190,36 @@ function CurrencyCell({ value }: { value: number }) {
   );
 }
 
+const columnWidthClasses: Record<string, string> = {
+  expander: 'w-10 min-w-[40px]',
+  description: 'w-[280px] min-w-[240px]',
+  originalBudgetAmount: 'w-[130px] min-w-[120px]',
+  budgetModifications: 'w-[130px] min-w-[120px]',
+  approvedCOs: 'w-[120px] min-w-[110px]',
+  revisedBudget: 'w-[130px] min-w-[120px]',
+  jobToDateCostDetail: 'w-[140px] min-w-[130px]',
+  directCosts: 'w-[120px] min-w-[110px]',
+  pendingChanges: 'w-[120px] min-w-[110px]',
+  projectedBudget: 'w-[130px] min-w-[120px]',
+  committedCosts: 'w-[130px] min-w-[120px]',
+  pendingCostChanges: 'w-[130px] min-w-[120px]',
+  projectedCosts: 'w-[130px] min-w-[120px]',
+  forecastToComplete: 'w-[130px] min-w-[120px]',
+  estimatedCostAtCompletion: 'w-[150px] min-w-[130px]',
+  projectedOverUnder: 'w-[130px] min-w-[120px]',
+};
+
+const depthPaddingClasses = ['pl-0', 'pl-4', 'pl-8', 'pl-12', 'pl-16', 'pl-20'];
+
+function getWidthClass(id: string | undefined) {
+  return columnWidthClasses[id ?? ''] ?? 'min-w-[120px]';
+}
+
+function getDepthPadding(depth: number) {
+  const index = Math.min(depth, depthPaddingClasses.length - 1);
+  return depthPaddingClasses[index];
+}
+
 export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
@@ -223,10 +253,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
       cell: ({ row }) => (
         <div
           className={cn(
-            "font-medium text-gray-900",
-            row.depth > 0 && "text-gray-700"
+            'font-medium text-gray-900',
+            row.depth > 0 && 'text-gray-700',
+            getDepthPadding(row.depth)
           )}
-          style={{ paddingLeft: `${row.depth * 20}px` }}
         >
           {row.getValue('description')}
         </div>
@@ -238,7 +268,7 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
       header: () => (
         <ColumnHeader
           columnKey="originalBudgetAmount"
-          lines={['Original Budget', 'Amount']}
+          lines={['Original Budget']}
         />
       ),
       cell: ({ row }) => (
@@ -253,7 +283,7 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
       header: () => (
         <ColumnHeader
           columnKey="budgetModifications"
-          lines={['Budget', 'Modifications']}
+          lines={['Budget Mods']}
         />
       ),
       cell: ({ row }) => (
@@ -292,7 +322,7 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
       header: () => (
         <ColumnHeader
           columnKey="jobToDateCostDetail"
-          lines={['Job to Date Cost', 'Detail']}
+          lines={['JTD Cost Detail']}
         />
       ),
       cell: ({ row }) => (
@@ -449,8 +479,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="text-xs font-semibold text-gray-600 py-3 px-4 bg-gray-100/80"
-                    style={{ width: header.getSize() }}
+                    className={cn(
+                      'text-xs font-semibold text-gray-600 py-3 px-2 bg-gray-100/80',
+                      getWidthClass(header.column.id)
+                    )}
                   >
                     {header.isPlaceholder
                       ? null
@@ -477,10 +509,10 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
                     <TableCell
                       key={cell.id}
                       className={cn(
-                        "py-3 px-4 text-sm",
-                        row.depth > 0 && "text-gray-600"
+                        'py-3 px-2 text-sm',
+                        row.depth > 0 && 'text-gray-600',
+                        getWidthClass(cell.column.id)
                       )}
-                      style={{ width: cell.column.getSize() }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
@@ -501,58 +533,91 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
       {/* Grand Totals Row - Fixed at bottom - Only show if there are rows */}
       {table.getRowModel().rows?.length > 0 && (
         <div className="border-t-2 border-gray-300 bg-gray-50 sticky bottom-0">
-          <Table>
-            <TableBody>
-              <TableRow className="font-semibold bg-gray-50">
-              <TableCell className="py-3 px-4" style={{ width: 40 }} />
-              <TableCell className="py-3 px-4 text-sm font-bold text-gray-900" style={{ width: 200 }}>
-                Grand Totals
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 130 }}>
-                <CurrencyCell value={grandTotals.originalBudgetAmount} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 130 }}>
-                <CurrencyCell value={grandTotals.budgetModifications} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 120 }}>
-                <CurrencyCell value={grandTotals.approvedCOs} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 130 }}>
-                <CurrencyCell value={grandTotals.revisedBudget} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 140 }}>
-                <CurrencyCell value={grandTotals.jobToDateCostDetail} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 120 }}>
-                <CurrencyCell value={grandTotals.directCosts} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 110 }}>
-                <CurrencyCell value={grandTotals.pendingChanges} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 130 }}>
-                <CurrencyCell value={grandTotals.projectedBudget} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 130 }}>
-                <CurrencyCell value={grandTotals.committedCosts} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 130 }}>
-                <CurrencyCell value={grandTotals.pendingCostChanges} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 130 }}>
-                <CurrencyCell value={grandTotals.projectedCosts} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 130 }}>
-                <CurrencyCell value={grandTotals.forecastToComplete} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 150 }}>
-                <CurrencyCell value={grandTotals.estimatedCostAtCompletion} />
-              </TableCell>
-              <TableCell className="py-3 px-4 text-sm text-right" style={{ width: 130 }}>
-                <CurrencyCell value={grandTotals.projectedOverUnder} />
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+          <table className="w-full caption-bottom text-sm table-fixed">
+            <tbody>
+              <tr className="font-semibold bg-gray-50 border-b transition-colors">
+                <td className={cn('py-3 px-2', getWidthClass('expander'))} />
+                <td
+                  className={cn(
+                    'py-3 px-2 text-sm font-bold text-gray-900',
+                    getWidthClass('description')
+                  )}
+                >
+                  Grand Totals
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('originalBudgetAmount'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.originalBudgetAmount} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('budgetModifications'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.budgetModifications} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('approvedCOs'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.approvedCOs} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('revisedBudget'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.revisedBudget} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('jobToDateCostDetail'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.jobToDateCostDetail} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('directCosts'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.directCosts} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('pendingChanges'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.pendingChanges} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('projectedBudget'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.projectedBudget} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('committedCosts'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.committedCosts} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('pendingCostChanges'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.pendingCostChanges} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('projectedCosts'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.projectedCosts} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('forecastToComplete'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.forecastToComplete} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('estimatedCostAtCompletion'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.estimatedCostAtCompletion} />
+                  </div>
+                </td>
+                <td className={cn('py-3 px-2 text-sm', getWidthClass('projectedOverUnder'))}>
+                  <div className="text-right">
+                    <CurrencyCell value={grandTotals.projectedOverUnder} />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
       </div>
       )}
     </div>

@@ -31,6 +31,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -51,6 +58,7 @@ import {
 import { toast } from 'sonner'
 import { Database } from '@/types/database.types'
 import { createClient } from '@/lib/supabase/client'
+import { useProjects } from '@/hooks/use-projects'
 
 export type Meeting = Database['public']['Tables']['document_metadata']['Row']
 
@@ -64,6 +72,7 @@ const COLUMNS = [
   { id: "type", label: "Type", defaultVisible: true },
   { id: "category", label: "Category", defaultVisible: true },
   { id: "source", label: "Source", defaultVisible: true },
+  { id: "url", label: "URL", defaultVisible: true },
   { id: "project", label: "Project", defaultVisible: true },
 ]
 
@@ -72,6 +81,30 @@ const getMeetingYear = (dateString: string | null): string | null => {
   const parsedDate = new Date(dateString)
   if (Number.isNaN(parsedDate.getTime())) return null
   return parsedDate.getFullYear().toString()
+}
+
+// Generate consistent color for project names
+const getProjectColor = (projectName: string): string => {
+  const colors = [
+    'bg-blue-100 text-blue-800 border-blue-200',
+    'bg-purple-100 text-purple-800 border-purple-200',
+    'bg-green-100 text-green-800 border-green-200',
+    'bg-amber-100 text-amber-800 border-amber-200',
+    'bg-rose-100 text-rose-800 border-rose-200',
+    'bg-cyan-100 text-cyan-800 border-cyan-200',
+    'bg-indigo-100 text-indigo-800 border-indigo-200',
+    'bg-pink-100 text-pink-800 border-pink-200',
+    'bg-teal-100 text-teal-800 border-teal-200',
+    'bg-orange-100 text-orange-800 border-orange-200',
+  ]
+
+  // Generate consistent hash from project name
+  let hash = 0
+  for (let i = 0; i < projectName.length; i++) {
+    hash = projectName.charCodeAt(i) + ((hash << 5) - hash)
+  }
+
+  return colors[Math.abs(hash) % colors.length]
 }
 
 export function MeetingsDataTable({ meetings: initialMeetings }: MeetingsDataTableProps) {
@@ -87,6 +120,9 @@ export function MeetingsDataTable({ meetings: initialMeetings }: MeetingsDataTab
   const [yearFilter, setYearFilter] = useState<string>('all')
   const [sortColumn, setSortColumn] = useState<string>('date')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
+
+  // Fetch projects for dropdown
+  const { projects } = useProjects()
 
   const availableYears = useMemo(() => {
     const years = new Set<string>()
@@ -127,6 +163,8 @@ export function MeetingsDataTable({ meetings: initialMeetings }: MeetingsDataTab
         return meeting.category?.toLowerCase() || ''
       case 'source':
         return meeting.source?.toLowerCase() || ''
+      case 'url':
+        return meeting.url?.toLowerCase() || ''
       case 'project':
         return meeting.project?.toLowerCase() || ''
       default:
@@ -175,13 +213,14 @@ export function MeetingsDataTable({ meetings: initialMeetings }: MeetingsDataTab
   }
 
   const exportToCSV = () => {
-    const headers = ['Title', 'Date', 'Type', 'Category', 'Source', 'Project']
+    const headers = ['Title', 'Date', 'Type', 'Category', 'Source', 'URL', 'Project']
     const rows = sortedMeetings.map(m => [
       m.title || '',
       m.date ? format(new Date(m.date), 'yyyy-MM-dd') : '',
       m.type || '',
       m.category || '',
       m.source || '',
+      m.url || '',
       m.project || ''
     ])
 
@@ -224,6 +263,7 @@ export function MeetingsDataTable({ meetings: initialMeetings }: MeetingsDataTab
       type: meeting.type,
       category: meeting.category,
       source: meeting.source,
+      url: meeting.url,
       project: meeting.project,
       participants: meeting.participants,
       summary: meeting.summary,
@@ -420,6 +460,17 @@ export function MeetingsDataTable({ meetings: initialMeetings }: MeetingsDataTab
                       </div>
                     </TableHead>
                   )}
+                  {visibleColumns.has('url') && (
+                    <TableHead
+                      className="w-[200px] cursor-pointer select-none"
+                      onClick={() => handleSort('url')}
+                    >
+                      <div className="flex items-center">
+                        URL
+                        {renderSortIcon('url')}
+                      </div>
+                    </TableHead>
+                  )}
                   {visibleColumns.has('project') && (
                     <TableHead
                       className="w-[150px] cursor-pointer select-none"
@@ -512,13 +563,30 @@ export function MeetingsDataTable({ meetings: initialMeetings }: MeetingsDataTab
                           )}
                         </TableCell>
                       )}
+                      {visibleColumns.has('url') && (
+                        <TableCell
+                          className="max-w-[200px] cursor-text"
+                          onClick={handleCellEdit(meeting)}
+                        >
+                          {meeting.url ? (
+                            <div className="text-sm text-muted-foreground truncate" title={meeting.url}>
+                              {meeting.url}
+                            </div>
+                          ) : (
+                            '-'
+                          )}
+                        </TableCell>
+                      )}
                       {visibleColumns.has('project') && (
                         <TableCell
                           className="cursor-text"
                           onClick={handleCellEdit(meeting)}
                         >
                           {meeting.project ? (
-                            <Badge variant="outline" className="font-normal truncate max-w-[140px]">
+                            <Badge
+                              variant="outline"
+                              className={`font-normal truncate max-w-[140px] ${getProjectColor(meeting.project)}`}
+                            >
                               {meeting.project}
                             </Badge>
                           ) : (
@@ -618,10 +686,21 @@ export function MeetingsDataTable({ meetings: initialMeetings }: MeetingsDataTab
               </div>
               <div className="grid gap-2">
                 <Label>Project</Label>
-                <Input
+                <Select
                   value={editData.project || ''}
-                  onChange={(e) => setEditData({ ...editData, project: e.target.value })}
-                />
+                  onValueChange={(value) => setEditData({ ...editData, project: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a project" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((project) => (
+                      <SelectItem key={project.id} value={project.name || ''}>
+                        {project.name || 'Unnamed Project'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label>Participants</Label>
@@ -635,6 +714,13 @@ export function MeetingsDataTable({ meetings: initialMeetings }: MeetingsDataTab
                 <Input
                   value={editData.source || ''}
                   onChange={(e) => setEditData({ ...editData, source: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>URL</Label>
+                <Input
+                  value={editData.url || ''}
+                  onChange={(e) => setEditData({ ...editData, url: e.target.value })}
                 />
               </div>
               <div className="grid gap-2">

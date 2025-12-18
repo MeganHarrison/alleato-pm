@@ -83,14 +83,14 @@ export function ContractSetup({ projectId, onNext, onSkip }: StepComponentProps)
           .from("schedule_of_values")
           .insert({
             contract_id: newContract.id,
-            project_id: projectId,
-            revision: 1,
             total_amount: newContract.original_contract_amount || 0,
             status: "draft",
-            is_current: true,
           })
 
-        if (sovError) throw sovError
+        if (sovError) {
+          console.error("Error creating SOV:", sovError)
+          throw sovError
+        }
       }
 
       onNext()

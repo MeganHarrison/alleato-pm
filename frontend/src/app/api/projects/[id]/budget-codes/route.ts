@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 import { createClient } from '@/lib/supabase/server';
 
@@ -10,6 +11,16 @@ type BudgetCodeResponse = {
     costType: string | null;
     fullLabel: string;
   }>;
+};
+
+type BudgetCodeRow = {
+  id: string;
+  cost_code_id: string;
+  description: string | null;
+  cost_code_types: {
+    code: string | null;
+    description: string | null;
+  } | null;
 };
 
 const formatBudgetCode = (options: {
@@ -28,10 +39,11 @@ const formatBudgetCode = (options: {
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const projectId = Number.parseInt(params.id, 10);
+    const { id } = await params;
+    const projectId = Number.parseInt(id, 10);
 
     if (Number.isNaN(projectId)) {
       return NextResponse.json(
@@ -42,85 +54,142 @@ export async function GET(
 
     const supabase = await createClient();
 
-    // Prefer project-specific cost codes when they exist
-    const { data: projectCostCodes, error: projectCostCodesError } = await supabase
-      .from('project_cost_codes')
+    // Fetch budget_codes for this project (these are the codes available for line items)
+    const { data: budgetCodesData, error: budgetCodesError } = await supabase
+      .from('budget_codes')
       .select(
         `
+          id,
           cost_code_id,
-          cost_type_id,
-          cost_codes ( id, description ),
-          cost_code_types ( id, code, description )
+          description,
+          cost_code_types ( code, description )
         `
       )
       .eq('project_id', projectId)
-      .eq('is_active', true);
+      .order('position', { ascending: true });
 
-    if (projectCostCodesError) {
-      console.error('Error fetching project cost codes:', projectCostCodesError);
+    if (budgetCodesError) {
+      console.error('Error fetching budget codes:', budgetCodesError);
       return NextResponse.json(
-        { error: 'Failed to load project cost codes' },
+        { error: 'Failed to load budget codes', details: budgetCodesError.message },
         { status: 500 }
       );
     }
 
-    // Fallback to global cost codes if the project has none configured
-    let budgetCodes: BudgetCodeResponse['budgetCodes'] = [];
-
-    if (projectCostCodes && projectCostCodes.length > 0) {
-      type ProjectCostCodeRow = {
-        cost_code_id: string | null;
-        cost_type_id: string | null;
-        cost_codes?: { id: string; description: string | null } | null;
-        cost_code_types?: { id: string; code: string | null; description: string | null } | null;
-      };
-
-      budgetCodes = (projectCostCodes as ProjectCostCodeRow[]).map((item) => {
-        const code = item.cost_codes?.id || item.cost_code_id || '';
-        const description = item.cost_codes?.description;
-        const costType = item.cost_code_types?.code || item.cost_type_id || null;
-        const costTypeDescription = item.cost_code_types?.description;
+    // Transform the data
+    const budgetCodes: BudgetCodeResponse['budgetCodes'] =
+      (budgetCodesData || []).map((item: BudgetCodeRow) => {
+        const costType = item.cost_code_types?.code || null;
+        const costTypeDescription = item.cost_code_types?.description || null;
 
         return {
-          id: code,
-          code,
-          description: description || '',
+          id: item.id,
+          code: item.cost_code_id,
+          description: item.description || '',
           costType,
           fullLabel: formatBudgetCode({
-            code,
-            description,
+            code: item.cost_code_id,
+            description: item.description,
             costType,
             costTypeDescription,
           }),
         };
       });
-    } else {
-      const { data: costCodes, error: costCodesError } = await supabase
-        .from('cost_codes')
-        .select('id, description')
-        .eq('status', 'True')
-        .order('id', { ascending: true });
-
-      if (costCodesError) {
-        console.error('Error fetching cost codes:', costCodesError);
-        return NextResponse.json(
-          { error: 'Failed to load cost codes' },
-          { status: 500 }
-        );
-      }
-
-      budgetCodes = (costCodes || []).map((code) => ({
-        id: code.id,
-        code: code.id,
-        description: code.description || '',
-        costType: null,
-        fullLabel: formatBudgetCode({ code: code.id, description: code.description }),
-      }));
-    }
 
     return NextResponse.json({ budgetCodes });
   } catch (error) {
     console.error('Error in budget codes route:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const projectId = Number.parseInt(id, 10);
+
+    if (Number.isNaN(projectId)) {
+      return NextResponse.json(
+        { error: 'Invalid project ID' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const { cost_code_id, cost_type_id, description } = body;
+
+    if (!cost_code_id) {
+      return NextResponse.json(
+        { error: 'cost_code_id is required' },
+        { status: 400 }
+      );
+    }
+
+    const supabase = await createClient();
+
+    // Get the current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Insert new budget code
+    const { data: newBudgetCode, error: insertError } = await supabase
+      .from('budget_codes')
+      .insert({
+        project_id: projectId,
+        cost_code_id,
+        cost_type_id: cost_type_id || null,
+        description: description || null,
+        created_by: user.id,
+      })
+      .select(
+        `
+          id,
+          cost_code_id,
+          description,
+          cost_code_types ( code, description )
+        `
+      )
+      .single();
+
+    if (insertError) {
+      console.error('Error creating budget code:', insertError);
+      return NextResponse.json(
+        { error: 'Failed to create budget code', details: insertError.message },
+        { status: 500 }
+      );
+    }
+
+    // Transform response to match frontend format
+    const costType = newBudgetCode.cost_code_types?.code || null;
+    const costTypeDescription = newBudgetCode.cost_code_types?.description || null;
+
+    const budgetCode = {
+      id: newBudgetCode.id,
+      code: newBudgetCode.cost_code_id,
+      description: newBudgetCode.description || '',
+      costType,
+      fullLabel: formatBudgetCode({
+        code: newBudgetCode.cost_code_id,
+        description: newBudgetCode.description,
+        costType,
+        costTypeDescription,
+      }),
+    };
+
+    return NextResponse.json({ budgetCode });
+  } catch (error) {
+    console.error('Error in POST budget codes route:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

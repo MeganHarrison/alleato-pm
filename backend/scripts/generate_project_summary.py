@@ -46,23 +46,37 @@ from supabase_helpers import get_supabase_client
 
 SUMMARY_PROMPT = """You are an AI Chief of Staff analyzing meeting transcripts for a construction/engineering project.
 
-Based on the meeting transcripts below, generate a comprehensive project summary that includes:
+Based on the meeting transcripts below, generate a comprehensive project summary with SPECIFIC, DATA-DRIVEN insights.
 
-1. **Project Overview**: What is this project about? What's being built/delivered?
-2. **Key Stakeholders**: Who are the main people involved and their roles?
-3. **Current Status**: What phase is the project in? What's been accomplished?
-4. **Critical Issues**: What are the main challenges, risks, or blockers?
-5. **Recent Decisions**: What important decisions have been made recently?
-6. **Next Steps**: What are the immediate priorities?
+Your analysis MUST include:
 
-Write the summary in 2-3 paragraphs, in a professional but accessible tone. Focus on actionable intelligence that would help an executive quickly understand the project's state.
+1. **Project Overview**: What is this project about? What's being built/delivered? What is the scope?
+
+2. **Key Stakeholders**: Who are the main people involved? List specific names and their roles mentioned in the meetings.
+
+3. **Current Status**: What phase is the project in? What milestones have been completed? What work is currently in progress?
+
+4. **Critical Issues & Risks**:
+   - Identify SPECIFIC risks mentioned in the meetings (e.g., "Structural steel delivery delayed by 3 weeks", "Budget overrun of $450K on foundation work")
+   - Look for schedule delays, cost overruns, design issues, permitting problems, subcontractor performance issues
+   - Quote specific concerns raised by team members
+   - Flag any recurring themes or patterns across multiple meetings
+   - If NO specific risks are mentioned, state "No specific risks identified in recent meetings" rather than providing generic risks
+
+5. **Recent Decisions**: What concrete decisions have been made? List specific action items, scope changes, or direction changes.
+
+6. **Next Steps**: What are the immediate priorities? What deadlines are approaching?
+
+CRITICAL: Be SPECIFIC. Reference actual data points, names, numbers, and dates from the meetings. Avoid generic statements like "there may be delays" - instead say "John mentioned 2-week delay on electrical rough-in due to inspector availability" or similar concrete details.
+
+If certain information is not available in the meetings, explicitly state "Not discussed in recent meetings" rather than making assumptions.
 
 PROJECT NAME: {project_name}
 
 MEETING TRANSCRIPTS:
 {transcripts}
 
-Generate the project summary:"""
+Generate a detailed, data-driven project summary (2-4 paragraphs):"""
 
 
 def get_project_info(client, project_id: int) -> Optional[dict]:
@@ -90,7 +104,7 @@ def get_document_content(client, document_id: str) -> Optional[str]:
 
 
 def generate_summary_with_openai(project_name: str, transcripts: str) -> str:
-    """Generate summary using OpenAI."""
+    """Generate summary using OpenAI GPT-4o."""
     openai_client = OpenAI()
 
     prompt = SUMMARY_PROMPT.format(
@@ -99,12 +113,12 @@ def generate_summary_with_openai(project_name: str, transcripts: str) -> str:
     )
 
     response = openai_client.chat.completions.create(
-        model="gpt-5.1",
+        model="gpt-4o",
         messages=[
-            {"role": "system", "content": "You are an expert project analyst specializing in construction and engineering projects."},
+            {"role": "system", "content": "You are an expert project analyst specializing in construction and engineering projects. You create clear, actionable summaries for executives. Always provide specific, data-driven insights based on the actual meeting content."},
             {"role": "user", "content": prompt}
         ],
-        max_completion_tokens=1000,
+        max_completion_tokens=2000,
         temperature=0.7
     )
 

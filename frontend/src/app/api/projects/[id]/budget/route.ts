@@ -11,7 +11,7 @@ export async function GET(
     const { id } = await params;
     const projectId = parseInt(id, 10);
 
-    if (isNaN(projectId)) {
+    if (Number.isNaN(projectId)) {
       return NextResponse.json(
         { error: 'Invalid project ID' },
         { status: 400 }
@@ -20,17 +20,12 @@ export async function GET(
 
     const supabase = await createClient();
 
-    // Fetch budget items with cost code details
+    // Fetch budget items from materialized view (all calculations done in SQL)
     const { data: budgetItems, error } = await supabase
-      .from('budget_items')
-      .select(`
-        *,
-        cost_codes (
-          id,
-          description
-        )
-      `)
+      .from('mv_budget_rollup')
+      .select('*')
       .eq('project_id', projectId)
+      .order('position', { ascending: true })
       .order('cost_code_id', { ascending: true });
 
     if (error) {
@@ -41,61 +36,75 @@ export async function GET(
       );
     }
 
-    // Transform data to match frontend expectations
+    // Fetch grand totals from view (also calculated in SQL)
+    const { data: grandTotalsData, error: totalsError } = await supabase
+      .from('v_budget_grand_totals')
+      .select('*')
+      .eq('project_id', projectId)
+      .maybeSingle();
+
+    if (totalsError) {
+      console.error('Error fetching grand totals:', totalsError);
+    }
+
+    // Transform to frontend format (no calculations, just formatting)
     const lineItems = (budgetItems || []).map((item: any) => ({
-      id: item.id,
-      description: `${item.cost_code_id} - ${item.cost_codes?.description || ''}`,
-      originalBudgetAmount: item.original_budget_amount || 0,
-      budgetModifications: item.budget_modifications || 0,
-      approvedCOs: item.approved_cos || 0,
-      revisedBudget: item.revised_budget || item.original_budget_amount || 0,
-      jobToDateCostDetail: 0, // TODO: Calculate from actual costs
-      directCosts: item.direct_cost || 0,
-      pendingChanges: 0, // TODO: Calculate from pending changes
-      projectedBudget: item.revised_budget || item.original_budget_amount || 0,
-      committedCosts: item.committed_cost || 0,
-      pendingCostChanges: item.pending_cost_changes || 0,
-      projectedCosts: item.projected_cost || 0,
-      forecastToComplete: item.forecast_to_complete || 0,
-      estimatedCostAtCompletion: (item.projected_cost || 0) + (item.forecast_to_complete || 0),
-      projectedOverUnder: (item.revised_budget || item.original_budget_amount || 0) - ((item.projected_cost || 0) + (item.forecast_to_complete || 0)),
+      id: item.budget_code_id,
+      description: `${item.cost_code_id} - ${item.cost_code_description || ''} ${item.cost_type_code ? `(${item.cost_type_code})` : ''}`,
+      costCode: item.cost_code_id,
+      costCodeDescription: item.cost_code_description,
+      costType: item.cost_type_code,
+      division: item.cost_code_division,
+      divisionTitle: item.division_title,
+
+      // All values come directly from SQL (no JavaScript calculation)
+      originalBudgetAmount: parseFloat(item.original_budget_amount) || 0,
+      budgetModifications: parseFloat(item.budget_modifications) || 0,
+      approvedCOs: parseFloat(item.approved_cos) || 0,
+      revisedBudget: parseFloat(item.revised_budget) || 0,
+      jobToDateCostDetail: parseFloat(item.job_to_date_cost) || 0,
+      directCosts: parseFloat(item.direct_costs) || 0,
+      pendingChanges: parseFloat(item.pending_budget_changes) || 0,
+      projectedBudget: parseFloat(item.projected_budget) || 0,
+      committedCosts: parseFloat(item.committed_costs) || 0,
+      pendingCostChanges: parseFloat(item.pending_cost_changes) || 0,
+      projectedCosts: parseFloat(item.projected_costs) || 0,
+      forecastToComplete: parseFloat(item.forecast_to_complete) || 0,
+      estimatedCostAtCompletion: parseFloat(item.estimated_cost_at_completion) || 0,
+      projectedOverUnder: parseFloat(item.projected_over_under) || 0,
     }));
 
-    // Calculate grand totals
-    const grandTotals = lineItems.reduce(
-      (acc, item) => ({
-        originalBudgetAmount: acc.originalBudgetAmount + item.originalBudgetAmount,
-        budgetModifications: acc.budgetModifications + item.budgetModifications,
-        approvedCOs: acc.approvedCOs + item.approvedCOs,
-        revisedBudget: acc.revisedBudget + item.revisedBudget,
-        jobToDateCostDetail: acc.jobToDateCostDetail + item.jobToDateCostDetail,
-        directCosts: acc.directCosts + item.directCosts,
-        pendingChanges: acc.pendingChanges + item.pendingChanges,
-        projectedBudget: acc.projectedBudget + item.projectedBudget,
-        committedCosts: acc.committedCosts + item.committedCosts,
-        pendingCostChanges: acc.pendingCostChanges + item.pendingCostChanges,
-        projectedCosts: acc.projectedCosts + item.projectedCosts,
-        forecastToComplete: acc.forecastToComplete + item.forecastToComplete,
-        estimatedCostAtCompletion: acc.estimatedCostAtCompletion + item.estimatedCostAtCompletion,
-        projectedOverUnder: acc.projectedOverUnder + item.projectedOverUnder,
-      }),
-      {
-        originalBudgetAmount: 0,
-        budgetModifications: 0,
-        approvedCOs: 0,
-        revisedBudget: 0,
-        jobToDateCostDetail: 0,
-        directCosts: 0,
-        pendingChanges: 0,
-        projectedBudget: 0,
-        committedCosts: 0,
-        pendingCostChanges: 0,
-        projectedCosts: 0,
-        forecastToComplete: 0,
-        estimatedCostAtCompletion: 0,
-        projectedOverUnder: 0,
-      }
-    );
+    const grandTotals = grandTotalsData ? {
+      originalBudgetAmount: parseFloat(grandTotalsData.original_budget_amount) || 0,
+      budgetModifications: parseFloat(grandTotalsData.budget_modifications) || 0,
+      approvedCOs: parseFloat(grandTotalsData.approved_cos) || 0,
+      revisedBudget: parseFloat(grandTotalsData.revised_budget) || 0,
+      jobToDateCostDetail: parseFloat(grandTotalsData.job_to_date_cost) || 0,
+      directCosts: parseFloat(grandTotalsData.direct_costs) || 0,
+      pendingChanges: parseFloat(grandTotalsData.pending_budget_changes) || 0,
+      projectedBudget: parseFloat(grandTotalsData.projected_budget) || 0,
+      committedCosts: parseFloat(grandTotalsData.committed_costs) || 0,
+      pendingCostChanges: parseFloat(grandTotalsData.pending_cost_changes) || 0,
+      projectedCosts: parseFloat(grandTotalsData.projected_costs) || 0,
+      forecastToComplete: parseFloat(grandTotalsData.forecast_to_complete) || 0,
+      estimatedCostAtCompletion: parseFloat(grandTotalsData.estimated_cost_at_completion) || 0,
+      projectedOverUnder: parseFloat(grandTotalsData.projected_over_under) || 0,
+    } : {
+      originalBudgetAmount: 0,
+      budgetModifications: 0,
+      approvedCOs: 0,
+      revisedBudget: 0,
+      jobToDateCostDetail: 0,
+      directCosts: 0,
+      pendingChanges: 0,
+      projectedBudget: 0,
+      committedCosts: 0,
+      pendingCostChanges: 0,
+      projectedCosts: 0,
+      forecastToComplete: 0,
+      estimatedCostAtCompletion: 0,
+      projectedOverUnder: 0,
+    };
 
     return NextResponse.json({
       lineItems,
@@ -119,7 +128,7 @@ export async function POST(
     const { id } = await params;
     const projectId = parseInt(id, 10);
 
-    if (isNaN(projectId)) {
+    if (Number.isNaN(projectId)) {
       return NextResponse.json(
         { error: 'Invalid project ID' },
         { status: 400 }
@@ -143,6 +152,7 @@ export async function POST(
       uom: item.uom ?? null,
       unitCost: item.unitCost && item.unitCost !== '' ? parseFloat(item.unitCost) : null,
       amount: parseFloat(item.amount),
+      description: item.description ?? null,
     }));
 
     const supabase = await createClient();
@@ -168,58 +178,94 @@ export async function POST(
     // Create a map of code ID to verify existence
     const validCostCodeIds = new Set((costCodeData || []).map(cc => cc.id));
 
-    // Prepare budget items for insertion
-    const budgetItemsToInsert = normalizedLineItems.map((item) => {
-      const originalAmount = item.amount || 0;
+    // Create budget_codes and budget_line_items using new schema
+    const results = [];
 
+    for (const item of normalizedLineItems) {
       if (!validCostCodeIds.has(item.costCodeId)) {
         throw new Error(`Cost code not found: ${item.costCodeId}`);
       }
 
-      return {
-        project_id: projectId,
-        cost_code_id: item.costCodeId,
-        cost_type: item.costType || null,
-        original_budget_amount: originalAmount,
-        unit_qty: item.qty ?? null,
-        uom: item.uom || null,
-        unit_cost: item.unitCost ?? null,
-        calculation_method: null,
-      };
-    });
+      // 1. Create or get budget_code
+      // First try to find existing budget_code
+      const { data: existingBudgetCode } = await supabase
+        .from('budget_codes')
+        .select('id')
+        .eq('project_id', projectId)
+        .eq('cost_code_id', item.costCodeId)
+        .is('sub_job_id', null)
+        .is('cost_type_id', item.costType || null)
+        .maybeSingle();
 
-    // Insert budget items
-    try {
-      const { data: insertedItems, error: insertError } = await supabase
-        .from('budget_items')
-        .insert(budgetItemsToInsert)
-        .select();
+      let budgetCode: { id: string };
+      if (existingBudgetCode) {
+        budgetCode = existingBudgetCode;
+      } else {
+        // Create new budget_code
+        const { data: newBudgetCode, error: bcError } = await supabase
+          .from('budget_codes')
+          .insert({
+            project_id: projectId,
+            cost_code_id: item.costCodeId,
+            cost_type_id: item.costType || null,
+            sub_job_id: null,
+            description: item.description || null,
+            created_by: user?.id,
+          })
+          .select()
+          .single();
 
-      if (insertError) {
-        console.error('Error inserting budget items:', insertError);
+        if (bcError) {
+          console.error('Error creating budget code:', bcError);
+          return NextResponse.json(
+            { error: 'Failed to create budget code', details: bcError.message },
+            { status: 500 }
+          );
+        }
+        budgetCode = newBudgetCode;
+      }
+
+      // 2. Create budget_line_item
+      const { data: lineItem, error: liError } = await supabase
+        .from('budget_line_items')
+        .insert({
+          budget_code_id: budgetCode.id,
+          description: item.description || null,
+          original_amount: item.amount || 0,
+          unit_qty: item.qty ?? null,
+          uom: item.uom || null,
+          unit_cost: item.unitCost ?? null,
+          calculation_method: item.qty && item.unitCost ? 'unit' : 'lump_sum',
+          created_by: user?.id,
+        })
+        .select()
+        .single();
+
+      if (liError) {
+        console.error('Error creating line item:', liError);
         return NextResponse.json(
-          { error: 'Failed to create budget line items', details: insertError.message },
+          { error: 'Failed to create line item', details: liError.message },
           { status: 500 }
         );
       }
 
-      return NextResponse.json({
-        success: true,
-        data: insertedItems,
-        message: `Successfully created ${insertedItems?.length || 0} budget line item(s)`,
-      });
-    } catch (error: any) {
-      console.error('Error in budget item creation:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to create budget items' },
-        { status: 400 }
-      );
+      results.push(lineItem);
     }
-  } catch (error) {
+
+    // Refresh materialized view to reflect new line items
+    await supabase.rpc('refresh_budget_rollup', { p_project_id: projectId });
+
+    return NextResponse.json({
+      success: true,
+      data: results,
+      message: `Successfully created ${results.length} budget line item(s)`,
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create budget items';
     console.error('Error in budget POST route:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: errorMessage },
+      { status: 400 }
     );
   }
 }

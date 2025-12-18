@@ -266,7 +266,7 @@ export default function PortfolioPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-50px)] min-h-0 bg-gray-50 rounded-lg overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-50px)] min-h-0 bg-neutral-50 rounded-lg overflow-hidden">
 
       {/* Portfolio Header with tabs */}
       <PortfolioHeader
@@ -314,6 +314,7 @@ export default function PortfolioPage() {
             <ProjectsTable
               data={filteredProjects}
               onProjectClick={handleProjectClick}
+              viewType={viewType}
             />
           )}
         </div>

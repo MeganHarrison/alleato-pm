@@ -34,6 +34,9 @@ const config = [
     rules: {
       'turbo/no-undeclared-env-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      // Design System Enforcement
+      'react/forbid-component-props': ['warn', { forbid: ['style'] }],
+      'react/forbid-dom-props': ['warn', { forbid: ['style'] }],
     },
   },
 ]

@@ -21,6 +21,7 @@ interface PortfolioHeaderProps {
   onSettingsClick?: () => void;
   onExport?: (format: 'pdf' | 'csv') => void;
   onCreateProject?: () => void;
+  onCreateTestProject?: () => void;
 }
 
 export function PortfolioHeader({
@@ -31,6 +32,7 @@ export function PortfolioHeader({
   onSettingsClick,
   onExport,
   onCreateProject,
+  onCreateTestProject,
 }: PortfolioHeaderProps) {
   return (
     <div className="bg-white border-b border-gray-200">
@@ -122,6 +124,19 @@ export function PortfolioHeader({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Create Test Project button (dev/testing only) */}
+          {process.env.NODE_ENV === 'development' && onCreateTestProject && (
+            <Button
+              onClick={onCreateTestProject}
+              variant="outline"
+              className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-4 border-green-500 text-green-600 hover:bg-green-50"
+              title="Create fully populated test project"
+            >
+              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline ml-1">Create Test Project</span>
+            </Button>
+          )}
 
           {/* Create Project button */}
           <Button

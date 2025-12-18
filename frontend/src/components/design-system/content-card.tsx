@@ -28,7 +28,7 @@ export function ContentCard({
   onClick,
   children
 }: ContentCardProps) {
-  const baseClasses = "border border-neutral-200 bg-white p-6 md:p-8 transition-all duration-300 hover:border-[#DB802D] hover:shadow-sm"
+  const baseClasses = "border border-neutral-200 bg-white p-6 md:p-8 transition-all duration-300 hover:border-brand hover:shadow-sm"
 
   const content = (
     <>

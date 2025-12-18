@@ -13,7 +13,7 @@ interface PageHeaderProps {
  */
 export function PageHeader({ client, title, description, actions }: PageHeaderProps) {
   return (
-    <header className="mb-16 md:mb-20 pb-8 md:pb-12 border-b border-neutral-200">
+    <header className="pb-4 md:pb-6">
       {/* Client Pre-heading */}
       {client && (
         <div className="mb-3 md:mb-4">
@@ -24,14 +24,14 @@ export function PageHeader({ client, title, description, actions }: PageHeaderPr
       )}
 
       {/* Page Title - Editorial Typography */}
-      <div className="mb-6 md:mb-8">
+      <div>
         <div className="flex items-start justify-between gap-6">
           <div className="flex-1">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-light tracking-tight text-neutral-900 leading-[1.05] mb-3">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-light tracking-tight text-neutral-900 leading-[1.05] mb-6">
               {title}
             </h1>
             {description && (
-              <p className="text-sm md:text-base text-neutral-600 leading-relaxed max-w-3xl">
+              <p className="text-sm md:text-base text-neutral-600 leading-[2] max-w-4xl">
                 {description}
               </p>
             )}

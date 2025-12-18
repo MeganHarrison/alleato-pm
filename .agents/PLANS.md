@@ -1,8 +1,8 @@
-# PLANS.md – Global Rules for ExecPlan Creation and Execution
+# PLANS.md – Global Rules for PlansDoc Creation and Execution
 
 This document defines the universal structure, rules, and execution standards for creating and maintaining **EXEC\_PLAN.md** files across all AI‑assisted development projects. All Agents must follow this specification **exactly**, without deviation.
 
-Treat the reader as a complete beginner to this repository: they have only the current working tree and the single ExecPlan file you provide. There is no memory of prior plans and no external context.
+Treat the reader as a complete beginner to this repository: they have only the current working tree and the single PlansDoc file you provide. There is no memory of prior plans and no external context.
 
 ## Purpose of PLANS.md
 
@@ -13,19 +13,19 @@ All AI agents must treat this document as **law**. The purpose of PLANS.md is to
 - Define strict testing protocol and "Definition of Done" the AI must follow.
 - Eliminate ambiguity, skipped steps, incomplete implementations, and false positives.
 
-## How to use ExecPlans and PLANS.md
+## How to use PlansDocs and PLANS.md
 
-When authoring an executable specification (ExecPlan), follow PLANS.md *\*to the letter\**.
+When authoring an executable specification (PlansDoc), follow PLANS.md *\*to the letter\**.
 
 If it is not in your context, refresh your memory by reading the entire PLANS.md file. Be thorough in reading (and re-reading) source material to produce an accurate specification. When creating a spec, start from the skeleton and flesh it out as you do your research.
 
-**When implementing an executable specification (ExecPlan), do not prompt the user for "next steps"; simply proceed to the next milestone.**
+**When implementing an executable specification (PlansDoc), do not prompt the user for "next steps"; simply proceed to the next milestone.**
 
 Keep all sections up to date, add or split entries in the list at every stopping point to affirmatively state the progress made and next steps. Resolve ambiguities autonomously, and commit frequently.
 
-When discussing an executable specification (ExecPlan), record decisions in a log in the spec for posterity; it should be unambiguously clear why any change to the specification was made.
+When discussing an executable specification (PlansDoc), record decisions in a log in the spec for posterity; it should be unambiguously clear why any change to the specification was made.
 
-**ExecPlans are living documents, and it should always be possible to restart from only the ExecPlan and no other work.**
+**PlansDocs are living documents, and it should always be possible to restart from only the PlansDoc and no other work.**
 
 When researching a design with challenging requirements or significant unknowns, use milestones to implement proof of concepts, "toy implementations", etc., that allow validating whether the user's proposal is feasible.
 
@@ -35,11 +35,11 @@ Read the source code of libraries by finding or acquiring them, research deeply,
 
 ### NON-NEGOTIABLE REQUIREMENTS:
 
-- Every ExecPlan must be fully self-contained. Self-contained means that in its current form it contains all knowledge and instructions needed for a novice to succeed.
-- Every ExecPlan is a living document. Contributors are required to revise it as progress is made, as discoveries occur, and as design decisions are finalized. Each revision must remain fully self-contained.
-- Every ExecPlan must enable a complete novice to implement the feature end-to-end without prior knowledge of this repo.
-- Every ExecPlan must produce a demonstrably working behavior, not merely code changes to "meet a definition".
-- Every ExecPlan must define every term of art in plain language or do not use it.
+- Every PlansDoc must be fully self-contained. Self-contained means that in its current form it contains all knowledge and instructions needed for a novice to succeed.
+- Every PlansDoc is a living document. Contributors are required to revise it as progress is made, as discoveries occur, and as design decisions are finalized. Each revision must remain fully self-contained.
+- Every PlansDoc must enable a complete novice to implement the feature end-to-end without prior knowledge of this repo.
+- Every PlansDoc must produce a demonstrably working behavior, not merely code changes to "meet a definition".
+- Every PlansDoc must define every term of art in plain language or do not use it.
 
 ### Purpose and intent come first.
 
@@ -47,11 +47,11 @@ Begin by explaining, in a few sentences, why the work matters from a user's pers
 
 The agent executing your plan can list files, read files, search, run the project, and run tests. It does not know any prior context and cannot infer what you meant from earlier milestones. Repeat any assumption you rely on.
 
-Do not point to external blogs or docs; if knowledge is required, embed it in the plan itself in your own words. If an ExecPlan builds upon a prior ExecPlan and that file is checked in, incorporate it by reference. If it is not, you must include all relevant context from that plan.
+Do not point to external blogs or docs; if knowledge is required, embed it in the plan itself in your own words. If an PlansDoc builds upon a prior PlansDoc and that file is checked in, incorporate it by reference. If it is not, you must include all relevant context from that plan.
 
 ### Formatting
 
-Use indentation for clarity rather than code fences inside an ExecPlan to avoid prematurely closing the ExecPlan's code fence. Use two newlines after every heading, use # and ## and so on, and correct syntax for ordered and unordered lists.
+Use indentation for clarity rather than code fences inside an PlansDoc to avoid prematurely closing the PlansDoc's code fence. Use two newlines after every heading, use # and ## and so on, and correct syntax for ordered and unordered lists.
 
 Write in plain prose. Prefer sentences over lists. Avoid checklists, tables, and long enumerations unless brevity would obscure meaning.
 
@@ -85,7 +85,7 @@ Include expected outputs and error messages so a novice can tell success from fa
 
 **Capture evidence.** When your steps produce terminal output, short diffs, or logs, include them inside the single fenced block as indented examples. Keep them concise and focused on what proves success. If you need to include a patch, prefer file-scoped diffs or small excerpts that a reader can recreate by following your instructions rather than pasting large blobs.
 
-**Testing Is Mandatory for ANY NEW FEATURE, CHANGE, OR BUG FIX.** No task may be marked completed unless tests are in place. The agent must write tests, run tests, capture screenshots when UI or flow-related, and update ExecPlan accordingly.
+**Testing Is Mandatory for ANY NEW FEATURE, CHANGE, OR BUG FIX.** No task may be marked completed unless tests are in place. The agent must write tests, run tests, capture screenshots when UI or flow-related, and update PlansDoc accordingly.
 
 ### Required Test Types
 
@@ -102,21 +102,6 @@ Strict testing is required because it ensures reliability, prevents silent failu
 - Name them clearly (e.g., `new-contract-success.png`)
 - Save them in an organized folder (e.g., `tests/screenshots/contracts/`)
 - Reference them in Progress Log
-
-### Definition of Done (Global).
-
-A task may be marked complete only if **ALL** of the following are true:
-
-1. **Functionality** works exactly as defined in REQUIREMENTS.md and EXEC\_PLAN.md.
-2. **User workflow** works end-to-end (page load is NOT enough).
-3. **Tests exist and pass**.
-4. **Screenshots** captured where applicable.
-5. **Checklist item updated** with links.
-6. **Progress Log updated**.
-7. **Decision Log updated**, if applicable.
-8. **Surprises & Discoveries logged**, if applicable.
-
-If any condition is missing → the task remains incomplete.
 
 ### Splitting Tasks
 If the agent discovers a task is too large:
@@ -135,9 +120,9 @@ Each milestone must be independently verifiable and incrementally implement the 
 
 ## Living plans and design decisions
 
-ExecPlans are living documents. As you make key design decisions, update the plan to record both the decision and the thinking behind it. Record all decisions in the `Decision Log` section.
+PlansDocs are living documents. As you make key design decisions, update the plan to record both the decision and the thinking behind it. Record all decisions in the `Decision Log` section.
 
-ExecPlans must contain and maintain a `Progress` section, a `Surprises & Discoveries` section, a `Decision Log`, and an `Outcomes & Retrospective` section. These are not optional.
+PlansDocs must contain and maintain a `Progress` section, a `Surprises & Discoveries` section, a `Decision Log`, and an `Outcomes & Retrospective` section. These are not optional.
 
 When you discover optimizer behavior, performance tradeoffs, unexpected bugs, or inverse/unapply semantics that shaped your approach, capture those observations in the `Surprises & Discoveries` section with short evidence snippets (test output is ideal).
 
@@ -151,9 +136,9 @@ It is acceptable—-and often encouraged—-to include explicit prototyping mile
 
 Prefer additive code changes followed by subtractions that keep tests passing. Parallel implementations (e.g., keeping an adapter alongside an older path during migration) are fine when they reduce risk or enable tests to continue passing during a large migration. Describe how to validate both paths and how to retire one safely with tests. When working with multiple new libraries or feature areas, consider creating spikes that evaluate the feasibility of these features *independently* of one another, proving that the external library performs as expected and implements the features we need in isolation.
 
-## EXEC_PLAN.md Structure
+## PLANS_DOC.md Structure
 
-Every EXEC\_PLAN.md file must follow **this exact structure in this exact order**:
+Every PLANS.md file must follow **this exact structure in this exact order**:
 1. **Purpose / Big Picture**
    High-level purpose, goals, context.
 2. **Master Checklist** (Phased, Ordered, Executable)
@@ -168,12 +153,12 @@ Every EXEC\_PLAN.md file must follow **this exact structure in this exact order*
 7. **Details (Context, Phase Descriptions, Specs)**
    All deep explanations and reference material. Not allowed in the Master Checklist.
 
-## Skeleton of a Good ExecPlan
+## Skeleton of a Good PlansDoc
 
 ```markdown
 
-# Short, action-oriented title
-This ExecPlan is a living document. The sections `Progress`, `Surprises & Discoveries`, `Decision Log`, and `Outcomes & Retrospective` must be kept up to date as work proceeds. If PLANS.md file is checked into the repo, reference the path to that file here from the repository root and note that this document must be maintained in accordance with PLANS.md.
+# Title (Short + action-oriented)
+This PlansDoc is a living document. The sections `Progress`, `Surprises & Discoveries`, `Decision Log`, and `Outcomes & Retrospective` must be kept up to date as work proceeds. If PLANS.md file is checked into the repo, reference the path to that file here from the repository root and note that this document must be maintained in accordance with PLANS.md.
 
 ## Purpose / Big Picture
 Explain in a few sentences what someone gains after this change and how they can see it working. State the user-visible behavior you will enable.
@@ -195,7 +180,7 @@ When a task is completed:
 - Add notes if anything unexpected occurred.
 
 **Example:**
-- [x] [Example completed step.](./exec_plan_part_2.md) (2025-10-01 13:00Z)
+- [x] [Example completed step.](./PLANS_DOC_part_2.md) (2025-10-01 13:00Z)
 - [ ] Example incomplete step.
 - [ ] Example partially completed step (completed: X; remaining: Y).
 
@@ -242,7 +227,7 @@ In crates/foo/planner.rs, define:
     }
 ```
 
-## Exec_Plan Folder Structure
+## PLANS_DOC Folder Structure
 Every project MUST conform to the following folder structure (adapt as needed for project type, but do not remove categories). This enforced structure provides predictable discovery paths for agents, reduces ambiguity during autonomous execution, and simplifies onboarding for maintainers by ensuring all components live in consistent, well-defined locations.
 
 - Agents MUST create files in their correct directories.
@@ -254,7 +239,7 @@ Every project MUST conform to the following folder structure (adapt as needed fo
 
 ```
 project-root/
-  EXEC_PLAN.md
+  PLANS_DOC.md
   REQUIREMENTS.md
   PLANS.md
 
@@ -297,13 +282,13 @@ project-root/
 # Glossary
 A shared vocabulary ensuring all agents interpret terms consistently.
 
-- **ExecPlan** – The master execution blueprint generated from REQUIREMENTS.md, dictating tasks, order, testing, and architecture.
+- **PlansDoc** – The master execution blueprint generated from REQUIREMENTS.md, dictating tasks, order, testing, and architecture.
 - **Master Checklist** – The authoritative, ordered list of tasks that MUST be followed step‑by‑step without skipping.
 - **Progress Log** – Mandatory chronological log updated after every work session documenting progress, tests, screenshots, and decisions.
 - **Surprises & Discoveries** – Section documenting unexpected findings, discrepancies, or missing requirements uncovered during development.
 - **Decision Log** – Section recording architectural, design, or strategic decisions with rationale and project impact.
 - **Definition of Done** – The strict criteria that determine whether a task can be marked complete. Includes tests, screenshots, links, and documentation.
-- **Requirements Document (REQUIREMENTS.md)** – The single input used to generate ExecPlan; a distilled and structured interpretation of the project’s needs.
+- **Requirements Document (REQUIREMENTS.md)** – The single input used to generate PlansDoc; a distilled and structured interpretation of the project’s needs.
 - **Planning Agent** – AI agent that reads REQUIREMENTS.md + PLANS.md and generates EXEC\_PLAN.md following required structure.
 - **Development Agent** – AI agent that executes the checklist sequentially, writes tests, updates logs, and ensures Definition of Done.
 - **CI/CD** – Continuous Integration and Continuous Deployment pipeline; verifies builds and tests before merging and deploying.
@@ -311,10 +296,10 @@ A shared vocabulary ensuring all agents interpret terms consistently.
 
 
 # Conclusion
-If you follow the guidance above, a single, stateless agent -- or a human novice -- can read your ExecPlan from top to bottom and produce a working, observable result.
+If you follow the guidance above, a single, stateless agent -- or a human novice -- can read your PlansDoc from top to bottom and produce a working, observable result.
 
 **That is the bar: SELF-CONTAINED, SELF-SUFFICIENT, NOVICE-GUIDING, OUTCOME-FOCUSED.**
 
-When you revise a plan, you must ensure your changes are comprehensively reflected across all sections, including the living document sections, and you must write a note at the bottom of the plan describing the change and the reason why. ExecPlans must describe not just the what but the why for almost everything.
+When you revise a plan, you must ensure your changes are comprehensively reflected across all sections, including the living document sections, and you must write a note at the bottom of the plan describing the change and the reason why. PlansDocs must describe not just the what but the why for almost everything.
 
 **End of PLANS.md**

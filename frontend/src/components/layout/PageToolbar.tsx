@@ -53,7 +53,9 @@ export function PageToolbar({
   }
 
   return (
-    <div className={cn(
+    <div
+      data-testid="page-toolbar"
+      className={cn(
       "flex flex-col gap-4 bg-gray-50 px-4 py-4 sm:px-6 lg:px-8",
       "sm:flex-row sm:items-center sm:justify-between",
       className
