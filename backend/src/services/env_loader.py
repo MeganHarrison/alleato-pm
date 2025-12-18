@@ -14,7 +14,7 @@ import os
 
 _env_loaded = False
 
-def load_env(force_reload: bool = False) -> Path:
+def load_env(force_reload: bool = False) -> Path | None:
     """
     Load environment variables from the root .env file.
 
@@ -22,7 +22,7 @@ def load_env(force_reload: bool = False) -> Path:
         force_reload: If True, reload even if already loaded
 
     Returns:
-        Path to the .env file that was loaded
+        Path to the .env file that was loaded, or None if no file exists (production)
     """
     global _env_loaded
 
@@ -40,10 +40,9 @@ def load_env(force_reload: bool = False) -> Path:
         if env_local_path.exists():
             env_path = env_local_path
         else:
-            raise FileNotFoundError(
-                f"No .env file found at {env_path} or {env_local_path}. "
-                f"Please create a .env file in the project root."
-            )
+            # In production (e.g., Render), env vars are set directly, no .env file needed
+            _env_loaded = True
+            return None
 
     load_dotenv(env_path, override=force_reload)
     _env_loaded = True
