@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PageHeader, PageContainer } from '@/components/layout';
+import { ProjectPageHeader, PageContainer } from '@/components/layout';
 import { ContractForm } from '@/components/domain/contracts';
 import type { ContractFormData } from '@/components/domain/contracts/ContractForm';
 
@@ -78,11 +78,10 @@ export default function NewContractPage() {
 
   return (
     <>
-      <PageHeader
+      <ProjectPageHeader
         title="New Prime Contract"
         description="Create a new prime contract for this project"
         breadcrumbs={[
-          { label: 'Project', href: `/${projectId}` },
           { label: 'Contracts', href: `/${projectId}/contracts` },
           { label: 'New Contract' },
         ]}
