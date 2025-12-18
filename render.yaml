@@ -25,4 +25,4 @@ services:
       - key: USE_UNIFIED_AGENT
         value: true
       - key: CORS_ORIGINS
-        value: https://alleato-procore.vercel.app,https://www.alleato-procore.vercel.app
+        value: https://alleato-procore.vercel.app,https://www.alleato-procore.vercel.app,https://alleato-pm-1.onrender.com
