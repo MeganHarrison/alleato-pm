@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { ChevronDown, ChevronRight, Download, Plus } from 'lucide-react';
@@ -8,8 +8,20 @@ import { ChevronDown, ChevronRight, Download, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { PageContainer, ProjectPageHeader } from '@/components/layout';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PageContainer, PageToolbar, ProjectPageHeader } from '@/components/layout';
 import { createClient } from '@/lib/supabase/client';
+import { cn } from '@/lib/utils';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { MobileFilterModal } from '@/components/tables/MobileFilterModal';
+import { Label } from '@/components/ui/label';
 
 import type { ChangeOrder } from '@/hooks/use-change-orders';
 
@@ -40,9 +52,8 @@ interface Contract {
 }
 
 // Component to fetch and display change orders for a contract
-function ContractChangeOrders({ contract, formatCurrency, getStatusBadge }: {
+function ContractChangeOrders({ contract, getStatusBadge }: {
   contract: Contract;
-  formatCurrency: (amount: number | null | undefined) => string;
   getStatusBadge: (status: string | null) => React.ReactNode;
 }) {
   const [changeOrders, setChangeOrders] = useState<ChangeOrder[]>([]);
@@ -78,45 +89,45 @@ function ContractChangeOrders({ contract, formatCurrency, getStatusBadge }: {
 
   if (loading) {
     return (
-      <tr>
-        <td colSpan={11} className="px-4 py-3 text-center text-gray-500 bg-gray-50">
+      <TableRow>
+        <TableCell colSpan={11} className="px-4 py-3 text-center text-gray-500 bg-gray-50">
           Loading change orders...
-        </td>
-      </tr>
+        </TableCell>
+      </TableRow>
     );
   }
 
   if (changeOrders.length === 0) {
     return (
-      <tr>
-        <td colSpan={11} className="px-4 py-3 text-center text-gray-500 bg-gray-50">
+      <TableRow>
+        <TableCell colSpan={11} className="px-4 py-3 text-center text-gray-500 bg-gray-50">
           No change orders for this contract
-        </td>
-      </tr>
+        </TableCell>
+      </TableRow>
     );
   }
 
   return (
     <>
       {changeOrders.map((co) => (
-        <tr key={co.id} className="bg-blue-50/50 border-b border-gray-100">
-          <td className="px-4 py-2"></td>
-          <td className="px-4 py-2 pl-12 text-sm text-gray-600">
+        <TableRow key={co.id} className="bg-blue-50/50 border-b border-gray-100">
+          <TableCell className="px-4 py-2" />
+          <TableCell className="px-4 py-2 pl-12 text-sm text-gray-600">
             <Link href={`/${contract.project_id}/change-orders/${co.id}`} className="text-blue-600 hover:underline">
               {co.co_number || `PCO-${co.id}`}
             </Link>
-          </td>
-          <td className="px-4 py-2 text-sm text-gray-600" colSpan={2}>
+          </TableCell>
+          <TableCell className="px-4 py-2 text-sm text-gray-600" colSpan={2}>
             {co.title || '--'}
-          </td>
-          <td className="px-4 py-2 text-sm">{getStatusBadge(co.status)}</td>
-          <td className="px-4 py-2 text-sm text-gray-600">{co.executed ? 'Yes' : 'No'}</td>
-          <td className="px-4 py-2 text-sm text-right">{formatCurrency(co.amount)}</td>
-          <td className="px-4 py-2 text-sm text-right">--</td>
-          <td className="px-4 py-2 text-sm text-right">--</td>
-          <td className="px-4 py-2 text-sm text-right">--</td>
-          <td className="px-4 py-2 text-sm text-right">{formatCurrency(co.amount)}</td>
-        </tr>
+          </TableCell>
+          <TableCell className="px-4 py-2 text-sm">{getStatusBadge(co.status)}</TableCell>
+          <TableCell className="px-4 py-2 text-sm text-gray-600">{co.approved_at ? 'Yes' : 'No'}</TableCell>
+          <TableCell className="px-4 py-2 text-sm text-right">--</TableCell>
+          <TableCell className="px-4 py-2 text-sm text-right">--</TableCell>
+          <TableCell className="px-4 py-2 text-sm text-right">--</TableCell>
+          <TableCell className="px-4 py-2 text-sm text-right">--</TableCell>
+          <TableCell className="px-4 py-2 text-sm text-right">--</TableCell>
+        </TableRow>
       ))}
     </>
   );
@@ -130,6 +141,8 @@ export default function ProjectContractsPage() {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     const fetchContracts = async () => {
@@ -141,19 +154,25 @@ export default function ProjectContractsPage() {
           .from('contracts')
           .select(`
             *,
-            client:clients(id, name),
-            project:projects(id, name, project_number)
+            client:clients!contracts_client_id_fkey(id, name),
+            project:projects!contracts_project_id_fkey(id, name, project_number)
           `)
           .eq('project_id', projectId)
           .order('created_at', { ascending: false });
 
         if (error) {
           console.error('Error fetching contracts:', error);
+          console.error('Error details:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
         } else {
           setContracts(data || []);
         }
       } catch (err) {
-        console.error('Error fetching contracts:', err);
+        console.error('Error fetching contracts (catch):', err);
       } finally {
         setLoading(false);
       }
@@ -200,8 +219,23 @@ export default function ProjectContractsPage() {
     );
   };
 
-  // Calculate totals
-  const totals = contracts.reduce(
+  const filteredContracts = useMemo(() => {
+    return contracts.filter((contract) => {
+      const matchesSearch =
+        !searchTerm ||
+        contract.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        contract.contract_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        contract.client?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        statusFilter === 'all' ||
+        (contract.status || '').toLowerCase() === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [contracts, searchTerm, statusFilter]);
+
+  const totals = filteredContracts.reduce(
     (acc, contract) => ({
       original: acc.original + (contract.original_contract_amount || 0),
       approved: acc.approved + (contract.approved_change_orders || 0),
@@ -230,7 +264,63 @@ export default function ProjectContractsPage() {
         }
       />
 
-      <PageContainer>
+      <PageContainer className="space-y-6">
+        <Card className="border bg-white shadow-sm">
+          <PageToolbar
+            searchPlaceholder="Search contracts or clients..."
+            onSearch={setSearchTerm}
+            filters={
+              <div className="flex items-center gap-2">
+                <div className="hidden md:block">
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-[220px]">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All statuses</SelectItem>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="executed">Executed</SelectItem>
+                      <SelectItem value="closed">Closed</SelectItem>
+                      <SelectItem value="void">Void</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <MobileFilterModal
+                  className="md:hidden"
+                  hasActiveFilters={statusFilter !== 'all'}
+                  onReset={() => setStatusFilter('all')}
+                >
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Status</Label>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Filter by status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All statuses</SelectItem>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="approved">Approved</SelectItem>
+                        <SelectItem value="executed">Executed</SelectItem>
+                        <SelectItem value="closed">Closed</SelectItem>
+                        <SelectItem value="void">Void</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </MobileFilterModal>
+              </div>
+            }
+            actions={
+              <Button variant="outline" size="sm" className="gap-2">
+                <Download className="h-4 w-4" />
+                Export CSV
+              </Button>
+            }
+          />
+        </Card>
+
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
           <Card className="p-4">
@@ -252,24 +342,12 @@ export default function ProjectContractsPage() {
         </div>
 
         {/* Contracts Table */}
-        <Card>
-          <div className="p-4 border-b">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold">All Contracts</h2>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Download className="h-4 w-4 mr-2" />
-                  Export
-                </Button>
-              </div>
-            </div>
-          </div>
-
+        <Card className="border bg-white shadow-sm">
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <p className="text-muted-foreground">Loading contracts...</p>
             </div>
-          ) : contracts.length === 0 ? (
+          ) : filteredContracts.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">No contracts found</p>
               <Button onClick={() => router.push(`/${projectId}/contracts/new`)}>
@@ -279,37 +357,39 @@ export default function ProjectContractsPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-50 border-b">
-                    <th className="w-10 px-4 py-3">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="w-10">
                       <span className="sr-only">Expand</span>
-                    </th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">#</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Owner/Client</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Title</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
-                    <th className="text-left px-4 py-3 font-medium text-gray-600">Executed</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-600">Original Amount</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-600">Approved COs</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-600">Pending COs</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-600">Draft COs</th>
-                    <th className="text-right px-4 py-3 font-medium text-gray-600">Revised Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {contracts.map((contract) => {
+                    </TableHead>
+                    <TableHead>#</TableHead>
+                    <TableHead>Owner/Client</TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Executed</TableHead>
+                    <TableHead className="text-right">Original Amount</TableHead>
+                    <TableHead className="text-right">Approved COs</TableHead>
+                    <TableHead className="text-right">Pending COs</TableHead>
+                    <TableHead className="text-right">Draft COs</TableHead>
+                    <TableHead className="text-right">Revised Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredContracts.map((contract) => {
                     const isExpanded = expandedRows.has(contract.id);
                     const revised = (contract.original_contract_amount || 0) + (contract.approved_change_orders || 0);
 
                     return (
-                      <>
-                        <tr
-                          key={contract.id}
-                          className={`border-b hover:bg-gray-50 cursor-pointer ${isExpanded ? 'bg-blue-50' : ''}`}
+                      <Fragment key={contract.id}>
+                        <TableRow
+                          className={cn(
+                            'border-b hover:bg-gray-50 cursor-pointer',
+                            isExpanded && 'bg-blue-50'
+                          )}
                           onClick={() => toggleRow(contract.id)}
                         >
-                          <td className="px-4 py-3">
+                          <TableCell>
                             <button
                               type="button"
                               onClick={(e) => {
@@ -324,8 +404,8 @@ export default function ProjectContractsPage() {
                                 <ChevronRight className="h-4 w-4" />
                               )}
                             </button>
-                          </td>
-                          <td className="px-4 py-3">
+                          </TableCell>
+                          <TableCell>
                             <Link
                               href={`/${projectId}/contracts/${contract.id}`}
                               className="text-blue-600 hover:text-blue-800 hover:underline"
@@ -333,11 +413,9 @@ export default function ProjectContractsPage() {
                             >
                               {contract.contract_number || contract.id}
                             </Link>
-                          </td>
-                          <td className="px-4 py-3">
-                            {contract.client?.name || '--'}
-                          </td>
-                          <td className="px-4 py-3">
+                          </TableCell>
+                          <TableCell>{contract.client?.name || '--'}</TableCell>
+                          <TableCell>
                             <Link
                               href={`/${projectId}/contracts/${contract.id}`}
                               className="text-blue-600 hover:text-blue-800 hover:underline"
@@ -345,53 +423,46 @@ export default function ProjectContractsPage() {
                             >
                               {contract.title || contract.project?.name || 'Prime Contract'}
                             </Link>
-                          </td>
-                          <td className="px-4 py-3">
-                            {getStatusBadge(contract.status)}
-                          </td>
-                          <td className="px-4 py-3">
-                            {contract.executed ? 'Yes' : 'No'}
-                          </td>
-                          <td className="px-4 py-3 text-right font-medium">
+                          </TableCell>
+                          <TableCell>{getStatusBadge(contract.status)}</TableCell>
+                          <TableCell>{contract.executed ? 'Yes' : 'No'}</TableCell>
+                          <TableCell className="text-right font-medium">
                             {formatCurrency(contract.original_contract_amount)}
-                          </td>
-                          <td className="px-4 py-3 text-right text-green-600">
+                          </TableCell>
+                          <TableCell className="text-right text-green-600">
                             {formatCurrency(contract.approved_change_orders)}
-                          </td>
-                          <td className="px-4 py-3 text-right text-yellow-600">
+                          </TableCell>
+                          <TableCell className="text-right text-yellow-600">
                             {formatCurrency(contract.pending_change_orders)}
-                          </td>
-                          <td className="px-4 py-3 text-right text-gray-500">
+                          </TableCell>
+                          <TableCell className="text-right text-gray-500">
                             {formatCurrency(contract.draft_change_orders)}
-                          </td>
-                          <td className="px-4 py-3 text-right font-medium">
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
                             {formatCurrency(revised)}
-                          </td>
-                        </tr>
+                          </TableCell>
+                        </TableRow>
                         {isExpanded && (
                           <ContractChangeOrders
                             contract={contract}
-                            formatCurrency={formatCurrency}
                             getStatusBadge={getStatusBadge}
                           />
                         )}
-                      </>
+                      </Fragment>
                     );
                   })}
-                </tbody>
+                </TableBody>
                 <tfoot>
-                  <tr className="bg-gray-100 font-medium">
-                    <td className="px-4 py-3" colSpan={6}>
-                      Grand Totals
-                    </td>
-                    <td className="px-4 py-3 text-right">{formatCurrency(totals.original)}</td>
-                    <td className="px-4 py-3 text-right text-green-600">{formatCurrency(totals.approved)}</td>
-                    <td className="px-4 py-3 text-right text-yellow-600">{formatCurrency(totals.pending)}</td>
-                    <td className="px-4 py-3 text-right text-gray-500">{formatCurrency(totals.draft)}</td>
-                    <td className="px-4 py-3 text-right">{formatCurrency(totals.original + totals.approved)}</td>
-                  </tr>
+                  <TableRow className="bg-gray-100 font-medium">
+                    <TableCell colSpan={6}>Grand Totals</TableCell>
+                    <TableCell className="text-right">{formatCurrency(totals.original)}</TableCell>
+                    <TableCell className="text-right text-green-600">{formatCurrency(totals.approved)}</TableCell>
+                    <TableCell className="text-right text-yellow-600">{formatCurrency(totals.pending)}</TableCell>
+                    <TableCell className="text-right text-gray-500">{formatCurrency(totals.draft)}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(totals.revised)}</TableCell>
+                  </TableRow>
                 </tfoot>
-              </table>
+              </Table>
             </div>
           )}
         </Card>
