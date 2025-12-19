@@ -1,19 +1,8 @@
 "use client";
 
-/**
- * Executive Dashboard - Example Implementation
- *
- * This demonstrates how to create a leadership-focused view that transforms
- * raw project intelligence into strategic insights.
- *
- * To use:
- * 1. Rename to: ui/app/executive/page.tsx
- * 2. Ensure lib/executiveIntelligence.ts exists (already created)
- * 3. The dashboard will show company-wide health metrics, patterns, and priorities
- */
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { TrendingUp, AlertTriangle, CheckCircle2 } from "lucide-react";
 import {
   getCompanyRiskHeatMap,
   getAllProjectHealthScores,
@@ -24,6 +13,18 @@ import {
   type Pattern,
   type ExecutiveSummary,
 } from "@/lib/executiveIntelligence";
+
+function RiskBar({ count, total }: { count: number; total: number }) {
+  const percentage = Math.min(100, (count / (total || 1)) * 100);
+  return (
+    <div className="flex-1 bg-neutral-100 rounded-full h-2 relative overflow-hidden">
+      <div
+        className="bg-gradient-to-r from-red-500 to-red-600 h-2 rounded-full transition-all duration-500"
+        style={{ width: `${percentage}%` }}
+      />
+    </div>
+  );
+}
 
 export default function ExecutiveDashboard() {
   const [summary, setSummary] = useState<ExecutiveSummary | null>(null);
@@ -46,8 +47,6 @@ export default function ExecutiveDashboard() {
         setHeatMap(heatMapData);
         setHealthScores(scoresData);
         setPatterns(patternsData);
-      } catch (error) {
-        console.error("Error loading executive data:", error);
       } finally {
         setLoading(false);
       }
@@ -58,294 +57,276 @@ export default function ExecutiveDashboard() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 p-6">
-        <div className="mx-auto max-w-7xl">
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-600 mx-auto"></div>
-            <p className="mt-4 text-sm text-gray-600">Loading executive intelligence...</p>
-          </div>
-        </div>
-      </main>
+      <div className="flex items-center justify-center h-full">
+        <div className="text-neutral-500">Loading executive intelligence...</div>
+      </div>
     );
   }
 
   const projectsNeedingAttention = healthScores.filter(
     (p) => p.status === "critical" || p.status === "at_risk"
-  ).slice(0, 10);
+  ).slice(0, 8);
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-7xl space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-zinc-900">Executive Dashboard</h1>
-            <p className="text-sm text-zinc-500">
-              Strategic intelligence · Updated {summary?.date}
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+      {/* Hero Metrics Section */}
+      <div className="flex flex-col gap-4 md:flex-row md:gap-6 mb-8">
+        {/* Company Health Score */}
+        <div className="w-full border border-neutral-200 bg-white p-4 transition-all duration-300 hover:border-brand hover:shadow-sm md:w-1/4 md:p-6">
+          <div className="space-y-3">
+            <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
+              Company Health
             </p>
-          </div>
-          <div className="text-right">
-            <div className="text-4xl font-bold text-violet-600">
-              {summary?.company_health_score}
+            <div className="space-y-1">
+              <p className="text-4xl md:text-5xl font-light tabular-nums tracking-tight text-brand">
+                {summary?.company_health_score || 0}
+              </p>
+              <p className="text-xs text-neutral-500">
+                Portfolio score
+              </p>
             </div>
-            <div className="text-xs text-zinc-600">Company Health Score</div>
           </div>
         </div>
 
-        {/* Key Metrics Row */}
-        <div className="grid grid-cols-4 gap-4">
-          {/* Critical Risks */}
-          <div className="bg-white rounded-lg border-2 border-red-500 p-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-red-900">Critical Risks</h3>
-              {heatMap?.trending === "increasing" && (
-                <span className="text-red-600">↑</span>
+        {/* Critical Risks */}
+        <div className="w-full border border-neutral-200 bg-white p-4 transition-all duration-300 hover:border-red-500 hover:shadow-sm md:w-1/4 md:p-6">
+          <div className="space-y-3">
+            <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
+              Critical Risks
+            </p>
+            <div className="space-y-2">
+              <p className="text-3xl md:text-4xl font-light tabular-nums tracking-tight text-red-700">
+                {heatMap?.critical || 0}
+              </p>
+              <div className="flex items-center gap-1.5">
+                {heatMap?.trending === "increasing" ? (
+                  <>
+                    <TrendingUp className="h-3.5 w-3.5 text-red-700" />
+                    <span className="text-xs font-medium text-red-700 tabular-nums">
+                      {heatMap?.trend_percentage && heatMap.trend_percentage > 0 ? "+" : ""}
+                      {heatMap?.trend_percentage || 0}% vs 30d
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-xs text-neutral-500">Require immediate action</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Projects at Risk */}
+        <div className="w-full border border-neutral-200 bg-white p-4 transition-all duration-300 hover:border-brand hover:shadow-sm md:w-1/4 md:p-6">
+          <div className="space-y-3">
+            <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
+              Projects at Risk
+            </p>
+            <div className="space-y-1">
+              <p className="text-3xl md:text-4xl font-light tabular-nums tracking-tight text-orange-700">
+                {summary?.projects_at_risk || 0}
+              </p>
+              <p className="text-xs text-neutral-500">
+                of {healthScores.length} total
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Patterns Detected */}
+        <div className="w-full border border-neutral-200 bg-white p-4 transition-all duration-300 hover:border-brand hover:shadow-sm md:w-1/4 md:p-6">
+          <div className="space-y-3">
+            <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
+              Pattern Insights
+            </p>
+            <div className="space-y-1">
+              <p className="text-3xl md:text-4xl font-light tabular-nums tracking-tight text-neutral-900">
+                {patterns.length}
+              </p>
+              <p className="text-xs text-neutral-500">
+                Systemic issues
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="space-y-6">
+          {/* Strategic Priorities Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Top Priorities */}
+            <div className="border border-neutral-200 bg-white p-5">
+              <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500 mb-4">
+                Top Priorities
+              </h3>
+              {summary?.top_priorities && summary.top_priorities.length > 0 ? (
+                <ul className="space-y-2.5">
+                  {summary.top_priorities.slice(0, 5).map((priority) => (
+                    <li key={priority} className="flex items-start gap-3 text-sm text-neutral-700">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-100 text-[10px] font-semibold text-red-700">
+                        {summary.top_priorities.indexOf(priority) + 1}
+                      </span>
+                      <span className="leading-relaxed">{priority}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-neutral-400">No critical priorities at this time</p>
               )}
             </div>
-            <div className="text-4xl font-bold text-red-700 mt-2">
-              {heatMap?.critical || 0}
+
+            {/* Quick Wins */}
+            <div className="border border-neutral-200 bg-white p-5">
+              <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500 mb-4">
+                Quick Wins Available
+              </h3>
+              {summary?.quick_wins && summary.quick_wins.length > 0 ? (
+                <ul className="space-y-2.5">
+                  {summary.quick_wins.slice(0, 5).map((win) => (
+                    <li key={win} className="flex items-start gap-3 text-sm text-neutral-700">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600 mt-0.5" />
+                      <span className="leading-relaxed">{win}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-neutral-400">Focus on top priorities first</p>
+              )}
             </div>
-            <p className="text-xs text-red-800 mt-1">
-              Require immediate attention
-            </p>
-            {heatMap?.trend_percentage !== 0 && (
-              <div className="mt-2 text-xs text-red-700">
-                {heatMap?.trend_percentage && heatMap.trend_percentage > 0 ? "+" : ""}
-                {heatMap?.trend_percentage}% vs. 30 days ago
-              </div>
-            )}
           </div>
 
-          {/* Elevated Risks */}
-          <div className="bg-white rounded-lg border border-yellow-500 p-6">
-            <h3 className="text-sm font-medium text-yellow-900">Elevated Risks</h3>
-            <div className="text-4xl font-bold text-yellow-700 mt-2">
-              {heatMap?.elevated || 0}
-            </div>
-            <p className="text-xs text-yellow-800 mt-1">Monitor closely</p>
-          </div>
-
-          {/* Projects at Risk */}
-          <div className="bg-white rounded-lg border border-orange-500 p-6">
-            <h3 className="text-sm font-medium text-orange-900">Projects at Risk</h3>
-            <div className="text-4xl font-bold text-orange-700 mt-2">
-              {summary?.projects_at_risk || 0}
-            </div>
-            <p className="text-xs text-orange-800 mt-1">
-              of {healthScores.length} total projects
-            </p>
-          </div>
-
-          {/* Patterns Detected */}
-          <div className="bg-white rounded-lg border border-purple-500 p-6">
-            <h3 className="text-sm font-medium text-purple-900">Patterns Detected</h3>
-            <div className="text-4xl font-bold text-purple-700 mt-2">
-              {patterns.length}
-            </div>
-            <p className="text-xs text-purple-800 mt-1">Systemic issues identified</p>
-          </div>
-        </div>
-
-        {/* Risk Heat Map by Category */}
-        <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Risk Distribution by Category</h2>
-          <div className="space-y-3">
-            {Object.entries(heatMap?.by_category || {})
-              .sort(([, a], [, b]) => b - a)
-              .map(([category, count]) => (
-                <div key={category} className="flex items-center gap-4">
-                  <div className="w-32 text-sm font-medium text-gray-700 capitalize">
-                    {category}
-                  </div>
-                  <div className="flex-1 bg-gray-200 rounded-full h-3 relative">
-                    <div
-                      className="bg-gradient-to-r from-red-500 to-red-600 h-3 rounded-full transition-all"
-                      style={{
-                        width: `${Math.min(100, (count / (heatMap?.total || 1)) * 100)}%`,
-                      }}
-                    />
-                  </div>
-                  <div className="w-12 text-right text-sm font-semibold text-gray-900">
-                    {count}
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-
-        {/* Strategic Patterns */}
-        {patterns.length > 0 && (
-          <div className="bg-white rounded-lg border p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              🔍 Strategic Patterns Detected
-            </h2>
-            <div className="space-y-4">
-              {patterns.map((pattern, idx) => (
-                <div
-                  key={idx}
-                  className={`p-4 rounded-lg border-l-4 ${
-                    pattern.severity === "high"
-                      ? "border-red-500 bg-red-50"
-                      : pattern.severity === "medium"
-                      ? "border-yellow-500 bg-yellow-50"
-                      : "border-blue-500 bg-blue-50"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">
-                        {pattern.description}
-                      </h3>
-                      <p className="text-sm text-gray-700 mt-1">
-                        Affects {pattern.affected_projects.length} projects · Occurred{" "}
-                        {pattern.frequency} times
-                      </p>
-                      <div className="mt-3 bg-white/60 rounded p-3">
-                        <p className="text-xs font-medium text-purple-900">
-                          💡 Recommendation:
+          {/* Strategic Patterns */}
+          {patterns.length > 0 && (
+            <div className="border border-neutral-200 bg-white p-5">
+              <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500 mb-4">
+                Strategic Pattern Analysis
+              </h3>
+              <div className="space-y-4">
+                {patterns.slice(0, 3).map((pattern) => (
+                  <div
+                    key={`${pattern.description}-${pattern.frequency}`}
+                    className={`border-l-2 pl-4 ${
+                      pattern.severity === "high"
+                        ? "border-red-500"
+                        : pattern.severity === "medium"
+                        ? "border-yellow-500"
+                        : "border-blue-500"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 space-y-2">
+                        <h4 className="font-medium text-neutral-900 text-sm">
+                          {pattern.description}
+                        </h4>
+                        <p className="text-xs text-neutral-500">
+                          {pattern.affected_projects.length} projects · {pattern.frequency} occurrences
                         </p>
-                        <p className="text-sm text-purple-800 mt-1">
-                          {pattern.recommendation}
-                        </p>
+                        <div className="bg-neutral-50 rounded px-3 py-2">
+                          <p className="text-xs font-medium text-neutral-700">
+                            Recommendation: {pattern.recommendation}
+                          </p>
+                        </div>
                       </div>
-                      {pattern.evidence.length > 0 && (
-                        <details className="mt-2 text-xs text-gray-600">
-                          <summary className="cursor-pointer font-medium">
-                            View evidence ({pattern.evidence.length} examples)
-                          </summary>
-                          <ul className="mt-2 space-y-1 pl-4">
-                            {pattern.evidence.map((evidence, i) => (
-                              <li key={i} className="list-disc">
-                                {evidence}
-                              </li>
-                            ))}
-                          </ul>
-                        </details>
-                      )}
-                    </div>
-                    <span
-                      className={`px-3 py-1 rounded text-xs font-semibold whitespace-nowrap ${
-                        pattern.severity === "high"
-                          ? "bg-red-100 text-red-800"
-                          : pattern.severity === "medium"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
-                    >
-                      {pattern.severity} severity
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Projects Needing Attention */}
-        <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            ⚠️ Projects Needing Attention
-          </h2>
-          {projectsNeedingAttention.length === 0 ? (
-            <p className="text-sm text-gray-500 text-center py-8">
-              All projects are healthy! 🎉
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {projectsNeedingAttention.map((project) => (
-                <Link
-                  key={project.project_id}
-                  href={`/projects/${project.project_id}`}
-                  className={`block p-4 rounded-lg border-l-4 hover:shadow-md transition ${
-                    project.status === "critical"
-                      ? "border-red-500 bg-red-50 hover:bg-red-100"
-                      : project.status === "at_risk"
-                      ? "border-yellow-500 bg-yellow-50 hover:bg-yellow-100"
-                      : "border-green-500 bg-green-50 hover:bg-green-100"
-                  }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">
-                        {project.project_name}
-                      </h3>
-                      <div className="flex gap-4 mt-2 text-xs text-gray-700">
-                        <span>
-                          {project.open_risks_count} open risks (
-                          {project.critical_risks_count} critical)
-                        </span>
-                        <span>{project.overdue_tasks_count} overdue tasks</span>
-                        <span>
-                          Last meeting: {project.last_meeting_days_ago} days ago
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div
-                        className={`text-3xl font-bold ${
-                          project.status === "critical"
-                            ? "text-red-700"
-                            : project.status === "at_risk"
-                            ? "text-yellow-700"
-                            : "text-green-700"
+                      <span
+                        className={`shrink-0 px-2 py-1 rounded text-[10px] font-semibold uppercase tracking-wider ${
+                          pattern.severity === "high"
+                            ? "bg-red-100 text-red-700"
+                            : pattern.severity === "medium"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-blue-100 text-blue-700"
                         }`}
                       >
-                        {project.health_score}
-                      </div>
-                      <div className="text-xs text-gray-600 capitalize">
-                        {project.status}
-                      </div>
+                        {pattern.severity}
+                      </span>
                     </div>
                   </div>
-                </Link>
-              ))}
+                ))}
+              </div>
             </div>
           )}
-        </div>
 
-        {/* Top Priorities & Quick Wins */}
-        <div className="grid grid-cols-2 gap-6">
-          {/* Top Priorities */}
-          <div className="bg-red-50 rounded-lg border border-red-200 p-6">
-            <h3 className="text-lg font-semibold text-red-900 mb-3">
-              🔥 Top Priorities
+          {/* Risk Distribution */}
+          <div className="border border-neutral-200 bg-white p-5">
+            <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500 mb-4">
+              Risk Distribution by Category
             </h3>
-            {summary?.top_priorities && summary.top_priorities.length > 0 ? (
-              <ul className="space-y-2">
-                {summary.top_priorities.map((priority, idx) => (
-                  <li key={idx} className="text-sm text-red-800 flex items-start gap-2">
-                    <span className="font-bold">{idx + 1}.</span>
-                    <span>{priority}</span>
-                  </li>
+            <div className="space-y-3">
+              {Object.entries(heatMap?.by_category || {})
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 6)
+                .map(([category, count]) => (
+                  <div key={category} className="flex items-center gap-4">
+                    <div className="w-28 text-xs font-medium text-neutral-600 capitalize">
+                      {category}
+                    </div>
+                    <RiskBar count={count} total={heatMap?.total || 1} />
+                    <div className="w-8 text-right text-xs font-semibold text-neutral-700 tabular-nums">
+                      {count}
+                    </div>
+                  </div>
                 ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-red-700">No critical priorities</p>
-            )}
+            </div>
           </div>
 
-          {/* Quick Wins */}
-          <div className="bg-green-50 rounded-lg border border-green-200 p-6">
-            <h3 className="text-lg font-semibold text-green-900 mb-3">
-              ✨ Quick Wins Available
+          {/* Projects Needing Attention */}
+          <div className="border border-neutral-200 bg-white p-5">
+            <h3 className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500 mb-4">
+              Projects Requiring Attention
             </h3>
-            {summary?.quick_wins && summary.quick_wins.length > 0 ? (
-              <ul className="space-y-2">
-                {summary.quick_wins.map((win, idx) => (
-                  <li key={idx} className="text-sm text-green-800 flex items-start gap-2">
-                    <span className="font-bold">•</span>
-                    <span>{win}</span>
-                  </li>
-                ))}
-              </ul>
+            {projectsNeedingAttention.length === 0 ? (
+              <div className="text-center py-8">
+                <CheckCircle2 className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                <p className="text-sm text-neutral-500">All projects are healthy</p>
+              </div>
             ) : (
-              <p className="text-sm text-green-700">
-                Focus on top priorities first
-              </p>
+              <div className="space-y-3">
+                {projectsNeedingAttention.map((project) => (
+                  <Link
+                    key={project.project_id}
+                    href={`/${project.project_id}/home`}
+                    className={`block border-l-2 pl-4 pr-4 py-3 transition-all duration-200 hover:bg-neutral-50 ${
+                      project.status === "critical"
+                        ? "border-red-500"
+                        : "border-yellow-500"
+                    }`}
+                  >
+                    <div className="flex justify-between items-start gap-4">
+                      <div className="flex-1 space-y-1">
+                        <h4 className="font-medium text-neutral-900 text-sm">
+                          {project.project_name}
+                        </h4>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
+                          <span className="flex items-center gap-1">
+                            <AlertTriangle className="h-3 w-3" />
+                            {project.critical_risks_count} critical, {project.open_risks_count} total risks
+                          </span>
+                          <span>{project.overdue_tasks_count} overdue tasks</span>
+                          <span>Last meeting {project.last_meeting_days_ago}d ago</span>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div
+                          className={`text-2xl font-light tabular-nums ${
+                            project.status === "critical"
+                              ? "text-red-700"
+                              : "text-yellow-700"
+                          }`}
+                        >
+                          {project.health_score}
+                        </div>
+                        <div className="text-[10px] text-neutral-500 uppercase tracking-wider">
+                          {project.status}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             )}
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
