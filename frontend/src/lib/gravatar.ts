@@ -1,7 +1,8 @@
 import crypto from 'crypto'
+import { md5 } from 'js-md5'
 
 /**
- * Generate a Gravatar URL for an email address
+ * Generate a Gravatar URL for an email address (server-side)
  * @param email - The email address
  * @param size - The size of the image (default: 200)
  * @param defaultImage - The default image type (404, mp, identicon, monsterid, wavatar, retro, robohash, blank)
@@ -18,25 +19,17 @@ export function getGravatarUrl(
 }
 
 /**
- * Client-side Gravatar URL generator (doesn't use crypto module)
+ * Client-side Gravatar URL generator
  * Use this in client components
  */
 export function getGravatarUrlClient(
   email: string,
   size: number = 200,
-  defaultImage: string = 'mp'
+  defaultImage: string = 'identicon' // Use identicon for better visual fallback
 ): string {
-  // Simple hash for client-side (not cryptographically secure, but fine for Gravatar)
   const trimmedEmail = email.trim().toLowerCase()
-
-  // For client-side, we'll use a simple encoding
-  // In production, you might want to use a lightweight MD5 library
-  const simpleHash = Array.from(trimmedEmail)
-    .reduce((hash, char) => ((hash << 5) - hash) + char.charCodeAt(0), 0)
-    .toString(16)
-    .padStart(32, '0')
-
-  return `https://www.gravatar.com/avatar/${simpleHash}?s=${size}&d=${defaultImage}`
+  const hash = md5(trimmedEmail)
+  return `https://www.gravatar.com/avatar/${hash}?s=${size}&d=${defaultImage}`
 }
 
 /**

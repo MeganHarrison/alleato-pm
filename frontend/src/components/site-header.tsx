@@ -4,7 +4,6 @@ import { useMemo, useState, useEffect } from "react"
 import { Bell, ChevronDown, ChevronRight, MessageSquare, Search, Star, Plus } from "lucide-react"
 import {
   IconLogout,
-  IconSettings,
   IconUserCircle,
 } from "@tabler/icons-react"
 import { createClient } from "@/lib/supabase/client"
@@ -322,7 +321,7 @@ export function SiteHeader({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="hidden md:flex h-8 text-[hsl(var(--procore-header-text))] px-2 bg-white/10"
+                className="hidden md:flex h-8 text-[hsl(var(--procore-header-text))] px-2 bg-white/10 hover:bg-white/20"
               >
                 {currentProject && (
                   <span className="mr-2 h-2 w-2 rounded-full bg-[hsl(var(--procore-orange))]" />
@@ -385,7 +384,7 @@ export function SiteHeader({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="hidden md:flex h-8 items-center gap-2 rounded px-2 text-[hsl(var(--procore-header-text))] transition-colors bg-white/10"
+                className="hidden md:flex h-8 items-center gap-2 rounded px-2 text-[hsl(var(--procore-header-text))] transition-colors bg-white/10 hover:bg-white/20"
               >
                 <span className="text-xs text-gray-200">Project Tools</span>
                 <span className="ml-2 text-sm font-medium">{activeToolName}</span>
@@ -604,10 +603,6 @@ export function SiteHeader({
                   <IconUserCircle className="mr-2 h-4 w-4" />
                   Profile
                 </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconSettings className="mr-2 h-4 w-4" />
-                Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
