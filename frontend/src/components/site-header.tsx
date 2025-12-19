@@ -253,7 +253,8 @@ export function SiteHeader({
 
   const breadcrumbs = useMemo(() => {
     const segments = pathname?.split("/").filter(Boolean) ?? []
-    const crumbs = [{ label: "Home", href: "/" }]
+    const crumbs: Array<{ label: string; href: string; isLogo?: boolean }> = []
+
     segments.forEach((segment, index) => {
       let href = `/${segments.slice(0, index + 1).join("/")}`
 
@@ -286,26 +287,32 @@ export function SiteHeader({
             className="hidden h-4 sm:inline-flex"
           />
         </div>
-        {/* Breadcrumbs - hidden on mobile */}
-        <nav
-          aria-label="Breadcrumb"
-          className="hidden md:flex min-w-0 flex-1 items-center gap-2 overflow-x-auto text-sm font-medium tracking-wide text-white/90 whitespace-nowrap"
-        >
-          {breadcrumbs.map((crumb, index) => (
-            <span key={`${crumb.href}-${index}`} className="flex items-center gap-2">
-              {index === breadcrumbs.length - 1 ? (
-                <span className="text-white">{crumb.label}</span>
-              ) : (
-                <Link href={crumb.href} className="text-white/70 hover:text-brand transition-colors">
-                  {crumb.label}
-                </Link>
-              )}
-              {index < breadcrumbs.length - 1 && (
-                <ChevronRight className="h-3 w-3 text-white/40" />
-              )}
-            </span>
-          ))}
-        </nav>
+        {/* Logo and Breadcrumbs - hidden on mobile */}
+        <div className="hidden md:flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
+          {/* Alleato Logo - links to homepage */}
+          <Link href="/" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
+            <Image src="/Alleato Favicon.png" alt="Alleato" width={24} height={24} className="object-contain" />
+            <span className="text-base font-semibold text-white">Alleato</span>
+          </Link>
+
+          {/* Breadcrumbs */}
+          {breadcrumbs.length > 0 && (
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-medium tracking-wide text-white/90 whitespace-nowrap">
+              {breadcrumbs.map((crumb, index) => (
+                <span key={`${crumb.href}-${index}`} className="flex items-center gap-2">
+                  <ChevronRight className="h-3 w-3 text-white/40" />
+                  {index === breadcrumbs.length - 1 ? (
+                    <span className="text-white">{crumb.label}</span>
+                  ) : (
+                    <Link href={crumb.href} className="text-white/70 hover:text-brand transition-colors">
+                      {crumb.label}
+                    </Link>
+                  )}
+                </span>
+              ))}
+            </nav>
+          )}
+        </div>
         {/* Logo - shown on mobile only */}
         <Link href="/protected" className="flex md:hidden items-center gap-2 flex-1">
           <Image src="/Alleato Favicon.png" alt="Alleato" width={24} height={24} className="object-contain" />
