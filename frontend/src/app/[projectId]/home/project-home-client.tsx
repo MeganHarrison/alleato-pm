@@ -170,7 +170,7 @@ export function ProjectHomeClient({
   const activeTasks = tasks.length
 
   return (
-    <div className="min-h-screen px-6 md:px-10 lg:px-12 py-6 max-w-[1800px] mx-auto">
+    <div className="min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-6 max-w-[1800px] mx-auto">
       {/* Header Section - Refined Architectural Hierarchy */}
       <header className="mb-8 pb-8">
         {/* Client Pre-heading */}
@@ -181,7 +181,7 @@ export function ProjectHomeClient({
         </div>
 
         {/* Project Title - Editorial Typography with Enhanced Scale */}
-        <div className="mb-10 flex items-center justify-between gap-4">
+        <div className="mb-10 flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-light tracking-tight text-neutral-900 leading-[1.05]">
             {project.name || project['job number']}
           </h1>
@@ -191,7 +191,7 @@ export function ProjectHomeClient({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="h-10 flex items-center gap-2 px-4 border-neutral-300 hover:border-brand hover:bg-neutral-50 transition-colors"
+                className="h-10 w-full justify-between px-4 border-neutral-300 hover:border-brand hover:bg-neutral-50 transition-colors md:w-auto md:justify-center"
               >
                 <span className="text-sm font-medium text-neutral-700">{currentTool}</span>
                 <ChevronDown className="h-4 w-4 text-neutral-500" />
@@ -277,12 +277,12 @@ export function ProjectHomeClient({
         </div>
 
         {/* Status Row - Clean, Aligned Data Points with Better Spacing */}
-        <div className="flex flex-wrap items-center gap-8 md:gap-16">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
           
           {/* Status */}
           <button
             type="button"
-            className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+            className="group w-full cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
             onClick={() => handleEditField('phase', project.phase || project.state || 'Active')}
           >
             {isEditing === 'phase' ? (
@@ -311,7 +311,7 @@ export function ProjectHomeClient({
           {/* Start Date */}
           <button
             type="button"
-            className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+            className="group w-full cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
             onClick={() => handleEditField('start date', project['start date'] ? format(new Date(project['start date']), 'yyyy-MM-dd') : '')}
           >
             {isEditing === 'start date' ? (
@@ -341,7 +341,7 @@ export function ProjectHomeClient({
           {/* Est Completion */}
           <button
             type="button"
-            className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+            className="group w-full cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
             onClick={() => handleEditField('est completion', project['est completion'] ? format(new Date(project['est completion']), 'yyyy-MM-dd') : '')}
           >
             {isEditing === 'est completion' ? (
@@ -371,7 +371,7 @@ export function ProjectHomeClient({
           {/* Category */}
             <button
               type="button"
-              className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+              className="group w-full cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
               onClick={() => handleEditField('category', project.category || '')}
             >
               {isEditing === 'category' ? (
@@ -401,7 +401,7 @@ export function ProjectHomeClient({
             {/* State */}
             <button
               type="button"
-              className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+              className="group w-full cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
               onClick={() => handleEditField('state', project.state || '')}
             >
               {isEditing === 'state' ? (
@@ -432,7 +432,7 @@ export function ProjectHomeClient({
             {/* Delivery Method */}
             <button
               type="button"
-              className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+              className="group w-full cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
               onClick={() => handleEditField('delivery_method', project.delivery_method || '')}
             >
               {isEditing === 'delivery_method' ? (
@@ -462,7 +462,7 @@ export function ProjectHomeClient({
             {/* Type */}
             <button
               type="button"
-              className="group cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
+              className="group w-full cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
               onClick={() => handleEditField('type', project.type || '')}
             >
               {isEditing === 'type' ? (

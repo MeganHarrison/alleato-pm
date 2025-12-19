@@ -35,9 +35,9 @@ export function HeroMetrics({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+    <div className="flex flex-col gap-4 md:flex-row md:gap-6 mb-20">
       {/* Primary Metric - Budget Remaining */}
-      <div className="border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-brand hover:shadow-sm">
+      <div className="w-full border border-neutral-200 bg-white p-4 transition-all duration-300 hover:border-brand hover:shadow-sm md:w-1/3 md:p-6">
         <div className="space-y-3">
           <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
             Budget Remaining
@@ -60,7 +60,7 @@ export function HeroMetrics({
       </div>
 
       {/* Forecast Variance */}
-      <div className="border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-brand hover:shadow-sm">
+      <div className="w-full border border-neutral-200 bg-white p-4 transition-all duration-300 hover:border-brand hover:shadow-sm md:w-1/3 md:p-6">
         <div className="space-y-3">
           <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
             Forecast Variance
@@ -93,7 +93,7 @@ export function HeroMetrics({
       </div>
 
       {/* Change Orders */}
-      <div className="border border-neutral-200 bg-white p-10 transition-all duration-300 hover:border-brand hover:shadow-sm">
+      <div className="w-full border border-neutral-200 bg-white p-4 transition-all duration-300 hover:border-brand hover:shadow-sm md:w-1/3 md:p-6">
         <div className="space-y-3">
           <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-neutral-500">
             Change Orders
