@@ -278,7 +278,7 @@ export function SiteHeader({
   }, [pathname, currentProject])
 
   return (
-    <header className="bg-gray-800 text-white flex flex-wrap items-center gap-2 border-b transition-[width,height] ease-linear">
+    <header className="bg-inverse text-white flex flex-wrap items-center gap-2 border-b transition-[width,height] ease-linear">
       <div className="flex w-full flex-wrap items-center gap-2 px-4 py-3 lg:gap-3 lg:px-6">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="-ml-1" />

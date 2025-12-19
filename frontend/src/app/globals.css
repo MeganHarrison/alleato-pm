@@ -40,9 +40,12 @@
     --procore-info-bg: 214 95% 93%;
     --procore-info-text: 214 80% 40%;
     --procore-negative: 0 84% 60%;
-    
+
     /* Brand color #DB802D */
     --brand: 29 71% 52%;
+
+    /* Surface inverse #272727 */
+    --surface-inverse: 0 0% 15.3%;
   }
   .dark {
     --background: 0 0% 3.9%;
