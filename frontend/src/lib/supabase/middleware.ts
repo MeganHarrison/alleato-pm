@@ -1,15 +1,10 @@
-// import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
-// import { getSupabaseConfig } from './config'
+import { type NextRequest, NextResponse } from 'next/server'
+
+import { createServerClient } from '@supabase/ssr'
+
+import { getSupabaseConfig } from './config'
 
 export async function updateSession(request: NextRequest) {
-  // Pass through all requests - authentication is handled by NextAuth middleware
-  return NextResponse.next({
-    request,
-  })
-
-  /* AUTH DISABLED - Uncomment when Supabase is back online
-  // Also uncomment the import above: import { createServerClient } from '@supabase/ssr'
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -24,31 +19,36 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value }) => {
+            request.cookies.set(name, value)
+          })
           supabaseResponse = NextResponse.next({
             request,
           })
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value, options }) => {
             supabaseResponse.cookies.set(name, value, options)
-          )
+          })
         },
       },
     }
   )
 
-  const { data } = await supabase.auth.getClaims()
-  const user = data?.claims
+  // Refresh session if expired
+  const { data: { user } } = await supabase.auth.getUser()
 
+  // Redirect to login if not authenticated and not on auth pages
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
+    !request.nextUrl.pathname.startsWith('/auth/login') &&
+    !request.nextUrl.pathname.startsWith('/auth/sign-up') &&
+    !request.nextUrl.pathname.startsWith('/auth/callback') &&
+    !request.nextUrl.pathname.startsWith('/auth/confirm')
   ) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/login'
+    url.searchParams.set('callbackUrl', request.nextUrl.pathname)
     return NextResponse.redirect(url)
   }
 
   return supabaseResponse
-  */
 }

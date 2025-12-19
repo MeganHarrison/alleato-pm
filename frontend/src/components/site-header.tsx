@@ -7,6 +7,8 @@ import {
   IconSettings,
   IconUserCircle,
 } from "@tabler/icons-react"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -80,9 +82,7 @@ export function SiteHeader({
   userName?: string
   userInitials?: string
 } = {}) {
-  const avatarSrc = userAvatar
-  // Generate initials from userName if userInitials not provided
-  const fallbackInitials = userInitials || userName?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'
+  const [user, setUser] = useState<any>(null)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [projects, setProjects] = useState<Project[]>([])
   const [loadingProjects, setLoadingProjects] = useState(false)
@@ -90,6 +90,31 @@ export function SiteHeader({
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const supabase = createClient()
+
+  // Fetch current user on mount and listen for auth changes
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    fetchUser()
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase.auth])
+
+  // Generate avatar data from user or props
+  const avatarSrc = userAvatar || user?.user_metadata?.avatar_url
+  const displayName = userName || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
+  const fallbackInitials = userInitials ||
+    (user?.user_metadata?.full_name
+      ? user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+      : displayName.slice(0, 2).toUpperCase())
 
   const parseProjectsResponse = async (response: Response) => {
     const contentType = response.headers.get('content-type') || ''
@@ -545,8 +570,13 @@ export function SiteHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" sideOffset={4} className="w-48">
               <DropdownMenuLabel className="text-sm font-semibold">
-                {userName || 'User'}
+                {displayName}
               </DropdownMenuLabel>
+              {user?.email && (
+                <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                  {user.email}
+                </DropdownMenuLabel>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href="/profile" className="cursor-pointer">
@@ -559,8 +589,21 @@ export function SiteHeader({
                 Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <IconLogout className="mr-2 h-4 w-4 text-destructive" />
+              <DropdownMenuItem
+                className="cursor-pointer text-destructive focus:text-destructive"
+                onClick={async () => {
+                  try {
+                    await supabase.auth.signOut()
+                    toast.success('Logged out successfully')
+                    router.push('/auth/login')
+                    router.refresh()
+                  } catch (error) {
+                    console.error('Logout error:', error)
+                    toast.error('Failed to log out')
+                  }
+                }}
+              >
+                <IconLogout className="mr-2 h-4 w-4" />
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>
