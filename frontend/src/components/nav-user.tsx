@@ -1,10 +1,11 @@
 "use client"
 
 import {
+  IconBell,
   IconCreditCard,
   IconDotsVertical,
   IconLogout,
-  IconNotification,
+  IconSearch,
   IconUserCircle,
 } from "@tabler/icons-react"
 import Link from "next/link"
@@ -12,6 +13,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { User } from "@supabase/supabase-js"
+import { getBestAvatarUrl } from "@/lib/gravatar"
 
 import {
   Avatar,
@@ -33,6 +35,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
 
 function getInitials(name: string | null | undefined): string {
   if (!name) return "U"
@@ -47,6 +53,7 @@ export function NavUser() {
   const { isMobile } = useSidebar()
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
+  const [showNotifications, setShowNotifications] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -63,15 +70,72 @@ export function NavUser() {
   }
 
   const displayUser = {
-    name: user?.user_metadata?.name || user?.email?.split('@')[0] || "User",
+    name: user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || "User",
     email: user?.email || "",
     avatar: user?.user_metadata?.avatar_url || "",
   }
 
   const initials = getInitials(displayUser.name)
+  const avatarSrc = getBestAvatarUrl(displayUser.avatar, displayUser.email)
 
   return (
     <SidebarMenu>
+      {/* Search Section */}
+      <SidebarMenuItem>
+        <div className="px-2 py-2">
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <IconSearch className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search..."
+                className="pl-8 h-9"
+              />
+            </div>
+          </div>
+        </div>
+      </SidebarMenuItem>
+
+      <Separator className="my-2" />
+
+      {/* Notifications Section */}
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          onClick={() => setShowNotifications(!showNotifications)}
+          className="w-full"
+        >
+          <IconBell className="h-4 w-4" />
+          <span>Notifications</span>
+          <Badge variant="destructive" className="ml-auto h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+            3
+          </Badge>
+        </SidebarMenuButton>
+        {showNotifications && (
+          <div className="mt-2 space-y-2 rounded-lg border bg-muted/50 p-3">
+            <div className="text-xs font-semibold text-muted-foreground">Recent Notifications</div>
+            <div className="space-y-2">
+              <div className="rounded-md bg-background p-2 text-xs">
+                <p className="font-medium">New message in project chat</p>
+                <p className="text-muted-foreground">Just now</p>
+              </div>
+              <div className="rounded-md bg-background p-2 text-xs">
+                <p className="font-medium">Budget update approved</p>
+                <p className="text-muted-foreground">30m ago</p>
+              </div>
+              <div className="rounded-md bg-background p-2 text-xs">
+                <p className="font-medium">New document shared</p>
+                <p className="text-muted-foreground">1h ago</p>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" className="w-full" asChild>
+              <Link href="/notifications">View All</Link>
+            </Button>
+          </div>
+        )}
+      </SidebarMenuItem>
+
+      <Separator className="my-2" />
+
+      {/* User Profile Section */}
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -79,8 +143,8 @@ export function NavUser() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage src={avatarSrc} alt={displayUser.name} />
                 <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -101,7 +165,7 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
+                  <AvatarImage src={avatarSrc} alt={displayUser.name} />
                   <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -123,10 +187,6 @@ export function NavUser() {
               <DropdownMenuItem>
                 <IconCreditCard />
                 Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
