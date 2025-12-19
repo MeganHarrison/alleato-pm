@@ -129,6 +129,8 @@ export function EditMeetingModal({
       onOpenChange(false)
     } catch (error) {
       console.error('Error updating meeting:', error)
+      // TODO: Replace with proper toast notification
+      // eslint-disable-next-line no-alert
       alert('Failed to update meeting. Please try again.')
     } finally {
       setLoading(false)

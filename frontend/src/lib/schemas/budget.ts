@@ -24,6 +24,7 @@ export const BudgetLineItemSchema = z.object({
   uom: optionalString,
   unitCost: numericString.optional(),
   amount: amountString,
+  description: optionalString,
 });
 
 export const BudgetLineItemsPayloadSchema = z.object({

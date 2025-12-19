@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { formatDistanceToNow, format } from 'date-fns'
 import { PageHeader } from '@/components/design-system'
 
-import { FileText, Clock, Tag, Users, Calendar, ExternalLink, Filter } from 'lucide-react'
+import { FileText, Clock, Tag, Users, Calendar, Filter } from 'lucide-react'
 
 const TABLE_NAME = 'document_metadata' as const
 
@@ -116,7 +116,7 @@ export default function DocumentsInfiniteDemoPage() {
     }
   }
 
-  const getTypeIcon = (type: string | null) => {
+  const _getTypeIcon = (type: string | null) => {
     switch (type?.toLowerCase()) {
       case 'meeting':
         return <Users className="h-4 w-4" />
@@ -142,6 +142,9 @@ export default function DocumentsInfiniteDemoPage() {
     if (Number.isNaN(ms)) return null
     return formatDistanceToNow(new Date(ms))
   }
+
+  const title = 'Projects'
+  const description = 'Browse all projects with infinite scroll'
 
   return (
     <div className="container mx-auto p-6 max-w-7xl">
@@ -257,7 +260,6 @@ export default function DocumentsInfiniteDemoPage() {
 
     <Button
   onClick={() => {
-    console.log('Load More clicked')
     fetchNextPage()
   }}
   disabled={isFetching}

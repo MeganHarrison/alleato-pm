@@ -10,6 +10,7 @@ import {
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { getBestAvatarUrl } from "@/lib/gravatar"
+import type { User } from "@supabase/supabase-js"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -83,7 +84,7 @@ export function SiteHeader({
   userName?: string
   userInitials?: string
 } = {}) {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [projects, setProjects] = useState<Project[]>([])
   const [loadingProjects, setLoadingProjects] = useState(false)
