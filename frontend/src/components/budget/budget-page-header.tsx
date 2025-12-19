@@ -104,10 +104,10 @@ export function BudgetPageHeader({
       : 'Out of sync · Review before exporting';
 
   const actionButtons = (
-    <div className="flex flex-wrap items-center gap-2 justify-end">
+    <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center md:justify-end">
       {/* Add Line Item Button - direct action */}
       <Button
-        className="bg-primary hover:bg-primary/90 text-primary-foreground"
+        className="h-auto w-full bg-primary py-3 text-base text-primary-foreground hover:bg-primary/90 md:w-auto md:py-2 md:text-sm"
         onClick={onCreateClick}
       >
         <Plus className="w-4 h-4 mr-1" />
@@ -117,7 +117,10 @@ export function BudgetPageHeader({
       {/* Create Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="text-gray-700">
+          <Button
+            variant="outline"
+            className="h-auto w-full py-3 text-base text-gray-700 md:w-auto md:py-2 md:text-sm"
+          >
             <Plus className="w-4 h-4 mr-1" />
             Create
             <ChevronDown className="w-4 h-4 ml-1" />
@@ -138,7 +141,7 @@ export function BudgetPageHeader({
       <Button
         variant="outline"
         onClick={onResendToERP}
-        className="text-gray-700"
+        className="h-auto w-full py-3 text-base text-gray-700 md:w-auto md:py-2 md:text-sm"
       >
         <ArrowRight className="w-4 h-4 mr-1" />
         Resend to ERP
@@ -149,7 +152,7 @@ export function BudgetPageHeader({
         <Button
           variant="outline"
           onClick={() => setShowUnlockDialog(true)}
-          className="text-gray-700"
+          className="h-auto w-full py-3 text-base text-gray-700 md:w-auto md:py-2 md:text-sm"
         >
           <Unlock className="w-4 h-4 mr-1" />
           Unlock Budget
@@ -158,7 +161,7 @@ export function BudgetPageHeader({
         <Button
           variant="outline"
           onClick={() => setShowLockDialog(true)}
-          className="text-gray-700"
+          className="h-auto w-full py-3 text-base text-gray-700 md:w-auto md:py-2 md:text-sm"
         >
           <Lock className="w-4 h-4 mr-1" />
           Lock Budget
@@ -168,7 +171,10 @@ export function BudgetPageHeader({
       {/* Export Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="text-gray-700">
+          <Button
+            variant="outline"
+            className="h-auto w-full py-3 text-base text-gray-700 md:w-auto md:py-2 md:text-sm"
+          >
             <Download className="w-4 h-4 mr-1" />
             Export
             <ChevronDown className="w-4 h-4 ml-1" />

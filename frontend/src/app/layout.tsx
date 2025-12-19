@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
@@ -38,6 +38,11 @@ export const metadata: Metadata = {
   description: "Modern construction management platform - 80% of Procore's value at 10% of the cost",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -60,7 +65,7 @@ export default function RootLayout({
                     <AppSidebar />
                     <SidebarInset>
                       <SiteHeader />
-                      <div className="bg-neutral-50 flex-1 w-full px-6 pt-8 pb-20">
+                      <div className="bg-neutral-50 flex-1 w-full px-4 sm:px-6 md:px-8 pt-6 md:pt-8 pb-20">
                         {children}
                       </div>
                     </SidebarInset>
