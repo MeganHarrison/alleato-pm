@@ -279,13 +279,15 @@ export function SiteHeader({
   return (
     <header className="bg-surface-inverse text-white flex flex-wrap items-center gap-2 border-b transition-[width,height] ease-linear">
       <div className="flex w-full flex-wrap items-center gap-2 px-4 py-3 lg:gap-3 lg:px-6">
-        <div className="flex items-center gap-2">
-          <SidebarTrigger className="-ml-1" />
+        {/* Sidebar Trigger - mobile left side */}
+        <div className="flex items-center gap-2 md:gap-3">
+          <SidebarTrigger className="-ml-1 opacity-70 hover:opacity-100 transition-opacity" />
           <Separator
             orientation="vertical"
             className="hidden h-4 sm:inline-flex"
           />
         </div>
+
         {/* Logo and Breadcrumbs - hidden on mobile */}
         <div className="hidden md:flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
           {/* Alleato Logo - links to homepage */}
@@ -311,10 +313,13 @@ export function SiteHeader({
             </nav>
           )}
         </div>
-        {/* Logo - shown on mobile only */}
-        <Link href="/protected" className="flex md:hidden items-center gap-2 flex-1">
-          <Image src="/Alleato-Group-Logo_Light.png" alt="Alleato" width={100} height={28} className="object-contain" />
-        </Link>
+
+        {/* Logo - shown on mobile only, centered */}
+        <div className="flex md:hidden flex-1 justify-center">
+          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+            <Image src="/Alleato-Group-Logo_Light.png" alt="Alleato" width={100} height={28} className="object-contain" />
+          </Link>
+        </div>
         <div className="ml-auto flex w-full flex-wrap items-center gap-2 sm:justify-end md:w-auto">
           {/* Company/Project Selector - hidden on mobile */}
           <DropdownMenu onOpenChange={(open) => open && fetchProjects()}>

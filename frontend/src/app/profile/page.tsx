@@ -137,9 +137,9 @@ export default function ProfilePage() {
       <PageContainer className="space-y-6">
         <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
           <Card>
-            <CardHeader className="flex flex-row items-start justify-between gap-4">
-              <div className="flex items-start gap-4">
-                <Avatar className="h-16 w-16">
+            <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex items-start gap-4 min-w-0 flex-1">
+                <Avatar className="h-16 w-16 shrink-0">
                   {profile?.avatarUrl ? (
                     <AvatarImage src={profile.avatarUrl} alt={profile.fullName} />
                   ) : profile?.email ? (
@@ -147,21 +147,21 @@ export default function ProfilePage() {
                   ) : null}
                   <AvatarFallback>{initials || "?"}</AvatarFallback>
                 </Avatar>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-xl">{profile?.fullName || "Your profile"}</CardTitle>
+                <div className="space-y-1 min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <CardTitle className="text-xl break-words">{profile?.fullName || "Your profile"}</CardTitle>
                     <Badge variant="secondary">{profile?.role || "Team member"}</Badge>
                   </div>
-                  <CardDescription>
+                  <CardDescription className="break-words">
                     {[profile?.title, profile?.company].filter(Boolean).join(" · ") ||
                       "Share your title and company"}
                   </CardDescription>
-                  <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                    <span>License: {profile?.licenseNumber || "Add license"}</span>
-                    <span className="text-gray-300">•</span>
-                    <span>Timezone: {profile?.timezone || "Set your timezone"}</span>
-                    <span className="text-gray-300">•</span>
-                    <span>Primary region: {profile?.region || "Not specified"}</span>
+                  <div className="flex flex-wrap gap-x-2 gap-y-1 text-sm text-muted-foreground">
+                    <span className="break-words">License: {profile?.licenseNumber || "Add license"}</span>
+                    <span className="hidden sm:inline text-gray-300">•</span>
+                    <span className="break-words">Timezone: {profile?.timezone || "Set your timezone"}</span>
+                    <span className="hidden sm:inline text-gray-300">•</span>
+                    <span className="break-words">Primary region: {profile?.region || "Not specified"}</span>
                   </div>
                 </div>
               </div>
@@ -176,9 +176,9 @@ export default function ProfilePage() {
                 <div className="space-y-3 rounded-xl border bg-muted/40 p-4">
                   {contactDetails.map((detail, index) => (
                     <div key={`${detail.value}-${index}`} className="space-y-3">
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                        <detail.icon className="h-4 w-4" />
-                        <span>{detail.value}</span>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground min-w-0">
+                        <detail.icon className="h-4 w-4 shrink-0" />
+                        <span className="break-words min-w-0">{detail.value}</span>
                       </div>
                       {index < contactDetails.length - 1 && <Separator />}
                     </div>
@@ -214,32 +214,32 @@ export default function ProfilePage() {
               <CardDescription>Set your availability and the information your team sees.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-start justify-between rounded-lg border bg-white p-3">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Default role</p>
-                  <p className="text-sm text-muted-foreground">
+              <div className="flex items-start justify-between gap-3 rounded-lg border bg-white p-3">
+                <div className="space-y-1 min-w-0 flex-1">
+                  <p className="text-sm font-medium break-words">Default role</p>
+                  <p className="text-sm text-muted-foreground break-words">
                     {profile?.role || "Share your primary role"}
                   </p>
                 </div>
-                <Badge>{profile?.role ? "Primary" : "Pending"}</Badge>
+                <Badge className="shrink-0">{profile?.role ? "Primary" : "Pending"}</Badge>
               </div>
-              <div className="flex items-start justify-between rounded-lg border bg-white p-3">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Work hours</p>
-                  <p className="text-sm text-muted-foreground">
+              <div className="flex items-start justify-between gap-3 rounded-lg border bg-white p-3">
+                <div className="space-y-1 min-w-0 flex-1">
+                  <p className="text-sm font-medium break-words">Work hours</p>
+                  <p className="text-sm text-muted-foreground break-words">
                     {profile?.workHours || "Add your working hours"}
                   </p>
                 </div>
-                <Badge variant="secondary">Updated</Badge>
+                <Badge variant="secondary" className="shrink-0">Updated</Badge>
               </div>
-              <div className="flex items-start justify-between rounded-lg border bg-white p-3">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Preferred communication</p>
-                  <p className="text-sm text-muted-foreground">
+              <div className="flex items-start justify-between gap-3 rounded-lg border bg-white p-3">
+                <div className="space-y-1 min-w-0 flex-1">
+                  <p className="text-sm font-medium break-words">Preferred communication</p>
+                  <p className="text-sm text-muted-foreground break-words">
                     {profile?.communicationPreference || "Select how we should reach you"}
                   </p>
                 </div>
-                <Badge variant="secondary">Synced</Badge>
+                <Badge variant="secondary" className="shrink-0">Synced</Badge>
               </div>
             </CardContent>
           </Card>
@@ -254,11 +254,11 @@ export default function ProfilePage() {
             <CardContent className="space-y-6">
               {notificationPreferences.map((preference) => (
                 <div key={preference.title} className="flex items-start justify-between gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-foreground">{preference.title}</p>
-                    <p className="text-sm text-muted-foreground">{preference.description}</p>
+                  <div className="space-y-1 min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground break-words">{preference.title}</p>
+                    <p className="text-sm text-muted-foreground break-words">{preference.description}</p>
                   </div>
-                  <Switch defaultChecked={preference.defaultChecked} aria-label={preference.title} />
+                  <Switch defaultChecked={preference.defaultChecked} aria-label={preference.title} className="shrink-0" />
                 </div>
               ))}
             </CardContent>
@@ -272,15 +272,15 @@ export default function ProfilePage() {
             <CardContent className="space-y-6">
               {communicationPreferences.map((preference) => (
                 <div key={preference.title} className="flex items-start justify-between gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-foreground">{preference.title}</p>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="space-y-1 min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground break-words">{preference.title}</p>
+                    <p className="text-sm text-muted-foreground break-words">
                       {preference.title === "Email"
                         ? `Send detailed summaries and approvals to ${profile?.email || "your email"}`
                         : preference.description}
                     </p>
                   </div>
-                  <Switch defaultChecked={preference.defaultChecked} aria-label={preference.title} />
+                  <Switch defaultChecked={preference.defaultChecked} aria-label={preference.title} className="shrink-0" />
                 </div>
               ))}
             </CardContent>
@@ -296,15 +296,15 @@ export default function ProfilePage() {
             <CardContent className="space-y-4">
               {securityItems.map((item) => (
                 <div key={item.title} className="flex items-start gap-4 rounded-xl border bg-white p-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted shrink-0">
                     <item.icon className="h-5 w-5 text-gray-700" />
                   </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-semibold text-foreground">{item.title}</p>
-                      <span className={`text-xs font-semibold ${item.statusColor}`}>{item.status}</span>
+                  <div className="flex-1 space-y-1 min-w-0">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm font-semibold text-foreground break-words">{item.title}</p>
+                      <span className={`text-xs font-semibold ${item.statusColor} whitespace-nowrap`}>{item.status}</span>
                     </div>
-                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                    <p className="text-sm text-muted-foreground break-words">{item.description}</p>
                   </div>
                 </div>
               ))}
@@ -321,16 +321,16 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg border bg-amber-50 p-4 text-sm text-amber-900">
-                <p className="font-medium">Verify company safety training</p>
-                <p className="text-amber-800">Upload the latest OSHA 30 certificate to stay compliant.</p>
+                <p className="font-medium break-words">Verify company safety training</p>
+                <p className="text-amber-800 break-words">Upload the latest OSHA 30 certificate to stay compliant.</p>
               </div>
               <div className="rounded-lg border bg-white p-4 text-sm text-slate-700">
-                <p className="font-medium">Add emergency contacts</p>
-                <p className="text-muted-foreground">Share at least two contacts for site escalations.</p>
+                <p className="font-medium break-words">Add emergency contacts</p>
+                <p className="text-muted-foreground break-words">Share at least two contacts for site escalations.</p>
               </div>
               <div className="rounded-lg border bg-white p-4 text-sm text-slate-700">
-                <p className="font-medium">Review permissions</p>
-                <p className="text-muted-foreground">Confirm access for current projects and archived work.</p>
+                <p className="font-medium break-words">Review permissions</p>
+                <p className="text-muted-foreground break-words">Confirm access for current projects and archived work.</p>
               </div>
             </CardContent>
           </Card>

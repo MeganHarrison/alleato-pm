@@ -55,14 +55,14 @@ export function PageHeader({
         )}
 
         {/* Title and Actions */}
-        <div className="flex items-center justify-between py-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+        <div className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl font-bold text-gray-900 break-words">{title}</h1>
             {description && (
-              <p className="mt-2 text-sm text-gray-600">{description}</p>
+              <p className="mt-2 text-sm text-gray-600 break-words">{description}</p>
             )}
           </div>
-          {actions && <div className="flex items-center gap-3">{actions}</div>}
+          {actions && <div className="flex flex-wrap items-center gap-2 sm:gap-3">{actions}</div>}
         </div>
       </div>
     </div>
