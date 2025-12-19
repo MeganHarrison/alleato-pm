@@ -171,8 +171,9 @@ export default function SimpleChatPage() {
                             <div className="prose prose-sm max-w-none">
                               <ReactMarkdown
                                 components={{
-                                  code({ node, inline, className, children, ...props }) {
+                                  code({ node, className, children, ...props }) {
                                     const match = /language-(\w+)/.exec(className || '')
+                                    const inline = !match
                                     return !inline && match ? (
                                       <SyntaxHighlighter
                                         style={oneDark}

@@ -75,7 +75,7 @@ export default function PortfolioPage() {
             // Legacy fields for backward compatibility
             projectNumber: p['job number'] || p.id.toString(),
             address: p.address || '',
-            city: p.address ? p.address.split(',')[0] || '' : '',
+            city: p.address && typeof p.address === 'string' ? p.address.split(',')[0] || '' : '',
             zip: '',
             phone: '',
             status: p.archived ? 'Inactive' : 'Active',
@@ -309,7 +309,7 @@ export default function PortfolioPage() {
             <ProjectsTable
               data={filteredProjects}
               onProjectClick={handleProjectClick}
-              viewType={viewType}
+              viewType={viewType === 'list' ? 'list' : 'grid'}
             />
           )}
         </div>

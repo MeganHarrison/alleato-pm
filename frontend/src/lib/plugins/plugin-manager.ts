@@ -12,7 +12,8 @@ import type {
   PluginStatus,
   HookType,
   HookContext,
-  PluginError,
+} from '@/types/plugin.types';
+import { PluginError,
   PluginValidationResult,
   MenuItem,
   DashboardWidget,

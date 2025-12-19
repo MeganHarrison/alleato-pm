@@ -499,6 +499,7 @@ export function ProjectHomeClient({
         spent={spent}
         forecastedCost={forecastedCost}
         changeOrdersTotal={changeOrdersTotal}
+        activeTasks={0}
       />
 
       {/* 2 Column - Summary, Team, and Quick Stats */}

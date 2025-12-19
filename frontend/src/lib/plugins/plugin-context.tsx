@@ -4,7 +4,6 @@
  */
 
 import React, { createContext, useContext } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { createClient } from '@/lib/supabase/client';
 import type { HookContext } from '@/types/plugin.types';
 
@@ -36,15 +35,11 @@ export function AppPluginContextProvider({
   projectId?: string;
   projectName?: string;
 }) {
-  const { user } = useUser();
   const supabase = createClient();
 
+  // TODO: Implement Supabase auth integration
   const context: AppContextForPlugins = {
-    user: user ? {
-      id: user.id,
-      email: user.emailAddresses[0]?.emailAddress || '',
-      role: user.publicMetadata?.role as string || 'user',
-    } : null,
+    user: null,
     currentProject: projectId ? {
       id: projectId,
       name: projectName || '',

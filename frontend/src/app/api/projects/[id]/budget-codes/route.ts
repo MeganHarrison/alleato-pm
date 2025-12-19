@@ -78,18 +78,19 @@ export async function GET(
 
     // Transform the data
     const budgetCodes: BudgetCodeResponse['budgetCodes'] =
-      (budgetCodesData || []).map((item: BudgetCodeRow) => {
-        const costType = item.cost_code_types?.code || null;
-        const costTypeDescription = item.cost_code_types?.description || null;
+      (budgetCodesData || []).map((item: unknown) => {
+        const row = item as BudgetCodeRow;
+        const costType = row.cost_code_types?.code || null;
+        const costTypeDescription = row.cost_code_types?.description || null;
 
         return {
-          id: item.id,
-          code: item.cost_code_id,
-          description: item.description || '',
+          id: row.id,
+          code: row.cost_code_id,
+          description: row.description || '',
           costType,
           fullLabel: formatBudgetCode({
-            code: item.cost_code_id,
-            description: item.description,
+            code: row.cost_code_id,
+            description: row.description,
             costType,
             costTypeDescription,
           }),
@@ -171,8 +172,10 @@ export async function POST(
     }
 
     // Transform response to match frontend format
-    const costType = newBudgetCode.cost_code_types?.code || null;
-    const costTypeDescription = newBudgetCode.cost_code_types?.description || null;
+    // Cast to unknown first, then to the proper type structure
+    const typedBudgetCode = newBudgetCode as unknown as BudgetCodeRow;
+    const costType = typedBudgetCode.cost_code_types?.code || null;
+    const costTypeDescription = typedBudgetCode.cost_code_types?.description || null;
 
     const budgetCode = {
       id: newBudgetCode.id,

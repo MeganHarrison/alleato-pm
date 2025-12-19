@@ -74,7 +74,7 @@ export function EditMeetingModal({
         .limit(10)
 
       if (!error && data) {
-        setProjectOptions(data)
+        setProjectOptions(data as unknown as typeof projectOptions)
       }
     }
 
