@@ -1,1 +1,22 @@
-npm test
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Run lint-staged to check and fix staged files
+npx lint-staged
+
+# If lint-staged fails, block the commit
+if [ $? -ne 0 ]; then
+  echo "❌ Pre-commit checks FAILED"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "Fix the errors above before committing."
+  echo "Type errors and lint errors must be fixed."
+  echo ""
+  exit 1
+fi
+
+echo "✅ Pre-commit checks PASSED"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

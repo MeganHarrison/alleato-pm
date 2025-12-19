@@ -34,8 +34,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Alleato OS - Procore Alternative",
-  description: "Modern construction management platform - 80% of Procore's value at 10% of the cost",
+  title: "Alleato AI - Project Management",
+  description: "Modern construction management platform powered by AI.",
 };
 
 export const viewport: Viewport = {
