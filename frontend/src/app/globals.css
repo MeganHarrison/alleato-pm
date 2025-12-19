@@ -46,6 +46,17 @@
 
     /* Surface inverse #272727 */
     --surface-inverse: 0 0% 15.3%;
+
+    /* Chat UI - Dark Luxury Theme */
+    --chat-bg: 0 0% 7%;
+    --chat-panel: 0 0% 10%;
+    --chat-panel-2: 0 0% 13%;
+    --chat-border: 0 0% 20%;
+    --chat-text: 0 0% 95%;
+    --chat-muted: 0 0% 60%;
+    --chat-accent: 190 95% 45%;
+    --chat-accent-2: 29 71% 52%;
+    --chat-hover: 0 0% 15%;
   }
   .dark {
     --background: 0 0% 3.9%;
