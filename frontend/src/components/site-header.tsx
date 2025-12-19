@@ -1,7 +1,7 @@
  "use client"
 
 import { useMemo, useState, useEffect } from "react"
-import { Bell, ChevronDown, ChevronRight, MessageSquare, Search, Star, Plus } from "lucide-react"
+import { Bell, ChevronDown, ChevronRight, MessageSquare, Search, Star, Plus, Menu } from "lucide-react"
 import {
   IconLogout,
   IconUserCircle,
@@ -86,6 +86,7 @@ export function SiteHeader({
 } = {}) {
   const [user, setUser] = useState<User | null>(null)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [projects, setProjects] = useState<Project[]>([])
   const [loadingProjects, setLoadingProjects] = useState(false)
   const [currentProject, setCurrentProject] = useState<Project | null>(null)
@@ -279,51 +280,91 @@ export function SiteHeader({
   return (
     <header className="bg-surface-inverse text-white flex flex-wrap items-center gap-2 border-b transition-[width,height] ease-linear">
       <div className="flex w-full flex-wrap items-center gap-2 px-4 py-3 lg:gap-3 lg:px-6">
-        {/* Sidebar Trigger - mobile left side */}
-        <div className="flex items-center gap-2 md:gap-3">
-          <SidebarTrigger className="-ml-1 opacity-70 hover:opacity-100 transition-opacity" />
-          <Separator
-            orientation="vertical"
-            className="hidden h-4 sm:inline-flex"
-          />
-        </div>
-
-        {/* Logo and Breadcrumbs - hidden on mobile */}
-        <div className="hidden md:flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
-          {/* Alleato Logo - links to homepage */}
-          <Link href="/" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
-            <Image src="/Alleato-Group-Logo_Light.png" alt="Alleato" width={120} height={32} className="object-contain" />
-          </Link>
-
-          {/* Breadcrumbs */}
-          {breadcrumbs.length > 0 && (
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-medium tracking-wide text-white/90 whitespace-nowrap">
-              {breadcrumbs.map((crumb, index) => (
-                <span key={`${crumb.href}-${index}`} className="flex items-center gap-2">
-                  <ChevronRight className="h-3 w-3 text-white/40" />
-                  {index === breadcrumbs.length - 1 ? (
-                    <span className="text-white">{crumb.label}</span>
-                  ) : (
-                    <Link href={crumb.href} className="text-white/70 hover:text-brand transition-colors">
-                      {crumb.label}
-                    </Link>
-                  )}
-                </span>
-              ))}
-            </nav>
-          )}
-        </div>
-
-        {/* Logo - shown on mobile only, centered */}
-        <div className="flex md:hidden flex-1 justify-center">
+        {/* Mobile Header Layout */}
+        <div className="flex md:hidden w-full items-center justify-between">
+          {/* Logo - left side on mobile */}
           <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
             <Image src="/Alleato-Group-Logo_Light.png" alt="Alleato" width={100} height={28} className="object-contain" />
           </Link>
+
+          {/* Mobile Actions - right side */}
+          <div className="flex items-center gap-3">
+            {/* Search Icon */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-white hover:bg-white/10"
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+
+            {/* Notifications Icon */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-white hover:bg-white/10"
+              onClick={() => setNotificationsOpen(true)}
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5" />
+            </Button>
+
+            {/* Hamburger Menu */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-white hover:bg-white/10"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Menu"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
-        <div className="ml-auto flex w-full flex-wrap items-center gap-2 sm:justify-end md:w-auto">
-          {/* Company/Project Selector - hidden on mobile */}
-          <DropdownMenu onOpenChange={(open) => open && fetchProjects()}>
-            <DropdownMenuTrigger asChild>
+
+        {/* Desktop Header Layout */}
+        <div className="hidden md:flex items-center gap-2 md:gap-3 w-full">
+          {/* Sidebar Trigger */}
+          <div className="flex items-center gap-2 md:gap-3">
+            <SidebarTrigger className="-ml-1 opacity-70 hover:opacity-100 transition-opacity" />
+            <Separator
+              orientation="vertical"
+              className="h-4"
+            />
+          </div>
+
+          {/* Logo and Breadcrumbs */}
+          <div className="min-w-0 flex-1 flex items-center gap-2 overflow-x-auto">
+            {/* Alleato Logo - links to homepage */}
+            <Link href="/" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
+              <Image src="/Alleato-Group-Logo_Light.png" alt="Alleato" width={120} height={32} className="object-contain" />
+            </Link>
+
+            {/* Breadcrumbs */}
+            {breadcrumbs.length > 0 && (
+              <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm font-medium tracking-wide text-white/90 whitespace-nowrap">
+                {breadcrumbs.map((crumb, index) => (
+                  <span key={`${crumb.href}-${index}`} className="flex items-center gap-2">
+                    <ChevronRight className="h-3 w-3 text-white/40" />
+                    {index === breadcrumbs.length - 1 ? (
+                      <span className="text-white">{crumb.label}</span>
+                    ) : (
+                      <Link href={crumb.href} className="text-white/70 hover:text-brand transition-colors">
+                        {crumb.label}
+                      </Link>
+                    )}
+                  </span>
+                ))}
+              </nav>
+            )}
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="ml-auto flex items-center gap-2">
+            {/* Company/Project Selector */}
+            <DropdownMenu onOpenChange={(open) => open && fetchProjects()}>
+              <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 className="hidden md:flex h-8 text-[hsl(var(--procore-header-text))] px-2 bg-white/10 hover:bg-white/20"
@@ -629,7 +670,171 @@ export function SiteHeader({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
         </div>
+
+        {/* Mobile Menu Sheet */}
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetContent side="right" className="w-full sm:w-[400px] bg-surface-inverse text-white p-0">
+            <SheetHeader className="px-6 pt-6 pb-4 border-b border-white/10">
+              <SheetTitle className="text-white text-left">Menu</SheetTitle>
+            </SheetHeader>
+            <div className="overflow-y-auto h-[calc(100vh-80px)]">
+              {/* Project Selector */}
+              {currentProject && (
+                <div className="px-6 py-4 border-b border-white/10">
+                  <div className="text-xs text-gray-400 mb-1">Current Project</div>
+                  <div className="text-sm font-medium text-white">
+                    {currentProject["job number"] && `${currentProject["job number"]} - `}
+                    {currentProject.name}
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation Links */}
+              <div className="px-6 py-4 space-y-4">
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Core Tools</h3>
+                  <div className="space-y-1">
+                    {coreTools.map((tool) => {
+                      const href = buildToolUrl(tool.path, tool.requiresProject)
+                      const isDisabled = tool.requiresProject && !projectId
+                      return (
+                        <Link
+                          key={tool.name}
+                          href={href}
+                          onClick={(e) => {
+                            if (isDisabled) {
+                              e.preventDefault()
+                            } else {
+                              setMobileMenuOpen(false)
+                            }
+                          }}
+                          className={`block px-3 py-2 rounded text-sm ${
+                            isDisabled
+                              ? 'opacity-50 cursor-not-allowed'
+                              : 'hover:bg-white/10 text-white'
+                          }`}
+                        >
+                          {tool.name}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Project Management</h3>
+                  <div className="space-y-1">
+                    {projectManagementTools.slice(0, 6).map((tool) => {
+                      const href = buildToolUrl(tool.path, tool.requiresProject)
+                      const isDisabled = tool.requiresProject && !projectId
+                      return (
+                        <Link
+                          key={tool.name}
+                          href={href}
+                          onClick={(e) => {
+                            if (isDisabled) {
+                              e.preventDefault()
+                            } else {
+                              setMobileMenuOpen(false)
+                            }
+                          }}
+                          className={`block px-3 py-2 rounded text-sm ${
+                            isDisabled
+                              ? 'opacity-50 cursor-not-allowed'
+                              : 'hover:bg-white/10 text-white'
+                          }`}
+                        >
+                          {tool.name}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Financial</h3>
+                  <div className="space-y-1">
+                    {financialManagementTools.slice(0, 4).map((tool) => {
+                      const href = buildToolUrl(tool.path, tool.requiresProject)
+                      const isDisabled = tool.requiresProject && !projectId
+                      return (
+                        <Link
+                          key={tool.name}
+                          href={href}
+                          onClick={(e) => {
+                            if (isDisabled) {
+                              e.preventDefault()
+                            } else {
+                              setMobileMenuOpen(false)
+                            }
+                          }}
+                          className={`block px-3 py-2 rounded text-sm ${
+                            isDisabled
+                              ? 'opacity-50 cursor-not-allowed'
+                              : 'hover:bg-white/10 text-white'
+                          }`}
+                        >
+                          {tool.name}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* User Section */}
+              <div className="px-6 py-4 border-t border-white/10">
+                <div className="flex items-center gap-3 mb-4">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={avatarSrc} alt="User avatar" />
+                    <AvatarFallback className="bg-brand/20 text-white font-medium">
+                      {fallbackInitials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="text-sm font-medium text-white">{displayName}</div>
+                    {user?.email && (
+                      <div className="text-xs text-gray-400">{user.email}</div>
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded text-sm text-white hover:bg-white/10"
+                  >
+                    <IconUserCircle className="h-4 w-4" />
+                    Profile
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await supabase.auth.signOut()
+                        toast.success('Logged out successfully')
+                        setMobileMenuOpen(false)
+                        router.push('/auth/login')
+                        router.refresh()
+                      } catch (error) {
+                        console.error('Logout error:', error)
+                        toast.error('Failed to log out')
+                      }
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 rounded text-sm text-red-400 hover:bg-white/10"
+                  >
+                    <IconLogout className="h-4 w-4" />
+                    Log out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        {/* Notifications Sheet */}
         <Sheet open={notificationsOpen} onOpenChange={setNotificationsOpen}>
           <SheetContent side="right" className="w-[320px] bg-gray-900 text-white">
             <SheetHeader className="px-4 pt-4">

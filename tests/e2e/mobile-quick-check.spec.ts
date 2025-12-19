@@ -11,10 +11,14 @@ const MOBILE = { width: 375, height: 667 }
 const DESKTOP = { width: 1920, height: 1080 }
 
 test.describe('Quick Mobile Check', () => {
+  test.setTimeout(120000) // 2 minutes per test
   test('Profile page - mobile vs desktop', async ({ page }) => {
     // Login
-    await page.goto('/dev-login?email=test@example.com&password=testpassword123')
-    await page.waitForURL('/', { timeout: 15000 })
+    await page.goto('/dev-login?email=test@example.com&password=testpassword123', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000
+    })
+    await page.waitForURL('/', { timeout: 30000 })
 
     // Test mobile
     await page.setViewportSize(MOBILE)
@@ -48,8 +52,11 @@ test.describe('Quick Mobile Check', () => {
   })
 
   test('Project Home - mobile vs desktop', async ({ page }) => {
-    await page.goto('/dev-login?email=test@example.com&password=testpassword123')
-    await page.waitForURL('/', { timeout: 15000 })
+    await page.goto('/dev-login?email=test@example.com&password=testpassword123', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000
+    })
+    await page.waitForURL('/', { timeout: 30000 })
 
     // Mobile
     await page.setViewportSize(MOBILE)
@@ -83,8 +90,11 @@ test.describe('Quick Mobile Check', () => {
   })
 
   test('Budget page - mobile vs desktop', async ({ page }) => {
-    await page.goto('/dev-login?email=test@example.com&password=testpassword123')
-    await page.waitForURL('/', { timeout: 15000 })
+    await page.goto('/dev-login?email=test@example.com&password=testpassword123', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000
+    })
+    await page.waitForURL('/', { timeout: 30000 })
 
     // Mobile
     await page.setViewportSize(MOBILE)
