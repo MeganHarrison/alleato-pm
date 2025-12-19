@@ -30,11 +30,80 @@ This is a **real production system**. Accuracy, verification, and correctness ar
 When rules conflict, obey this order:
 
 1. **Security**
-2. **Execution Gates**
-3. **Explicit User Instructions**
-4. **Schema & Type Safety**
-5. **Testing Requirements**
-6. **Code Quality & Conventions**
+2. **Code Quality Gates** (NEW - Zero tolerance for type/lint errors)
+3. **Execution Gates**
+4. **Explicit User Instructions**
+5. **Schema & Type Safety**
+6. **Testing Requirements**
+7. **Code Quality & Conventions**
+
+---
+
+## 🚫 CODE QUALITY GATES (ABSOLUTE - ZERO TOLERANCE)
+
+**THESE RULES ARE MANDATORY AND NON-NEGOTIABLE**
+
+### Pre-Commit Enforcement (Automatic)
+
+Every commit is automatically checked for:
+
+1. **TypeScript Errors** - ALL type errors must be fixed
+2. **ESLint Errors** - ALL lint errors must be fixed
+3. **Auto-formatting** - Code is automatically formatted
+
+**If any check fails, the commit is BLOCKED.**
+
+### Pre-Push Enforcement (Full Project Check)
+
+Before pushing, the ENTIRE project is checked:
+
+1. **Full TypeScript Check** - `npm run typecheck`
+2. **Full ESLint Check** - `npm run lint`
+
+**If either fails, the push is BLOCKED.**
+
+### CI/CD Enforcement (GitHub Actions)
+
+Every Pull Request runs:
+
+1. TypeScript type check on entire codebase
+2. ESLint on entire codebase
+
+**PRs cannot be merged if checks fail.**
+
+### Rules for Claude
+
+Claude MUST:
+
+1. **Run `npm run quality` after EVERY code change**
+2. **Fix ALL errors before marking task complete**
+3. **Never commit code with type/lint errors**
+4. **Never use `@ts-ignore` or `@ts-expect-error`**
+5. **Never use `any` type (use `unknown` instead)**
+6. **Never use `console.log` (use `console.warn` or `console.error`)**
+
+### Available Commands
+
+```bash
+# Check for errors
+npm run typecheck --prefix frontend
+npm run lint --prefix frontend
+npm run quality --prefix frontend  # Runs both
+
+# Auto-fix errors
+npm run lint:fix --prefix frontend
+npm run quality:fix --prefix frontend  # Typecheck + auto-fix lint
+```
+
+### Bypassing Hooks (EMERGENCY ONLY)
+
+Hooks can be bypassed with:
+```bash
+git commit --no-verify
+git push --no-verify
+```
+
+**WARNING:** Only use in absolute emergencies. Bypassing will cause CI to fail.
 
 ---
 

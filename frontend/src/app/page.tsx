@@ -61,7 +61,7 @@ export default function PortfolioPage() {
 
         if (response.ok) {
           // Map Supabase data to our Project interface
-          const mappedProjects: Project[] = (result.data || []).map((p: any) => ({
+          const mappedProjects: Project[] = (result.data || []).map((p: Record<string, unknown>) => ({
             id: p.id.toString(),
             name: p.name || 'Untitled Project',
             jobNumber: p['job number'] || p.id.toString(),
@@ -137,12 +137,10 @@ export default function PortfolioPage() {
   };
 
   const handleSettingsClick = () => {
-    console.log('Settings clicked');
+    // Settings functionality to be implemented
   };
 
   const handleExport = (format: 'pdf' | 'csv') => {
-    console.log('Export to', format);
-    
     // Export to CSV
     if (format === 'csv') {
       const headers = ['Job Number', 'Project Name', 'Client', 'Phase', 'Category', 'State', 'Revenue', 'Profit', 'Status'];
@@ -256,18 +254,15 @@ export default function PortfolioPage() {
   };
 
   const handleProjectClick = (project: Project) => {
-    console.log('Project clicked:', project.id, project.name);
     router.push(`/${project.id}/home`);
   };
 
   const handleCreateProject = () => {
-    console.log('Create project clicked');
     router.push('/form-project');
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-50px)] min-h-0 bg-neutral-50 rounded-lg overflow-hidden">
-
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* Portfolio Header with tabs */}
       <PortfolioHeader
         views={portfolioViews}
