@@ -32,11 +32,27 @@ const config = [
       '@typescript-eslint': tseslint,
     },
     rules: {
+      // MANDATORY RULES - All set to 'error' level
       'turbo/no-undeclared-env-vars': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      // Design System Enforcement
-      'react/forbid-component-props': ['warn', { forbid: ['style'] }],
-      'react/forbid-dom-props': ['warn', { forbid: ['style'] }],
+      '@typescript-eslint/no-explicit-any': 'error', // No 'any' types allowed
+      '@typescript-eslint/no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        ignoreRestSiblings: true
+      }],
+      'no-console': ['error', { allow: ['warn', 'error'] }], // No console.log in production
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'error',
+
+      // Design System Enforcement - Changed to ERROR
+      'react/forbid-component-props': ['error', { forbid: ['style'] }],
+      'react/forbid-dom-props': ['error', { forbid: ['style'] }],
+
+      // Code Quality
+      'no-debugger': 'error',
+      'no-alert': 'error',
+      'prefer-const': 'error',
+      'no-var': 'error',
     },
   },
 ]

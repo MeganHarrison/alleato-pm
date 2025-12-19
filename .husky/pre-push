@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-push checks..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Run full typecheck on entire project
+echo "📝 Type checking entire project..."
+npm run typecheck --prefix frontend
+TYPECHECK_EXIT=$?
+
+# Run full lint on entire project
+echo ""
+echo "🔍 Linting entire project..."
+npm run lint --prefix frontend
+LINT_EXIT=$?
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Block push if either check failed
+if [ $TYPECHECK_EXIT -ne 0 ] || [ $LINT_EXIT -ne 0 ]; then
+  echo "❌ Pre-push checks FAILED"
+  echo ""
+  echo "PUSH BLOCKED - Fix all errors before pushing"
+  echo ""
+  echo "Run these commands to see errors:"
+  echo "  npm run typecheck --prefix frontend"
+  echo "  npm run lint --prefix frontend"
+  echo ""
+  exit 1
+fi
+
+echo "✅ Pre-push checks PASSED - Push allowed"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
