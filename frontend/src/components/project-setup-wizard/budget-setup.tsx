@@ -181,8 +181,14 @@ export function BudgetSetup({ projectId, onNext, onSkip }: StepComponentProps) {
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to create budget items")
+        let errorMessage = "Failed to create budget items"
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch {
+          // Response body is empty or not valid JSON - use default message
+        }
+        throw new Error(errorMessage)
       }
 
       // API endpoint now handles updating project budget totals atomically
