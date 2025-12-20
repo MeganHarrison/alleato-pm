@@ -1,9 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
 import { GenericDataTable, type GenericTableConfig } from '@/components/tables/generic-table-factory'
-import { Database } from '@/types/database.types'
 import { ProjectToolPage } from '@/components/layout/project-tool-page'
-
-type Task = Database['public']['Tables']['project_tasks']['Row']
+import { getProjectInfo } from '@/lib/supabase/project-fetcher'
 
 const config: GenericTableConfig = {
   title: 'Tasks',
@@ -105,28 +102,21 @@ export default async function ProjectTasksPage({
 }: {
   params: Promise<{ projectId: string }>
 }) {
-  const supabase = await createClient()
   const { projectId } = await params
-
-  // Fetch project info for header
-  const { data: project } = await supabase
-    .from('projects')
-    .select('name, client')
-    .eq('id', projectId)
-    .single()
+  const { project, numericProjectId, supabase } = await getProjectInfo(projectId)
 
   const { data: tasks, error } = await supabase
     .from('project_tasks')
     .select('*')
-    .eq('project_id', projectId)
+    .eq('project_id', numericProjectId)
     .order('created_at', { ascending: false })
 
   if (error) {
     console.error('Error fetching tasks:', error)
     return (
       <ProjectToolPage
-        project={project?.name || undefined}
-        client={project?.client || undefined}
+        project={project.name || undefined}
+        client={project.client || undefined}
         title="Tasks"
         description="Manage project tasks and assignments"
       >
@@ -139,8 +129,8 @@ export default async function ProjectTasksPage({
 
   return (
     <ProjectToolPage
-      project={project?.name || undefined}
-      client={project?.client || undefined}
+      project={project.name || undefined}
+      client={project.client || undefined}
       title="Tasks"
       description="Manage project tasks and assignments"
     >

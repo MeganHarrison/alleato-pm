@@ -1,9 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
-import { notFound } from 'next/navigation'
-import { Calendar, Clock, User, Video } from 'lucide-react'
+import { Calendar, Clock } from 'lucide-react'
 
 import { EmptyState, PageHeader } from '@/components/design-system'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { getProjectInfo } from '@/lib/supabase/project-fetcher'
 
 import { MeetingsTableWrapper } from './meetings-table-wrapper'
 
@@ -13,24 +12,13 @@ interface PageProps {
 
 export default async function ProjectMeetingsPage({ params }: PageProps) {
   const { projectId } = await params
-  const supabase = await createClient()
-
-  // Fetch project info for header
-  const { data: project } = await supabase
-    .from('projects')
-    .select('name, client')
-    .eq('id', projectId)
-    .single()
-
-  if (!project) {
-    notFound()
-  }
+  const { project, numericProjectId, supabase } = await getProjectInfo(projectId)
 
   // Fetch meetings for this project
   const { data: meetings, error } = await supabase
     .from('document_metadata')
     .select('*')
-    .eq('project_id', projectId)
+    .eq('project_id', numericProjectId)
     .eq('type', 'meeting')
     .order('date', { ascending: false })
 
@@ -48,12 +36,6 @@ export default async function ProjectMeetingsPage({ params }: PageProps) {
            meetingDate.getFullYear() === now.getFullYear()
   }).length || 0
 
-  const withRecordings = meetings?.filter(m => m.fireflies_link || m.video || m.audio).length || 0
-  const totalParticipants = meetings?.reduce((acc, m) => {
-    if (!m.participants) return acc
-    return acc + m.participants.split(',').length
-  }, 0) || 0
-  const avgParticipants = totalMeetings > 0 ? Math.round(totalParticipants / totalMeetings) : 0
 
   return (
     <PageContainer>

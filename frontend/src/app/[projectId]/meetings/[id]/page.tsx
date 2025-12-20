@@ -1,7 +1,5 @@
-import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import {
-  User,
   FileText,
   ExternalLink,
   ArrowLeft,
@@ -19,6 +17,17 @@ import { FormattedTranscript } from '../formatted-transcript'
 import { parseTranscriptSections } from './parse-transcript-sections'
 import { MarkdownSummary } from './markdown-summary'
 import { format } from 'date-fns'
+import { getProjectInfo } from '@/lib/supabase/project-fetcher'
+import type { Database } from '@/types/database.types'
+
+// Extended types to handle fields that may exist in DB but not in generated types
+type MeetingSegment = Database['public']['Tables']['meeting_segments']['Row'] & {
+  opportunities?: unknown[]
+}
+
+type DocumentMetadata = Database['public']['Tables']['document_metadata']['Row'] & {
+  duration?: number
+}
 
 interface PageProps {
   params: Promise<{ projectId: string; id: string }>
@@ -26,32 +35,31 @@ interface PageProps {
 
 export default async function ProjectMeetingDetailPage({ params }: PageProps) {
   const { projectId, id } = await params
-  const supabase = await createClient()
-
-  // Fetch project info
-  const { data: project } = await supabase
-    .from('projects')
-    .select('name, client')
-    .eq('id', projectId)
-    .single()
+  const { project, supabase } = await getProjectInfo(projectId)
 
   // Fetch meeting metadata
-  const { data: meeting, error } = await supabase
+  const { data: meetingData, error } = await supabase
     .from('document_metadata')
     .select('*')
     .eq('id', id)
     .single()
 
-  if (error || !meeting) {
+  if (error || !meetingData) {
     notFound()
   }
 
+  // Cast to extended type to handle optional fields
+  const meeting = meetingData as DocumentMetadata
+
   // Fetch meeting segments
-  const { data: segments } = await supabase
+  const { data: segmentsData } = await supabase
     .from('meeting_segments')
     .select('*')
     .eq('metadata_id', id)
     .order('segment_index', { ascending: true })
+
+  // Cast to extended type to handle optional fields
+  const segments = (segmentsData || []) as MeetingSegment[]
 
   // Aggregate all outcomes from segments
   const allTasks: string[] = []
@@ -59,7 +67,7 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
   const allDecisions: string[] = []
   const allOpportunities: string[] = []
 
-  segments?.forEach(segment => {
+  segments.forEach(segment => {
     if (segment.tasks && Array.isArray(segment.tasks)) {
       segment.tasks.forEach((task: unknown) => {
         const text = typeof task === 'string' ? task : (task as Record<string, unknown>)?.description
@@ -107,21 +115,7 @@ export default async function ProjectMeetingDetailPage({ params }: PageProps) {
     }
   }
 
-  // Fallback to documents table if storage fetch failed
-  if (!transcriptContent) {
-    const { data: document } = await supabase
-      .from('documents')
-      .select('content')
-      .eq('metadata_id', id)
-      .single()
-
-    transcriptContent = document?.content
-    if (transcriptContent) {
-      console.log('Using transcript from documents table, length:', transcriptContent.length)
-    }
-  }
-
-  // Last resort: use meeting.content
+  // Fallback: use meeting.content
   if (!transcriptContent && meeting.content) {
     transcriptContent = meeting.content
     console.log('Using transcript from meeting.content, length:', transcriptContent.length)
