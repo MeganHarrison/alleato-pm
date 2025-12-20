@@ -185,18 +185,7 @@ export function BudgetSetup({ projectId, onNext, onSkip }: StepComponentProps) {
         throw new Error(errorData.error || "Failed to create budget items")
       }
 
-      // Update project budget total
-      const summary = calculateSummary()
-      const { error: updateError } = await supabase
-        .from("projects")
-        .update({
-          original_budget: summary.totalBudget,
-          current_budget: summary.totalBudget,
-        })
-        .eq("id", projectId)
-
-      if (updateError) throw updateError
-
+      // API endpoint now handles updating project budget totals atomically
       onNext()
 
     } catch (err) {

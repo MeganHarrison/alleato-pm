@@ -255,9 +255,28 @@ export async function POST(
     // Refresh materialized view to reflect new line items
     await supabase.rpc('refresh_budget_rollup', { p_project_id: projectId });
 
+    // Calculate total budget from created line items and update project
+    const totalBudget = normalizedLineItems.reduce((sum, item) => sum + item.amount, 0);
+
+    if (totalBudget > 0) {
+      const { error: projectUpdateError } = await supabase
+        .from('projects')
+        .update({
+          original_budget: totalBudget,
+          current_budget: totalBudget,
+        })
+        .eq('id', projectId);
+
+      if (projectUpdateError) {
+        console.error('Error updating project budget totals:', projectUpdateError);
+        // Don't fail the request - line items were created successfully
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: results,
+      totalBudget,
       message: `Successfully created ${results.length} budget line item(s)`,
     });
   } catch (error: unknown) {
