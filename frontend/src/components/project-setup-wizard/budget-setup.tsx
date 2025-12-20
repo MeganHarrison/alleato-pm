@@ -162,24 +162,28 @@ export function BudgetSetup({ projectId, onNext, onSkip }: StepComponentProps) {
         return
       }
 
-      const { error: insertError } = await supabase
-        .from("budget_items")
-        .insert(
-          itemsToSave.map(item => ({
-            project_id: item.project_id,
-            cost_code_id: item.cost_code_id,
-            original_budget_amount: item.amount,
-            original_amount: item.amount,
-            unit_qty: item.quantity || null,
-            unit_cost: item.unit_price || null,
+      // Use the budget API endpoint which properly creates budget_codes and budget_line_items
+      // This ensures data is in the correct tables for the mv_budget_rollup view
+      const response = await fetch(`/api/projects/${projectId}/budget`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lineItems: itemsToSave.map(item => ({
+            costCodeId: item.cost_code_id,
+            costType: item.cost_code_type?.id || null,
+            qty: item.quantity?.toString() || null,
             uom: item.unit_of_measure || null,
-            cost_type: item.cost_code_type?.code || null,
-            approved_cos: 0,
-            budget_modifications: 0,
-          }))
-        )
+            unitCost: item.unit_price?.toString() || null,
+            amount: item.amount.toString(),
+            description: item.description || null,
+          })),
+        }),
+      })
 
-      if (insertError) throw insertError
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to create budget items")
+      }
 
       // Update project budget total
       const summary = calculateSummary()
