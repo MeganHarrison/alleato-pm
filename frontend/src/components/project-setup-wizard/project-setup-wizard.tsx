@@ -43,7 +43,7 @@ const setupSteps: SetupStep[] = [
     title: "Project Directory",
     description: "Add team members and assign roles to your project",
     component: ProjectDirectorySetup,
-    required: true,
+    required: false,
   },
   {
     id: "documents",

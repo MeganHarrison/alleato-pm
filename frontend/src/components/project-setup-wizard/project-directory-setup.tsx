@@ -85,6 +85,11 @@ export function ProjectDirectorySetup({ projectId, onNext, onSkip }: StepCompone
       setLoading(true)
       setError(null)
 
+      const numericProjectId = parseInt(projectId, 10)
+      if (isNaN(numericProjectId)) {
+        throw new Error("Invalid project ID")
+      }
+
       // Load companies
       const { data: companiesData, error: companiesError } = await supabase
         .from("companies")
@@ -100,7 +105,7 @@ export function ProjectDirectorySetup({ projectId, onNext, onSkip }: StepCompone
           *,
           company:companies(*)
         `)
-        .eq("project_id", projectId)
+        .eq("project_id", numericProjectId)
         .order("created_at")
 
       if (directoryError) throw directoryError
@@ -167,6 +172,11 @@ export function ProjectDirectorySetup({ projectId, onNext, onSkip }: StepCompone
         return
       }
 
+      const numericProjectId = parseInt(projectId, 10)
+      if (isNaN(numericProjectId)) {
+        throw new Error("Invalid project ID")
+      }
+
       // Check if already exists
       const exists = projectDirectory.some(
         d => d.company_id === selectedCompanyId && d.role === selectedRole
@@ -179,7 +189,7 @@ export function ProjectDirectorySetup({ projectId, onNext, onSkip }: StepCompone
       const { data, error } = await supabase
         .from("project_directory")
         .insert({
-          project_id: projectId,
+          project_id: numericProjectId,
           company_id: selectedCompanyId,
           role: selectedRole,
           is_active: true,
