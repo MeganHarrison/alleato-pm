@@ -94,8 +94,8 @@ export default function ProjectBudgetPage() {
       return;
     }
     console.log('Create clicked for project:', projectId);
-    // Navigate to line item creation page instead of modal
-    router.push(`/${projectId}/budget/line-item/new`);
+    // Navigate to bulk budget setup page
+    router.push(`/${projectId}/budget/setup`);
   };
 
   const handleModificationClick = () => {
