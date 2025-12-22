@@ -20,12 +20,16 @@ export async function GET(
 
     const supabase = await createClient();
 
-    // Fetch budget items from materialized view (all calculations done in SQL)
+    // Fetch budget lines from new v_budget_lines view
     const { data: budgetItems, error } = await supabase
-      .from('mv_budget_rollup')
-      .select('*')
+      .from('v_budget_lines')
+      .select(`
+        *,
+        cost_code:cost_codes(id, description, division_id),
+        cost_type:cost_code_types(code, description),
+        sub_job:sub_jobs(code, name)
+      `)
       .eq('project_id', projectId)
-      .order('position', { ascending: true })
       .order('cost_code_id', { ascending: true });
 
     if (error) {
@@ -36,60 +40,59 @@ export async function GET(
       );
     }
 
-    // Fetch grand totals from view (also calculated in SQL)
-    const { data: grandTotalsData, error: totalsError } = await supabase
-      .from('v_budget_grand_totals')
-      .select('*')
-      .eq('project_id', projectId)
-      .maybeSingle();
-
-    if (totalsError) {
-      console.error('Error fetching grand totals:', totalsError);
-    }
-
     // Transform to frontend format (no calculations, just formatting)
-    const lineItems = (budgetItems || []).map((item: any) => ({
-      id: item.budget_code_id,
-      description: `${item.cost_code_id} - ${item.cost_code_description || ''} ${item.cost_type_code ? `(${item.cost_type_code})` : ''}`,
-      costCode: item.cost_code_id,
-      costCodeDescription: item.cost_code_description,
-      costType: item.cost_type_code,
-      division: item.cost_code_division,
-      divisionTitle: item.division_title,
+    const lineItems = (budgetItems || []).map((item: Record<string, unknown>) => {
+      const costCode = item.cost_code as { id?: string; description?: string; division_id?: string } | undefined;
+      const costType = item.cost_type as { code?: string; description?: string } | undefined;
+      const subJob = item.sub_job as { code?: string; name?: string } | undefined;
 
-      // All values come directly from SQL (no JavaScript calculation)
-      originalBudgetAmount: parseFloat(item.original_budget_amount) || 0,
-      budgetModifications: parseFloat(item.budget_modifications) || 0,
-      approvedCOs: parseFloat(item.approved_cos) || 0,
-      revisedBudget: parseFloat(item.revised_budget) || 0,
-      jobToDateCostDetail: parseFloat(item.job_to_date_cost) || 0,
-      directCosts: parseFloat(item.direct_costs) || 0,
-      pendingChanges: parseFloat(item.pending_budget_changes) || 0,
-      projectedBudget: parseFloat(item.projected_budget) || 0,
-      committedCosts: parseFloat(item.committed_costs) || 0,
-      pendingCostChanges: parseFloat(item.pending_cost_changes) || 0,
-      projectedCosts: parseFloat(item.projected_costs) || 0,
-      forecastToComplete: parseFloat(item.forecast_to_complete) || 0,
-      estimatedCostAtCompletion: parseFloat(item.estimated_cost_at_completion) || 0,
-      projectedOverUnder: parseFloat(item.projected_over_under) || 0,
-    }));
+      return {
+        id: item.id as string,
+        description: (item.description as string) || `${item.cost_code_id} - ${costCode?.description || ''} ${costType?.code ? `(${costType.code})` : ''}`,
+        costCode: item.cost_code_id as string,
+        costCodeDescription: costCode?.description || '',
+        costType: costType?.code || '',
+        division: costCode?.division_id || '',
+        divisionTitle: '',
+        subJob: subJob?.name || '',
 
-    const grandTotals = grandTotalsData ? {
-      originalBudgetAmount: parseFloat(grandTotalsData.original_budget_amount) || 0,
-      budgetModifications: parseFloat(grandTotalsData.budget_modifications) || 0,
-      approvedCOs: parseFloat(grandTotalsData.approved_cos) || 0,
-      revisedBudget: parseFloat(grandTotalsData.revised_budget) || 0,
-      jobToDateCostDetail: parseFloat(grandTotalsData.job_to_date_cost) || 0,
-      directCosts: parseFloat(grandTotalsData.direct_costs) || 0,
-      pendingChanges: parseFloat(grandTotalsData.pending_budget_changes) || 0,
-      projectedBudget: parseFloat(grandTotalsData.projected_budget) || 0,
-      committedCosts: parseFloat(grandTotalsData.committed_costs) || 0,
-      pendingCostChanges: parseFloat(grandTotalsData.pending_cost_changes) || 0,
-      projectedCosts: parseFloat(grandTotalsData.projected_costs) || 0,
-      forecastToComplete: parseFloat(grandTotalsData.forecast_to_complete) || 0,
-      estimatedCostAtCompletion: parseFloat(grandTotalsData.estimated_cost_at_completion) || 0,
-      projectedOverUnder: parseFloat(grandTotalsData.projected_over_under) || 0,
-    } : {
+        // Core budget values from view
+        originalBudgetAmount: parseFloat(item.original_amount as string) || 0,
+        budgetModifications: parseFloat(item.budget_mod_total as string) || 0,
+        approvedCOs: parseFloat(item.approved_co_total as string) || 0,
+        revisedBudget: parseFloat(item.revised_budget as string) || 0,
+
+        // Cost tracking fields (placeholder - TODO: implement cost tracking)
+        jobToDateCostDetail: 0,
+        directCosts: 0,
+        pendingChanges: 0,
+        projectedBudget: 0,
+        committedCosts: 0,
+        pendingCostChanges: 0,
+        projectedCosts: 0,
+        forecastToComplete: 0,
+        estimatedCostAtCompletion: 0,
+        projectedOverUnder: 0,
+      };
+    });
+
+    // Calculate grand totals from line items
+    const grandTotals = lineItems.reduce((totals, item) => ({
+      originalBudgetAmount: totals.originalBudgetAmount + item.originalBudgetAmount,
+      budgetModifications: totals.budgetModifications + item.budgetModifications,
+      approvedCOs: totals.approvedCOs + item.approvedCOs,
+      revisedBudget: totals.revisedBudget + item.revisedBudget,
+      jobToDateCostDetail: totals.jobToDateCostDetail + item.jobToDateCostDetail,
+      directCosts: totals.directCosts + item.directCosts,
+      pendingChanges: totals.pendingChanges + item.pendingChanges,
+      projectedBudget: totals.projectedBudget + item.projectedBudget,
+      committedCosts: totals.committedCosts + item.committedCosts,
+      pendingCostChanges: totals.pendingCostChanges + item.pendingCostChanges,
+      projectedCosts: totals.projectedCosts + item.projectedCosts,
+      forecastToComplete: totals.forecastToComplete + item.forecastToComplete,
+      estimatedCostAtCompletion: totals.estimatedCostAtCompletion + item.estimatedCostAtCompletion,
+      projectedOverUnder: totals.projectedOverUnder + item.projectedOverUnder,
+    }), {
       originalBudgetAmount: 0,
       budgetModifications: 0,
       approvedCOs: 0,
@@ -104,7 +107,7 @@ export async function GET(
       forecastToComplete: 0,
       estimatedCostAtCompletion: 0,
       projectedOverUnder: 0,
-    };
+    });
 
     return NextResponse.json({
       lineItems,
@@ -147,7 +150,7 @@ export async function POST(
 
     const normalizedLineItems = parsed.data.lineItems.map((item) => ({
       costCodeId: item.costCodeId,
-      costType: item.costType ?? null,
+      costTypeId: item.costType ?? null,
       qty: item.qty && item.qty !== '' ? parseFloat(item.qty) : null,
       uom: item.uom ?? null,
       unitCost: item.unitCost && item.unitCost !== '' ? parseFloat(item.unitCost) : null,
@@ -178,7 +181,29 @@ export async function POST(
     // Create a map of code ID to verify existence
     const validCostCodeIds = new Set((costCodeData || []).map(cc => cc.id));
 
-    // Create budget_codes and budget_line_items using new schema
+    // Look up cost type IDs if provided
+    const costTypeIds = normalizedLineItems
+      .map((item) => item.costTypeId)
+      .filter((id): id is string => id !== null);
+
+    let validCostTypeIds = new Set<string>();
+    if (costTypeIds.length > 0) {
+      const { data: costTypeData, error: typeError } = await supabase
+        .from('cost_code_types')
+        .select('id')
+        .in('id', costTypeIds);
+
+      if (typeError) {
+        console.error('Error looking up cost types:', typeError);
+        return NextResponse.json(
+          { error: 'Failed to look up cost types', details: typeError.message },
+          { status: 500 }
+        );
+      }
+      validCostTypeIds = new Set((costTypeData || []).map(ct => ct.id));
+    }
+
+    // Create budget_lines using new schema
     const results = [];
 
     for (const item of normalizedLineItems) {
@@ -186,74 +211,70 @@ export async function POST(
         throw new Error(`Cost code not found: ${item.costCodeId}`);
       }
 
-      // 1. Create or get budget_code
-      // First try to find existing budget_code
-      const { data: existingBudgetCode } = await supabase
-        .from('budget_codes')
-        .select('id')
+      if (item.costTypeId && !validCostTypeIds.has(item.costTypeId)) {
+        throw new Error(`Cost type not found: ${item.costTypeId}`);
+      }
+
+      // Create or update budget_line
+      // First try to find existing budget_line
+      const { data: existingBudgetLine } = await supabase
+        .from('budget_lines')
+        .select('id, original_amount')
         .eq('project_id', projectId)
         .eq('cost_code_id', item.costCodeId)
+        .eq('cost_type_id', item.costTypeId || '')
         .is('sub_job_id', null)
-        .is('cost_type_id', item.costType || null)
         .maybeSingle();
 
-      let budgetCode: { id: string };
-      if (existingBudgetCode) {
-        budgetCode = existingBudgetCode;
+      let budgetLine: { id: string };
+      if (existingBudgetLine) {
+        // Update existing budget line - add to original amount
+        const newAmount = (existingBudgetLine.original_amount || 0) + item.amount;
+        const { data: updatedLine, error: updateError } = await supabase
+          .from('budget_lines')
+          .update({
+            original_amount: newAmount,
+          })
+          .eq('id', existingBudgetLine.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error('Error updating budget line:', updateError);
+          return NextResponse.json(
+            { error: 'Failed to update budget line', details: updateError.message },
+            { status: 500 }
+          );
+        }
+        budgetLine = updatedLine;
       } else {
-        // Create new budget_code
-        const { data: newBudgetCode, error: bcError } = await supabase
-          .from('budget_codes')
+        // Create new budget_line
+        const { data: newBudgetLine, error: blError } = await supabase
+          .from('budget_lines')
           .insert({
             project_id: projectId,
             cost_code_id: item.costCodeId,
-            cost_type_id: item.costType || null,
+            cost_type_id: item.costTypeId || '',
             sub_job_id: null,
             description: item.description || null,
+            original_amount: item.amount || 0,
             created_by: user?.id,
           })
           .select()
           .single();
 
-        if (bcError) {
-          console.error('Error creating budget code:', bcError);
+        if (blError) {
+          console.error('Error creating budget line:', blError);
           return NextResponse.json(
-            { error: 'Failed to create budget code', details: bcError.message },
+            { error: 'Failed to create budget line', details: blError.message },
             { status: 500 }
           );
         }
-        budgetCode = newBudgetCode;
+        budgetLine = newBudgetLine;
       }
 
-      // 2. Create budget_line_item
-      const { data: lineItem, error: liError } = await supabase
-        .from('budget_line_items')
-        .insert({
-          budget_code_id: budgetCode.id,
-          description: item.description || null,
-          original_amount: item.amount || 0,
-          unit_qty: item.qty ?? null,
-          uom: item.uom || null,
-          unit_cost: item.unitCost ?? null,
-          calculation_method: item.qty && item.unitCost ? 'unit' : 'lump_sum',
-          created_by: user?.id,
-        })
-        .select()
-        .single();
-
-      if (liError) {
-        console.error('Error creating line item:', liError);
-        return NextResponse.json(
-          { error: 'Failed to create line item', details: liError.message },
-          { status: 500 }
-        );
-      }
-
-      results.push(lineItem);
+      results.push(budgetLine);
     }
-
-    // Refresh materialized view to reflect new line items
-    await supabase.rpc('refresh_budget_rollup', { p_project_id: projectId });
 
     // Calculate total budget from created line items and update project
     const totalBudget = normalizedLineItems.reduce((sum, item) => sum + item.amount, 0);
@@ -277,7 +298,7 @@ export async function POST(
       success: true,
       data: results,
       totalBudget,
-      message: `Successfully created ${results.length} budget line item(s)`,
+      message: `Successfully created ${results.length} budget line(s)`,
     });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to create budget items';

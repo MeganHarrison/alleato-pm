@@ -101,9 +101,9 @@ export default async function ProjectHomePage({
       .eq('project_id', numericProjectId)
       .order('created_at', { ascending: false }),
 
-    // Fetch budget items
+    // Fetch budget lines
     supabase
-      .from('budget_items')
+      .from('budget_lines')
       .select('*')
       .eq('project_id', numericProjectId)
       .order('cost_code_id', { ascending: true }),

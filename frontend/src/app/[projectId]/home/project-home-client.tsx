@@ -35,7 +35,7 @@ type RFI = Database['public']['Tables']['rfis']['Row']
 type DailyLog = Database['public']['Tables']['daily_logs']['Row']
 type Commitment = Database['public']['Tables']['commitments']['Row']
 type Contract = Database['public']['Tables']['financial_contracts']['Row']
-type BudgetItem = Database['public']['Tables']['budget_items']['Row']
+type BudgetItem = Database['public']['Tables']['budget_lines']['Row']
 type ChangeEvent = Database['public']['Tables']['change_events']['Row']
 type SOV = Database['public']['Tables']['schedule_of_values']['Row']
 
@@ -160,10 +160,10 @@ export function ProjectHomeClient({
   }
 
   // Calculate financial metrics for hero section
-  const totalBudget = budget.reduce((sum, item) => sum + (item.original_budget_amount || 0), 0)
+  const totalBudget = budget.reduce((sum, item) => sum + (item.original_amount || 0), 0)
   const committed = commitments.reduce((sum, c) => sum + (c.contract_amount || 0), 0)
-  const spent = budget.reduce((sum, item) => sum + (item.direct_cost || 0), 0)
-  const forecastedCost = budget.reduce((sum, item) => sum + (item.projected_cost || item.original_budget_amount || 0), 0)
+  const spent = 0 // TODO: Implement cost tracking
+  const forecastedCost = totalBudget // TODO: Implement cost forecasting
 
   // Change orders don't have an 'amount' field in the schema, so we'll count them instead
   const changeOrdersTotal = changeOrders.filter(co => co.status === 'approved').length
@@ -182,7 +182,7 @@ export function ProjectHomeClient({
 
         {/* Project Title - Editorial Typography with Enhanced Scale */}
         <div className="mb-4 sm:mb-10 flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-light tracking-tight text-neutral-900 leading-[1.05]">
+          <h1 className="text-2xl md:text-4xl lg:text-4xl font-bold tracking-tight text-neutral-900 leading-[1.05]">
             {project.name || project['job number']}
           </h1>
 
@@ -190,7 +190,7 @@ export function ProjectHomeClient({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                className="h-10 w-full justify-between px-4 bg-brand text-white hover:bg-brand/90 transition-colors md:w-auto md:justify-center"
+                className="h-8 rounded-sm justify-between px-4 bg-brand text-white hover:bg-brand/90 transition-colors md:w-auto md:justify-center"
               >
                 <span className="text-sm font-medium">{currentTool}</span>
                 <ChevronDown className="h-4 w-4 ml-2" />
@@ -276,7 +276,7 @@ export function ProjectHomeClient({
         </div>
 
         {/* Status Row - Clean, Aligned Data Points with Better Spacing */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-8">
           
           {/* Status */}
           <button
@@ -367,36 +367,6 @@ export function ProjectHomeClient({
             )}
           </button>
 
-          {/* Category */}
-            <button
-              type="button"
-              className="group w-full cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
-              onClick={() => handleEditField('category', project.category || '')}
-            >
-              {isEditing === 'category' ? (
-                <div className="flex items-center gap-2">
-                  <FolderKanban className="h-4 w-4 text-brand flex-shrink-0" />
-                  <Input
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onBlur={() => handleSaveField('category')}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSaveField('category')}
-                    className="h-9 w-44 border-neutral-300 focus:border-brand focus:ring-brand/20"
-                    placeholder="Commercial, Residential, etc."
-                    autoFocus
-                  />
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <FolderKanban className="h-4 w-4 text-brand flex-shrink-0" />
-                  <span className={`text-sm font-medium ${project.category ? 'text-neutral-900' : 'text-neutral-400'}`}>
-                    {project.category || 'Category'}
-                  </span>
-                  <Pencil className="h-3 w-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              )}
-            </button>
-
             {/* State */}
             <button
               type="button"
@@ -428,65 +398,6 @@ export function ProjectHomeClient({
               )}
             </button>
 
-            {/* Delivery Method */}
-            <button
-              type="button"
-              className="group w-full cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
-              onClick={() => handleEditField('delivery_method', project.delivery_method || '')}
-            >
-              {isEditing === 'delivery_method' ? (
-                <div className="flex items-center gap-2">
-                  <Truck className="h-4 w-4 text-brand flex-shrink-0" />
-                  <Input
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onBlur={() => handleSaveField('delivery_method')}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSaveField('delivery_method')}
-                    className="h-9 w-48 border-neutral-300 focus:border-brand focus:ring-brand/20"
-                    placeholder="Design-Bid-Build, CM at Risk, etc."
-                    autoFocus
-                  />
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Truck className="h-4 w-4 text-brand flex-shrink-0" />
-                  <span className={`text-sm font-medium ${project.delivery_method ? 'text-neutral-900' : 'text-neutral-400'}`}>
-                    {project.delivery_method || 'Delivery'}
-                  </span>
-                  <Pencil className="h-3 w-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              )}
-            </button>
-
-            {/* Type */}
-            <button
-              type="button"
-              className="group w-full cursor-pointer hover:opacity-70 transition-opacity duration-200 border-0 bg-transparent text-left p-0"
-              onClick={() => handleEditField('type', project.type || '')}
-            >
-              {isEditing === 'type' ? (
-                <div className="flex items-center gap-2">
-                  <Hammer className="h-4 w-4 text-brand flex-shrink-0" />
-                  <Input
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onBlur={() => handleSaveField('type')}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSaveField('type')}
-                    className="h-9 w-44 border-neutral-300 focus:border-brand focus:ring-brand/20"
-                    placeholder="New Construction, Renovation, etc."
-                    autoFocus
-                  />
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Hammer className="h-4 w-4 text-brand flex-shrink-0" />
-                  <span className={`text-sm font-medium ${project.type ? 'text-neutral-900' : 'text-neutral-400'}`}>
-                    {project.type || 'Type'}
-                  </span>
-                  <Pencil className="h-3 w-3 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              )}
-            </button>
 
         </div>
       </header>
@@ -502,7 +413,7 @@ export function ProjectHomeClient({
       />
 
       {/* 2 Column - Summary, Team, and Quick Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-4 lg:gap-10">
 
         {/* Project Summary - Takes 2 columns */}
         <div className="lg:col-span-2">

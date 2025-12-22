@@ -180,18 +180,18 @@ export const TABLE_REGISTRY = {
       subtitleColumns: ['code'],
     },
   },
-  budget_items: {
-    label: 'Budget Items',
+  budget_lines: {
+    label: 'Budget Lines',
     description: 'Budget line items and allocations',
     primaryKey: 'id',
     defaultSort: { column: 'created_at', direction: 'desc' },
-    hiddenColumns: ['updated_at'],
-    searchColumns: ['description', 'name'],
+    hiddenColumns: ['updated_at', 'sub_job_key'],
+    searchColumns: ['description'],
     viewsEnabled: ['table', 'list'],
     permissions: { read: true, create: true, update: true, delete: true },
     display: {
       titleColumn: 'description',
-      subtitleColumns: ['amount'],
+      subtitleColumns: ['original_amount'],
     },
   },
   issues: {

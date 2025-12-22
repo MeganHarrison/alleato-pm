@@ -17,7 +17,7 @@ import type { Database } from './database.types'
 export type Project = Database['public']['Tables']['projects']['Row']
 export type Commitment = Database['public']['Tables']['commitments']['Row']
 export type ChangeOrder = Database['public']['Tables']['change_orders']['Row']
-export type BudgetItem = Database['public']['Tables']['budget_items']['Row']
+export type BudgetLine = Database['public']['Tables']['budget_lines']['Row']
 export type Document = Database['public']['Tables']['documents']['Row']
 export type User = Database['public']['Tables']['users']['Row']
 export type Company = Database['public']['Tables']['companies']['Row']

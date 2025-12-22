@@ -39,7 +39,7 @@ export type Commitment = Database['public']['Tables']['commitments']['Row']
 export type RFI = Database['public']['Tables']['rfis']['Row']
 export type ChangeOrder = Database['public']['Tables']['change_orders']['Row']
 export type DailyLog = Database['public']['Tables']['daily_logs']['Row']
-export type BudgetLineItem = Database['public']['Tables']['budget_line_items']['Row']
+export type BudgetLine = Database['public']['Tables']['budget_lines']['Row']
 
 // =============================================================================
 // Extended Types (for columns not in generated types)

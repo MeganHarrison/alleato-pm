@@ -30,7 +30,7 @@ import { StepComponentProps } from "./project-setup-wizard"
 import type { Database } from "@/types/database.types"
 import { isDevelopment, fakeData } from "@/lib/dev-autofill"
 
-type BudgetItem = Database["public"]["Tables"]["budget_items"]["Row"]
+type BudgetItem = Database["public"]["Tables"]["budget_lines"]["Row"]
 type CostCode = Database["public"]["Tables"]["cost_codes"]["Row"]
 type ProjectCostCode = Database["public"]["Tables"]["project_cost_codes"]["Row"]
 type CostCodeType = Database["public"]["Tables"]["cost_code_types"]["Row"]

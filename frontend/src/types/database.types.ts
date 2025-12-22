@@ -1300,109 +1300,112 @@ export type Database = {
           },
         ]
       }
-      budget_codes: {
+      budget_lines: {
         Row: {
           cost_code_id: string
-          cost_type_id: string | null
-          created_at: string | null
+          cost_type_id: string
+          created_at: string
           created_by: string | null
           description: string | null
           id: string
-          position: number | null
+          original_amount: number
           project_id: number
           sub_job_id: string | null
-          updated_at: string | null
+          sub_job_key: string | null
+          updated_at: string
         }
         Insert: {
           cost_code_id: string
-          cost_type_id?: string | null
-          created_at?: string | null
+          cost_type_id: string
+          created_at?: string
           created_by?: string | null
           description?: string | null
           id?: string
-          position?: number | null
+          original_amount?: number
           project_id: number
           sub_job_id?: string | null
-          updated_at?: string | null
+          sub_job_key?: string | null
+          updated_at?: string
         }
         Update: {
           cost_code_id?: string
-          cost_type_id?: string | null
-          created_at?: string | null
+          cost_type_id?: string
+          created_at?: string
           created_by?: string | null
           description?: string | null
           id?: string
-          position?: number | null
+          original_amount?: number
           project_id?: number
           sub_job_id?: string | null
-          updated_at?: string | null
+          sub_job_key?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "budget_codes_cost_code_id_fkey"
+            foreignKeyName: "budget_lines_cost_code_id_fkey"
             columns: ["cost_code_id"]
             isOneToOne: false
             referencedRelation: "cost_codes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_cost_type_id_fkey"
+            foreignKeyName: "budget_lines_cost_type_id_fkey"
             columns: ["cost_type_id"]
             isOneToOne: false
             referencedRelation: "cost_code_types"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_activity_view"
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_health_dashboard"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_health_dashboard_no_summary"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_issue_summary"
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_with_manager"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "submittal_project_dashboard"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_sub_job_id_fkey"
+            foreignKeyName: "budget_lines_sub_job_id_fkey"
             columns: ["sub_job_id"]
             isOneToOne: false
             referencedRelation: "sub_jobs"
@@ -1410,179 +1413,116 @@ export type Database = {
           },
         ]
       }
-      budget_items: {
+      budget_mod_lines: {
         Row: {
-          approved_cos: number
-          budget_code_id: string | null
-          budget_modifications: number
-          calculation_method: string | null
-          committed_cost: number | null
+          amount: number
+          budget_modification_id: string
           cost_code_id: string
-          cost_type: string | null
+          cost_type_id: string
           created_at: string
-          created_by: string | null
-          direct_cost: number | null
-          forecast_to_complete: number | null
+          description: string | null
           id: string
-          original_amount: number | null
-          original_budget_amount: number
-          parent_cost_code: string | null
-          pending_cost_changes: number | null
           project_id: number
-          projected_cost: number | null
-          revised_budget: number | null
           sub_job_id: string | null
-          unit_cost: number | null
-          unit_qty: number | null
-          uom: string | null
           updated_at: string
         }
         Insert: {
-          approved_cos?: number
-          budget_code_id?: string | null
-          budget_modifications?: number
-          calculation_method?: string | null
-          committed_cost?: number | null
+          amount?: number
+          budget_modification_id: string
           cost_code_id: string
-          cost_type?: string | null
+          cost_type_id: string
           created_at?: string
-          created_by?: string | null
-          direct_cost?: number | null
-          forecast_to_complete?: number | null
+          description?: string | null
           id?: string
-          original_amount?: number | null
-          original_budget_amount?: number
-          parent_cost_code?: string | null
-          pending_cost_changes?: number | null
           project_id: number
-          projected_cost?: number | null
-          revised_budget?: number | null
           sub_job_id?: string | null
-          unit_cost?: number | null
-          unit_qty?: number | null
-          uom?: string | null
           updated_at?: string
         }
         Update: {
-          approved_cos?: number
-          budget_code_id?: string | null
-          budget_modifications?: number
-          calculation_method?: string | null
-          committed_cost?: number | null
+          amount?: number
+          budget_modification_id?: string
           cost_code_id?: string
-          cost_type?: string | null
+          cost_type_id?: string
           created_at?: string
-          created_by?: string | null
-          direct_cost?: number | null
-          forecast_to_complete?: number | null
+          description?: string | null
           id?: string
-          original_amount?: number | null
-          original_budget_amount?: number
-          parent_cost_code?: string | null
-          pending_cost_changes?: number | null
           project_id?: number
-          projected_cost?: number | null
-          revised_budget?: number | null
           sub_job_id?: string | null
-          unit_cost?: number | null
-          unit_qty?: number | null
-          uom?: string | null
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "budget_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
+            foreignKeyName: "budget_mod_lines_budget_modification_id_fkey"
+            columns: ["budget_modification_id"]
             isOneToOne: false
-            referencedRelation: "budget_codes"
+            referencedRelation: "budget_modifications"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "mv_budget_rollup"
-            referencedColumns: ["budget_code_id"]
-          },
-          {
-            foreignKeyName: "budget_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "v_budget_rollup"
-            referencedColumns: ["budget_code_id"]
-          },
-          {
-            foreignKeyName: "budget_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "v_budget_with_markup"
-            referencedColumns: ["budget_code_id"]
-          },
-          {
-            foreignKeyName: "budget_items_cost_code_id_fkey"
+            foreignKeyName: "budget_mod_lines_cost_code_id_fkey"
             columns: ["cost_code_id"]
             isOneToOne: false
             referencedRelation: "cost_codes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_items_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: "budget_mod_lines_cost_type_id_fkey"
+            columns: ["cost_type_id"]
             isOneToOne: false
-            referencedRelation: "app_users"
+            referencedRelation: "cost_code_types"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_items_project_id_fkey"
+            foreignKeyName: "budget_mod_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_activity_view"
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "budget_items_project_id_fkey"
+            foreignKeyName: "budget_mod_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_health_dashboard"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_items_project_id_fkey"
+            foreignKeyName: "budget_mod_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_health_dashboard_no_summary"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_items_project_id_fkey"
+            foreignKeyName: "budget_mod_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_issue_summary"
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "budget_items_project_id_fkey"
+            foreignKeyName: "budget_mod_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_with_manager"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_items_project_id_fkey"
+            foreignKeyName: "budget_mod_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_items_project_id_fkey"
+            foreignKeyName: "budget_mod_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "submittal_project_dashboard"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_items_sub_job_id_fkey"
+            foreignKeyName: "budget_mod_lines_sub_job_id_fkey"
             columns: ["sub_job_id"]
             isOneToOne: false
             referencedRelation: "sub_jobs"
@@ -1590,203 +1530,88 @@ export type Database = {
           },
         ]
       }
-      budget_line_items: {
-        Row: {
-          budget_code_id: string
-          calculation_method: string | null
-          created_at: string | null
-          created_by: string | null
-          description: string | null
-          id: string
-          line_number: number | null
-          original_amount: number | null
-          unit_cost: number | null
-          unit_qty: number | null
-          uom: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          budget_code_id: string
-          calculation_method?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          line_number?: number | null
-          original_amount?: number | null
-          unit_cost?: number | null
-          unit_qty?: number | null
-          uom?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          budget_code_id?: string
-          calculation_method?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          line_number?: number | null
-          original_amount?: number | null
-          unit_cost?: number | null
-          unit_qty?: number | null
-          uom?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "budget_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "budget_codes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "mv_budget_rollup"
-            referencedColumns: ["budget_code_id"]
-          },
-          {
-            foreignKeyName: "budget_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "v_budget_rollup"
-            referencedColumns: ["budget_code_id"]
-          },
-          {
-            foreignKeyName: "budget_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "v_budget_with_markup"
-            referencedColumns: ["budget_code_id"]
-          },
-        ]
-      }
       budget_modifications: {
         Row: {
-          amount: number
-          approved: boolean
-          approved_at: string | null
-          budget_item_id: string
           created_at: string
-          description: string | null
-          id: string
-        }
-        Insert: {
-          amount: number
-          approved?: boolean
-          approved_at?: string | null
-          budget_item_id: string
-          created_at?: string
-          description?: string | null
-          id?: string
-        }
-        Update: {
-          amount?: number
-          approved?: boolean
-          approved_at?: string | null
-          budget_item_id?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "budget_modifications_budget_item_id_fkey"
-            columns: ["budget_item_id"]
-            isOneToOne: false
-            referencedRelation: "budget_items"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      budget_snapshots: {
-        Row: {
-          created_at: string | null
           created_by: string | null
-          description: string | null
-          grand_totals: Json
+          effective_date: string | null
           id: string
-          is_baseline: boolean | null
-          line_items: Json
+          number: string
           project_id: number
-          project_metadata: Json | null
-          snapshot_name: string
-          snapshot_type: string | null
+          reason: string | null
+          status: string
+          title: string
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           created_by?: string | null
-          description?: string | null
-          grand_totals: Json
+          effective_date?: string | null
           id?: string
-          is_baseline?: boolean | null
-          line_items: Json
+          number: string
           project_id: number
-          project_metadata?: Json | null
-          snapshot_name: string
-          snapshot_type?: string | null
+          reason?: string | null
+          status?: string
+          title: string
+          updated_at?: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           created_by?: string | null
-          description?: string | null
-          grand_totals?: Json
+          effective_date?: string | null
           id?: string
-          is_baseline?: boolean | null
-          line_items?: Json
+          number?: string
           project_id?: number
-          project_metadata?: Json | null
-          snapshot_name?: string
-          snapshot_type?: string | null
+          reason?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "budget_snapshots_project_id_fkey"
+            foreignKeyName: "budget_modifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_activity_view"
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "budget_snapshots_project_id_fkey"
+            foreignKeyName: "budget_modifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_health_dashboard"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_snapshots_project_id_fkey"
+            foreignKeyName: "budget_modifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_health_dashboard_no_summary"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_snapshots_project_id_fkey"
+            foreignKeyName: "budget_modifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_issue_summary"
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "budget_snapshots_project_id_fkey"
+            foreignKeyName: "budget_modifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_with_manager"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_snapshots_project_id_fkey"
+            foreignKeyName: "budget_modifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_snapshots_project_id_fkey"
+            foreignKeyName: "budget_modifications_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "submittal_project_dashboard"
@@ -2009,133 +1834,42 @@ export type Database = {
           },
         ]
       }
-      change_order_line_items: {
-        Row: {
-          amount: number
-          budget_code_id: string | null
-          change_order_id: number
-          cost_code_id: string | null
-          created_at: string | null
-          description: string
-          id: string
-          line_number: number | null
-          unit_cost: number | null
-          unit_qty: number | null
-          uom: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          amount?: number
-          budget_code_id?: string | null
-          change_order_id: number
-          cost_code_id?: string | null
-          created_at?: string | null
-          description: string
-          id?: string
-          line_number?: number | null
-          unit_cost?: number | null
-          unit_qty?: number | null
-          uom?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          amount?: number
-          budget_code_id?: string | null
-          change_order_id?: number
-          cost_code_id?: string | null
-          created_at?: string | null
-          description?: string
-          id?: string
-          line_number?: number | null
-          unit_cost?: number | null
-          unit_qty?: number | null
-          uom?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "change_order_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "budget_codes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "change_order_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "mv_budget_rollup"
-            referencedColumns: ["budget_code_id"]
-          },
-          {
-            foreignKeyName: "change_order_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "v_budget_rollup"
-            referencedColumns: ["budget_code_id"]
-          },
-          {
-            foreignKeyName: "change_order_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "v_budget_with_markup"
-            referencedColumns: ["budget_code_id"]
-          },
-          {
-            foreignKeyName: "change_order_line_items_change_order_id_fkey"
-            columns: ["change_order_id"]
-            isOneToOne: false
-            referencedRelation: "change_orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "change_order_line_items_cost_code_id_fkey"
-            columns: ["cost_code_id"]
-            isOneToOne: false
-            referencedRelation: "cost_codes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       change_order_lines: {
         Row: {
+          amount: number
           change_order_id: number
-          cost_type: string | null
-          created_at: string | null
+          cost_code_id: string
+          cost_type_id: string
+          created_at: string
           description: string | null
-          id: number
-          line_total: number | null
+          id: string
           project_id: number
-          quantity: number | null
-          related_qto_item_id: number | null
-          unit: string | null
-          unit_cost: number | null
+          sub_job_id: string | null
+          updated_at: string
         }
         Insert: {
+          amount?: number
           change_order_id: number
-          cost_type?: string | null
-          created_at?: string | null
+          cost_code_id: string
+          cost_type_id: string
+          created_at?: string
           description?: string | null
-          id?: number
-          line_total?: number | null
+          id?: string
           project_id: number
-          quantity?: number | null
-          related_qto_item_id?: number | null
-          unit?: string | null
-          unit_cost?: number | null
+          sub_job_id?: string | null
+          updated_at?: string
         }
         Update: {
+          amount?: number
           change_order_id?: number
-          cost_type?: string | null
-          created_at?: string | null
+          cost_code_id?: string
+          cost_type_id?: string
+          created_at?: string
           description?: string | null
-          id?: number
-          line_total?: number | null
+          id?: string
           project_id?: number
-          quantity?: number | null
-          related_qto_item_id?: number | null
-          unit?: string | null
-          unit_cost?: number | null
+          sub_job_id?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -2143,6 +1877,20 @@ export type Database = {
             columns: ["change_order_id"]
             isOneToOne: false
             referencedRelation: "change_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_order_lines_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_order_lines_cost_type_id_fkey"
+            columns: ["cost_type_id"]
+            isOneToOne: false
+            referencedRelation: "cost_code_types"
             referencedColumns: ["id"]
           },
           {
@@ -2195,10 +1943,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "change_order_lines_related_qto_item_id_fkey"
-            columns: ["related_qto_item_id"]
+            foreignKeyName: "change_order_lines_sub_job_id_fkey"
+            columns: ["sub_job_id"]
             isOneToOne: false
-            referencedRelation: "qto_items"
+            referencedRelation: "sub_jobs"
             referencedColumns: ["id"]
           },
         ]
@@ -3915,34 +3663,6 @@ export type Database = {
           vendor_name?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "direct_cost_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "budget_codes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "direct_cost_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "mv_budget_rollup"
-            referencedColumns: ["budget_code_id"]
-          },
-          {
-            foreignKeyName: "direct_cost_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "v_budget_rollup"
-            referencedColumns: ["budget_code_id"]
-          },
-          {
-            foreignKeyName: "direct_cost_line_items_budget_code_id_fkey"
-            columns: ["budget_code_id"]
-            isOneToOne: false
-            referencedRelation: "v_budget_with_markup"
-            referencedColumns: ["budget_code_id"]
-          },
           {
             foreignKeyName: "direct_cost_line_items_cost_code_id_fkey"
             columns: ["cost_code_id"]
@@ -6955,33 +6675,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      pending_budget_changes: {
-        Row: {
-          amount: number
-          budget_item_id: string
-          created_at: string
-          description: string | null
-          id: string
-          status: string | null
-        }
-        Insert: {
-          amount: number
-          budget_item_id: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          status?: string | null
-        }
-        Update: {
-          amount?: number
-          budget_item_id?: string
-          created_at?: string
-          description?: string | null
-          id?: string
-          status?: string | null
-        }
-        Relationships: []
       }
       prime_contract_change_orders: {
         Row: {
@@ -12220,115 +11913,6 @@ export type Database = {
         }
         Relationships: []
       }
-      mv_budget_rollup: {
-        Row: {
-          approved_cos: number | null
-          budget_code_description: string | null
-          budget_code_id: string | null
-          budget_modifications: number | null
-          committed_costs: number | null
-          cost_code_description: string | null
-          cost_code_division: string | null
-          cost_code_id: string | null
-          cost_type_code: string | null
-          cost_type_description: string | null
-          cost_type_id: string | null
-          direct_costs: number | null
-          division_title: string | null
-          estimated_cost_at_completion: number | null
-          forecast_to_complete: number | null
-          job_to_date_cost: number | null
-          original_budget_amount: number | null
-          pending_budget_changes: number | null
-          pending_cost_changes: number | null
-          position: number | null
-          project_id: number | null
-          projected_budget: number | null
-          projected_costs: number | null
-          projected_over_under: number | null
-          revised_budget: number | null
-          sub_job_id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "budget_codes_cost_code_id_fkey"
-            columns: ["cost_code_id"]
-            isOneToOne: false
-            referencedRelation: "cost_codes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_cost_type_id_fkey"
-            columns: ["cost_type_id"]
-            isOneToOne: false
-            referencedRelation: "cost_code_types"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_activity_view"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_health_dashboard"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_health_dashboard_no_summary"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_issue_summary"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_with_manager"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "submittal_project_dashboard"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_sub_job_id_fkey"
-            columns: ["sub_job_id"]
-            isOneToOne: false
-            referencedRelation: "sub_jobs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "cost_codes_division_id_fkey"
-            columns: ["cost_code_division"]
-            isOneToOne: false
-            referencedRelation: "cost_code_divisions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       open_tasks_view: {
         Row: {
           assignee: string | null
@@ -12675,291 +12259,121 @@ export type Database = {
         }
         Relationships: []
       }
-      v_budget_grand_totals: {
+      v_budget_lines: {
         Row: {
-          approved_cos: number | null
-          budget_modifications: number | null
-          committed_costs: number | null
-          direct_costs: number | null
-          estimated_cost_at_completion: number | null
-          forecast_to_complete: number | null
-          job_to_date_cost: number | null
-          original_budget_amount: number | null
-          pending_budget_changes: number | null
-          pending_cost_changes: number | null
-          project_id: number | null
-          projected_budget: number | null
-          projected_costs: number | null
-          projected_over_under: number | null
-          revised_budget: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_activity_view"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_health_dashboard"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_health_dashboard_no_summary"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_issue_summary"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_with_manager"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "submittal_project_dashboard"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      v_budget_rollup: {
-        Row: {
-          approved_cos: number | null
-          budget_code_description: string | null
-          budget_code_id: string | null
-          budget_modifications: number | null
-          committed_costs: number | null
-          cost_code_description: string | null
-          cost_code_division: string | null
+          approved_co_total: number | null
+          budget_mod_total: number | null
           cost_code_id: string | null
-          cost_type_code: string | null
-          cost_type_description: string | null
           cost_type_id: string | null
-          direct_costs: number | null
-          division_title: string | null
-          estimated_cost_at_completion: number | null
-          forecast_to_complete: number | null
-          job_to_date_cost: number | null
-          original_budget_amount: number | null
-          pending_budget_changes: number | null
-          pending_cost_changes: number | null
-          position: number | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string | null
+          original_amount: number | null
           project_id: number | null
-          projected_budget: number | null
-          projected_costs: number | null
-          projected_over_under: number | null
           revised_budget: number | null
           sub_job_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          approved_co_total?: never
+          budget_mod_total?: never
+          cost_code_id?: string | null
+          cost_type_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string | null
+          original_amount?: number | null
+          project_id?: number | null
+          revised_budget?: never
+          sub_job_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          approved_co_total?: never
+          budget_mod_total?: never
+          cost_code_id?: string | null
+          cost_type_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string | null
+          original_amount?: number | null
+          project_id?: number | null
+          revised_budget?: never
+          sub_job_id?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "budget_codes_cost_code_id_fkey"
+            foreignKeyName: "budget_lines_cost_code_id_fkey"
             columns: ["cost_code_id"]
             isOneToOne: false
             referencedRelation: "cost_codes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_cost_type_id_fkey"
+            foreignKeyName: "budget_lines_cost_type_id_fkey"
             columns: ["cost_type_id"]
             isOneToOne: false
             referencedRelation: "cost_code_types"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_activity_view"
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_health_dashboard"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_health_dashboard_no_summary"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_issue_summary"
             referencedColumns: ["project_id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "project_with_manager"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_project_id_fkey"
+            foreignKeyName: "budget_lines_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "submittal_project_dashboard"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "budget_codes_sub_job_id_fkey"
+            foreignKeyName: "budget_lines_sub_job_id_fkey"
             columns: ["sub_job_id"]
             isOneToOne: false
             referencedRelation: "sub_jobs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "cost_codes_division_id_fkey"
-            columns: ["cost_code_division"]
-            isOneToOne: false
-            referencedRelation: "cost_code_divisions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      v_budget_with_markup: {
-        Row: {
-          approved_cos: number | null
-          budget_code_description: string | null
-          budget_code_id: string | null
-          budget_modifications: number | null
-          committed_costs: number | null
-          cost_code_description: string | null
-          cost_code_division: string | null
-          cost_code_id: string | null
-          cost_type_code: string | null
-          cost_type_description: string | null
-          cost_type_id: string | null
-          direct_costs: number | null
-          division_title: string | null
-          estimated_cost_at_completion: number | null
-          forecast_to_complete: number | null
-          job_to_date_cost: number | null
-          markups: Json | null
-          original_budget_amount: number | null
-          pending_budget_changes: number | null
-          pending_cost_changes: number | null
-          position: number | null
-          project_id: number | null
-          projected_budget: number | null
-          projected_costs: number | null
-          projected_over_under: number | null
-          revised_budget: number | null
-          sub_job_id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "budget_codes_cost_code_id_fkey"
-            columns: ["cost_code_id"]
-            isOneToOne: false
-            referencedRelation: "cost_codes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_cost_type_id_fkey"
-            columns: ["cost_type_id"]
-            isOneToOne: false
-            referencedRelation: "cost_code_types"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_activity_view"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_health_dashboard"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_health_dashboard_no_summary"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_issue_summary"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_with_manager"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "submittal_project_dashboard"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "budget_codes_sub_job_id_fkey"
-            columns: ["sub_job_id"]
-            isOneToOne: false
-            referencedRelation: "sub_jobs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "cost_codes_division_id_fkey"
-            columns: ["cost_code_division"]
-            isOneToOne: false
-            referencedRelation: "cost_code_divisions"
             referencedColumns: ["id"]
           },
         ]
