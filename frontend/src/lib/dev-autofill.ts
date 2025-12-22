@@ -96,34 +96,30 @@ export const autoFillPresets = {
     // Basic Information
     name: fakeData.projectName,
     description: fakeData.projectDescription,
-    job_number: fakeData.jobNumber,
-    project_number: fakeData.projectNumber,
+    project_number: () => `24-${copycat.int(Math.random().toString(), { min: 100, max: 999 })}`,
     project_code: () => `PRJ-${copycat.int(Math.random().toString(), { min: 1000, max: 9999 })}`,
 
-    // Client & Classification
-    client: fakeData.companyName,
-    category: () => copycat.oneOf(Math.random().toString(), ['Commercial', 'Residential', 'Infrastructure', 'Industrial']),
-    project_type: () => copycat.oneOf(Math.random().toString(), ['New Construction', 'Renovation', 'Tenant Improvement', 'Addition']),
-    project_sector: () => copycat.oneOf(Math.random().toString(), ['Education', 'Healthcare', 'Office', 'Retail', 'Hospitality', 'Industrial', 'Mixed Use']),
-    work_scope: () => copycat.oneOf(Math.random().toString(), ['Full Build', 'Core & Shell', 'Tenant Improvement', 'Site Work', 'Demolition']),
+    // Project Setup - Values matching form dropdown options exactly
+    project_template: () => copycat.oneOf(Math.random().toString(), ['standard', 'shell', 'interiors']),
+    stage: () => copycat.oneOf(Math.random().toString(), ['Planning', 'Pre-Construction', 'Course of Construction', 'Closeout', 'Warranty', 'Archived']),
 
-    // Project Setup
-    project_template: () => copycat.oneOf(Math.random().toString(), ['Standard', 'Fast Track', 'Design Build', 'IPD']),
-    stage: () => copycat.oneOf(Math.random().toString(), ['Pre-Construction', 'Bidding', 'Construction', 'Closeout']),
-    delivery_method: () => copycat.oneOf(Math.random().toString(), ['Design-Bid-Build', 'Design-Build', 'CM at Risk', 'IPD']),
+    // Classification - Values matching form dropdown options exactly
+    project_type: () => copycat.oneOf(Math.random().toString(), ['New Build', 'Addition', 'Fit-Out', 'Maintenance', 'Restoration']),
+    project_sector: () => copycat.oneOf(Math.random().toString(), ['Commercial', 'Industrial', 'Infrastructure', 'Healthcare', 'Institutional', 'Residential']),
+    work_scope: () => copycat.oneOf(Math.random().toString(), ['Ground-Up Construction', 'Renovation', 'Tenant Improvement', 'Interior Build-Out', 'Maintenance']),
+    delivery_method: () => copycat.oneOf(Math.random().toString(), ['Design-Bid-Build', 'Design-Build', 'Construction Management at Risk', 'Integrated Project Delivery']),
 
-    // Location
+    // Location - Values matching form dropdown options exactly
     street_address: fakeData.streetAddress,
     city: fakeData.city,
-    state: () => fakeData.state().substring(0, 2).toUpperCase(),
+    state: () => copycat.oneOf(Math.random().toString(), ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY']),
     postal_code: fakeData.zipCode,
-    country: fakeData.country,
-    region: () => copycat.oneOf(Math.random().toString(), ['Northeast', 'Southeast', 'Midwest', 'Southwest', 'West']),
-    timezone: () => copycat.oneOf(Math.random().toString(), ['America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles']),
+    country: () => 'United States',
+    region: () => copycat.oneOf(Math.random().toString(), ['Northeast', 'Southeast', 'Midwest', 'Southwest', 'West Coast', 'Mountain States']),
+    timezone: () => copycat.oneOf(Math.random().toString(), ['America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles', 'America/Anchorage', 'Pacific/Honolulu']),
+    office: () => copycat.oneOf(Math.random().toString(), ['Alleato Group', 'Alleato Group West', 'Alleato Group Southeast']),
 
     // Financials
-    estimated_revenue: () => fakeData.amount(100000, 10000000),
-    estimated_profit: () => fakeData.amount(10000, 1000000),
     total_value: () => fakeData.amount(500000, 15000000),
     square_footage: () => fakeData.amount(5000, 500000),
 
@@ -135,14 +131,13 @@ export const autoFillPresets = {
       return date.toISOString().split('T')[0];
     },
 
-    // Contact & Organization
+    // Contact
     phone: fakeData.phone,
-    office: () => copycat.oneOf(Math.random().toString(), ['Main Office', 'Regional Office', 'Branch Office']),
 
     // Flags
     active: () => true,
     test_project: () => false,
-    erp_sync: () => copycat.bool(Math.random().toString()),
+    erp_sync: () => true,
   },
 
   contract: {
@@ -210,6 +205,69 @@ export const autoFillPresets = {
     description: () => copycat.paragraph(Math.random().toString(), { min: 2, max: 3 }),
     estimatedImpact: () => fakeData.amount(5000, 250000),
     notes: () => copycat.paragraph(Math.random().toString()),
+  },
+
+  commitment: {
+    // Required fields
+    number: () => `SC-${copycat.int(Math.random().toString(), { min: 100, max: 999 })}`,
+    title: () => copycat.oneOf(Math.random().toString(), [
+      'Electrical Subcontract',
+      'Plumbing Installation',
+      'HVAC Systems',
+      'Concrete Work',
+      'Steel Erection',
+      'Drywall & Framing',
+      'Roofing Subcontract',
+      'Flooring Installation',
+    ]),
+    description: fakeData.description,
+    status: () => copycat.oneOf(Math.random().toString(), ['draft', 'sent', 'pending', 'approved', 'executed', 'closed', 'void']),
+    original_amount: () => fakeData.amount(50000, 2000000),
+    accounting_method: () => copycat.oneOf(Math.random().toString(), ['amount', 'unit', 'percent']),
+
+    // Optional fields
+    retention_percentage: () => copycat.oneOf(Math.random().toString(), [5, 10, 15]),
+    executed_date: fakeData.recentDate,
+    start_date: fakeData.futureDate,
+    substantial_completion_date: () => {
+      const date = new Date();
+      date.setDate(date.getDate() + copycat.int(Math.random().toString(), { min: 90, max: 365 }));
+      return date.toISOString().split('T')[0];
+    },
+    vendor_invoice_number: () => `INV-${copycat.int(Math.random().toString(), { min: 10000, max: 99999 })}`,
+    signed_received_date: fakeData.recentDate,
+    private: () => false,
+  },
+
+  primeContract: {
+    number: () => `PC-${copycat.int(Math.random().toString(), { min: 100, max: 999 })}`,
+    title: () => copycat.oneOf(Math.random().toString(), [
+      'General Construction Contract',
+      'Owner-Contractor Agreement',
+      'Design-Build Contract',
+      'Construction Management Agreement',
+    ]),
+    description: fakeData.description,
+    status: () => copycat.oneOf(Math.random().toString(), ['draft', 'sent', 'pending', 'approved', 'executed', 'closed']),
+    contract_date: fakeData.recentDate,
+    start_date: fakeData.futureDate,
+    substantial_completion_date: () => {
+      const date = new Date();
+      date.setDate(date.getDate() + copycat.int(Math.random().toString(), { min: 180, max: 730 }));
+      return date.toISOString().split('T')[0];
+    },
+    original_amount: () => fakeData.amount(500000, 10000000),
+    retention_percentage: () => copycat.oneOf(Math.random().toString(), [5, 10]),
+  },
+
+  invoice: {
+    number: () => `INV-${copycat.int(Math.random().toString(), { min: 1000, max: 9999 })}`,
+    billing_period_start: fakeData.pastDate,
+    billing_period_end: fakeData.recentDate,
+    invoice_date: () => new Date().toISOString().split('T')[0],
+    due_date: fakeData.futureDate,
+    status: () => copycat.oneOf(Math.random().toString(), ['draft', 'submitted', 'approved', 'paid', 'void']),
+    notes: fakeData.notes,
   },
 };
 

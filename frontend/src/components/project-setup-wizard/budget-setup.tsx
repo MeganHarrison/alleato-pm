@@ -24,9 +24,11 @@ import {
   FileSpreadsheet,
   Upload,
   Download,
+  Wand2,
 } from "lucide-react"
 import { StepComponentProps } from "./project-setup-wizard"
 import type { Database } from "@/types/database.types"
+import { isDevelopment, fakeData } from "@/lib/dev-autofill"
 
 type BudgetItem = Database["public"]["Tables"]["budget_items"]["Row"]
 type CostCode = Database["public"]["Tables"]["cost_codes"]["Row"]
@@ -118,18 +120,37 @@ export function BudgetSetup({ projectId, onNext, onSkip }: StepComponentProps) {
       ...updatedItems[index],
       [field]: value,
     }
-    
+
     // Calculate amount if quantity and unit_price are provided
     if (field === "quantity" || field === "unit_price") {
       const quantity = field === "quantity" ? value : updatedItems[index].quantity
       const unitPrice = field === "unit_price" ? value : updatedItems[index].unit_price
-      
+
       if (quantity && unitPrice) {
         updatedItems[index].amount = quantity * unitPrice
       }
     }
-    
+
     setBudgetItems(updatedItems)
+  }
+
+  // Auto-fill all budget items with random test data
+  const autoFillBudgetItems = () => {
+    if (!isDevelopment) return
+
+    const units = ["EA", "SF", "LF", "HR", "LS", "CY", "TON"]
+    const filledItems = budgetItems.map(item => {
+      const quantity = fakeData.amount(10, 500)
+      const unitPrice = fakeData.amount(50, 2000)
+      return {
+        ...item,
+        quantity,
+        unit_of_measure: units[Math.floor(Math.random() * units.length)],
+        unit_price: unitPrice,
+        amount: quantity * unitPrice,
+      }
+    })
+    setBudgetItems(filledItems)
   }
 
 
@@ -283,7 +304,20 @@ export function BudgetSetup({ projectId, onNext, onSkip }: StepComponentProps) {
           </TabsList>
 
           <TabsContent value="manual" className="space-y-4">
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-between gap-2">
+              {isDevelopment && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={autoFillBudgetItems}
+                  className="gap-2 bg-purple-100 text-purple-700 hover:bg-purple-200 border-purple-300"
+                  title="Development only: Fill all budget items with test data"
+                >
+                  <Wand2 className="h-4 w-4" />
+                  Auto-Fill All
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"

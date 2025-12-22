@@ -22,12 +22,16 @@ Visit any form page in development (e.g., `/[projectId]/contracts/new`) and you'
 
 The system comes with built-in presets for common construction management forms:
 
-- `project` - Project creation forms
+- `project` - Project creation forms (matches exact form dropdown values)
 - `contract` - Contract forms
 - `company` - Company/client forms
 - `contact` - Contact forms
 - `budgetLineItem` - Budget line item forms
 - `meeting` - Meeting forms
+- `changeEvent` - Change event forms
+- `commitment` - Commitment/subcontract forms
+- `primeContract` - Prime contract forms
+- `invoice` - Invoice forms
 
 ## Usage
 

@@ -17,13 +17,15 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
-import { 
-  AlertCircle, 
+import {
+  AlertCircle,
   FileText,
   DollarSign,
+  Wand2,
 } from "lucide-react"
 import { StepComponentProps } from "./project-setup-wizard"
 import type { Database } from "@/types/database.types"
+import { isDevelopment, getAutoFillData } from "@/lib/dev-autofill"
 
 type Contract = Database["public"]["Tables"]["contracts"]["Row"]
 
@@ -47,6 +49,20 @@ export function ContractSetup({ projectId, onNext, onSkip }: StepComponentProps)
     setContract(prev => ({
       ...prev,
       [field]: value,
+    }))
+  }
+
+  // Auto-fill contract with test data
+  const autoFillContract = () => {
+    if (!isDevelopment) return
+
+    const data = getAutoFillData("primeContract")
+    setContract(prev => ({
+      ...prev,
+      contract_number: data.number || `PC-2024-${Math.floor(Math.random() * 999).toString().padStart(3, "0")}`,
+      title: data.title || "Prime Construction Contract",
+      original_contract_amount: data.original_amount || 0,
+      notes: data.description || "",
     }))
   }
 
@@ -119,9 +135,24 @@ export function ContractSetup({ projectId, onNext, onSkip }: StepComponentProps)
         </p>
 
         <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <FileText className="h-5 w-5 text-primary" />
-            <h3 className="text-lg font-medium">Prime Contract Details</h3>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              <h3 className="text-lg font-medium">Prime Contract Details</h3>
+            </div>
+            {isDevelopment && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={autoFillContract}
+                className="gap-2 bg-purple-100 text-purple-700 hover:bg-purple-200 border-purple-300"
+                title="Development only: Fill contract with test data"
+              >
+                <Wand2 className="h-4 w-4" />
+                Auto-Fill
+              </Button>
+            )}
           </div>
 
           <div className="grid gap-4">

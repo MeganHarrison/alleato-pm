@@ -65,7 +65,7 @@ export function CommitmentForm({
     },
   });
 
-  const { DevAutoFillButton } = useDevAutoFill('contract', setValue);
+  const { DevAutoFillButton } = useDevAutoFill('commitment', setValue);
 
   const handleFormSubmit = async (data: CommitmentFormData) => {
     setIsSubmitting(true);
