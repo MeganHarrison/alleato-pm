@@ -100,7 +100,7 @@ export function ProjectDirectorySetup({ projectId, onNext, onSkip }: StepCompone
           *,
           company:companies(*)
         `)
-        .eq("project_id", projectId)
+        .eq("project_id", parseInt(projectId, 10))
         .order("created_at")
 
       if (directoryError) throw directoryError
@@ -179,7 +179,7 @@ export function ProjectDirectorySetup({ projectId, onNext, onSkip }: StepCompone
       const { data, error } = await supabase
         .from("project_directory")
         .insert({
-          project_id: projectId,
+          project_id: parseInt(projectId, 10),
           company_id: selectedCompanyId,
           role: selectedRole,
           is_active: true,
