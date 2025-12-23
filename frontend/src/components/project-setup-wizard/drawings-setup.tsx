@@ -91,8 +91,9 @@ export function DrawingsSetup({ projectId, onNext, onSkip }: StepComponentProps)
           .from("files")
           .insert({
             id: uploadFile.id,
-            content: "",
+            content: uploadFile.file.name,
             url: publicUrl,
+            status: "active",
             metadata: {
               fileName: uploadFile.file.name,
               fileType: uploadFile.file.type || "application/octet-stream",
