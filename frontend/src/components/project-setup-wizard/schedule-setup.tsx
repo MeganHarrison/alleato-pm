@@ -94,12 +94,13 @@ export function ScheduleSetup({ projectId, onNext, onSkip }: StepComponentProps)
             content: uploadFile.file.name,
             url: publicUrl,
             status: "active",
+            project_id: parseInt(projectId, 10),
+            title: uploadFile.file.name,
+            category: "schedule",
             metadata: {
               fileName: uploadFile.file.name,
               fileType: uploadFile.file.type || "application/octet-stream",
               fileSize: uploadFile.file.size,
-              category: "schedule",
-              projectId: parseInt(projectId, 10),
             },
           })
           .select()

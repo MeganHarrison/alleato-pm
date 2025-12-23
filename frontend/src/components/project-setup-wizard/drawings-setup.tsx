@@ -94,12 +94,13 @@ export function DrawingsSetup({ projectId, onNext, onSkip }: StepComponentProps)
             content: uploadFile.file.name,
             url: publicUrl,
             status: "active",
+            project_id: parseInt(projectId, 10),
+            title: uploadFile.file.name,
+            category: "drawings",
             metadata: {
               fileName: uploadFile.file.name,
               fileType: uploadFile.file.type || "application/octet-stream",
               fileSize: uploadFile.file.size,
-              category: "drawings",
-              projectId: parseInt(projectId, 10),
             },
           })
           .select()

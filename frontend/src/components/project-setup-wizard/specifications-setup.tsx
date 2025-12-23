@@ -94,12 +94,13 @@ export function SpecificationsSetup({ projectId, onNext, onSkip }: StepComponent
             content: uploadFile.file.name,
             url: publicUrl,
             status: "active",
+            project_id: parseInt(projectId, 10),
+            title: uploadFile.file.name,
+            category: "specifications",
             metadata: {
               fileName: uploadFile.file.name,
               fileType: uploadFile.file.type || "application/octet-stream",
               fileSize: uploadFile.file.size,
-              category: "specifications",
-              projectId: parseInt(projectId, 10),
             },
           })
           .select()
