@@ -224,9 +224,9 @@ export default function ProjectBudgetPage() {
     setShowEditModal(true);
   };
 
-  const handleSelectionChange = (ids: string[]) => {
+  const handleSelectionChange = React.useCallback((ids: string[]) => {
     setSelectedIds(ids);
-  };
+  }, []);
 
   const handleDeleteSelected = () => {
     if (isLocked) {

@@ -127,14 +127,14 @@ export function useProject() {
 
 // Hook that requires a project to be selected
 export function useRequireProject() {
-  const context = useProject()
+  const { selectedProject, projectId, setSelectedProject, isLoading, requireProject } = useProject()
 
   useEffect(() => {
-    if (!context.isLoading && !context.selectedProject) {
+    if (!isLoading && !selectedProject) {
       // Project is required but not selected
-      context.requireProject()
+      requireProject()
     }
-  }, [context])
+  }, [isLoading, selectedProject, requireProject])
 
-  return context
+  return { selectedProject, projectId, setSelectedProject, isLoading, requireProject }
 }
