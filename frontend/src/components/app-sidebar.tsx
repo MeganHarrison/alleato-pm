@@ -34,108 +34,131 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { useProject } from "@/contexts/project-context"
 
-const data = {
-  // Primary navigation - most frequently used features
-  navMain: [
-    {
-      title: "Projects",
-      url: "/",
-      icon: IconLayoutGrid,
-    },
-    {
-      title: "Tasks",
-      url: "/tasks",
-      icon: IconCheckbox,
-    },
-    {
-      title: "Meetings",
-      url: "/meetings",
-      icon: IconCalendar,
-    },
-    {
-      title: "Directory",
-      url: "/directory/companies",
-      icon: IconUsers,
-    },
-    {
-      title: "AI Chat",
-      url: "/chat-rag",
-      icon: IconMessageChatbot,
-    },
-  ],
-  // Project-specific tools
-  projectTools: [
-    {
-      name: "Drawings",
-      url: "/drawings",
-      icon: IconPencil,
-    },
-    {
-      name: "Photos",
-      url: "/photos",
-      icon: IconPhoto,
-    },
-    {
-      name: "Submittals",
-      url: "/submittals",
-      icon: IconFileText,
-    },
-    {
-      name: "Punch List",
-      url: "/punch-list",
-      icon: IconCheckbox,
-    },
-  ],
-  // Financial section - grouped by function
-  financial: [
-    {
-      name: "Budget",
-      url: "/budget",
-      icon: IconReportMoney,
-    },
-    {
-      name: "Contracts",
-      url: "/contracts",
-      icon: IconFileDescription,
-    },
-    {
-      name: "Commitments",
-      url: "/commitments",
-      icon: IconBriefcase,
-    },
-    {
-      name: "Change Orders",
-      url: "/change-orders",
-      icon: IconFileInvoice,
-    },
-    {
-      name: "Change Events",
-      url: "/change-events",
-      icon: IconCoin,
-    },
-    {
-      name: "Invoices",
-      url: "/invoices",
-      icon: IconBuildingBank,
-    },
-    {
-      name: "Billing Periods",
-      url: "/billing-periods",
-      icon: IconCalendar,
-    },
-  ],
-  // Secondary navigation - admin and settings
-  navSecondary: [
-    {
-      title: "Executive",
-      url: "/executive",
-      icon: IconChartLine,
-    },
-  ],
-}
+// Static navigation items (not project-specific)
+const staticNavMain = [
+  {
+    title: "Projects",
+    url: "/",
+    icon: IconLayoutGrid,
+  },
+  {
+    title: "Tasks",
+    url: "/tasks",
+    icon: IconCheckbox,
+  },
+  {
+    title: "Meetings",
+    url: "/meetings",
+    icon: IconCalendar,
+  },
+  {
+    title: "Directory",
+    url: "/directory/companies",
+    icon: IconUsers,
+  },
+  {
+    title: "AI Chat",
+    url: "/chat-rag",
+    icon: IconMessageChatbot,
+  },
+]
+
+// Project-specific tools (require projectId prefix)
+const projectToolsConfig = [
+  {
+    name: "Drawings",
+    path: "/drawings",
+    icon: IconPencil,
+  },
+  {
+    name: "Photos",
+    path: "/photos",
+    icon: IconPhoto,
+  },
+  {
+    name: "Submittals",
+    path: "/submittals",
+    icon: IconFileText,
+  },
+  {
+    name: "Punch List",
+    path: "/punch-list",
+    icon: IconCheckbox,
+  },
+]
+
+// Financial section - grouped by function (require projectId prefix)
+const financialConfig = [
+  {
+    name: "Budget",
+    path: "/budget",
+    icon: IconReportMoney,
+  },
+  {
+    name: "Contracts",
+    path: "/contracts",
+    icon: IconFileDescription,
+  },
+  {
+    name: "Commitments",
+    path: "/commitments",
+    icon: IconBriefcase,
+  },
+  {
+    name: "Change Orders",
+    path: "/change-orders",
+    icon: IconFileInvoice,
+  },
+  {
+    name: "Change Events",
+    path: "/change-events",
+    icon: IconCoin,
+  },
+  {
+    name: "Invoices",
+    path: "/invoices",
+    icon: IconBuildingBank,
+  },
+  {
+    name: "Billing Periods",
+    path: "/billing-periods",
+    icon: IconCalendar,
+  },
+]
+
+// Secondary navigation - admin and settings
+const navSecondary = [
+  {
+    title: "Executive",
+    url: "/executive",
+    icon: IconChartLine,
+  },
+]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { projectId } = useProject()
+
+  // Build project-prefixed URLs for project-specific navigation
+  const projectTools = React.useMemo(() => {
+    if (!projectId) return []
+    return projectToolsConfig.map((item) => ({
+      name: item.name,
+      url: `/${projectId}${item.path}`,
+      icon: item.icon,
+    }))
+  }, [projectId])
+
+  const financial = React.useMemo(() => {
+    if (!projectId) return []
+    return financialConfig.map((item) => ({
+      name: item.name,
+      url: `/${projectId}${item.path}`,
+      icon: item.icon,
+    }))
+  }, [projectId])
+
   return (
     <Sidebar
       collapsible="offcanvas"
@@ -149,11 +172,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <Link href="/protected" className="flex items-center gap-2">
-                <Image 
-                  src="/Alleato Favicon.png" 
-                  alt="Alleato" 
-                  width={20} 
+              <Link href="/" className="flex items-center gap-2">
+                <Image
+                  src="/Alleato Favicon.png"
+                  alt="Alleato"
+                  width={20}
                   height={20}
                   className="object-contain"
                 />
@@ -164,10 +187,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.projectTools} label="Project Tools" />
-        <NavDocuments items={data.financial} label="Financial" />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={staticNavMain} />
+        {projectId && projectTools.length > 0 && (
+          <NavDocuments items={projectTools} label="Project Tools" />
+        )}
+        {projectId && financial.length > 0 && (
+          <NavDocuments items={financial} label="Financial" />
+        )}
+        <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
