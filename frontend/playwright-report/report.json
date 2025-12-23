@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 2
     },
     "preserveOutput": "always",
     "reporter": [
@@ -39,7 +39,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 2
         },
         "id": "setup",
         "name": "setup",
@@ -55,7 +55,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 2
         },
         "id": "chromium",
         "name": "chromium",
@@ -102,7 +102,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "timedOut",
-                  "duration": 41034,
+                  "duration": 41001,
                   "error": {
                     "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
                     "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
@@ -123,7 +123,7 @@
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-12-23T12:30:52.673Z",
+                  "startTime": "2025-12-23T20:59:17.971Z",
                   "annotations": [],
                   "attachments": [
                     {
@@ -145,20 +145,20 @@
       ]
     },
     {
-      "title": "e2e/project-setup-wizard.spec.ts",
-      "file": "e2e/project-setup-wizard.spec.ts",
+      "title": "e2e/portfolio-table-columns.spec.ts",
+      "file": "e2e/portfolio-table-columns.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Project Setup Wizard",
-          "file": "e2e/project-setup-wizard.spec.ts",
+          "title": "Portfolio Table Columns",
+          "file": "e2e/portfolio-table-columns.spec.ts",
           "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "can skip through all steps and redirect to home page",
+              "title": "should not display est revenue and est profit columns",
               "ok": true,
               "tags": [],
               "tests": [
@@ -172,9 +172,29 @@
                   "status": "skipped"
                 }
               ],
-              "id": "325d5edaeee2997a3f44-2b8d9394e8a0deb6cfac",
-              "file": "e2e/project-setup-wizard.spec.ts",
-              "line": 46,
+              "id": "6b3cf4413058737d08b2-85dadb9cde57c7917803",
+              "file": "e2e/portfolio-table-columns.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "should not display revenue and profit in grid view cards",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "6b3cf4413058737d08b2-5d307073bc15ea93768b",
+              "file": "e2e/portfolio-table-columns.spec.ts",
+              "line": 28,
               "column": 7
             }
           ]
@@ -184,10 +204,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-12-23T12:30:52.338Z",
-    "duration": 42222.29,
+    "startTime": "2025-12-23T20:59:17.594Z",
+    "duration": 41785.001,
     "expected": 0,
-    "skipped": 1,
+    "skipped": 2,
     "unexpected": 1,
     "flaky": 0
   }
