@@ -44,16 +44,11 @@ interface ProjectDirectoryWithCompany extends ProjectDirectory {
 }
 
 const projectRoles = [
-  { value: "owner", label: "Project Owner" },
-  { value: "general_contractor", label: "General Contractor" },
+  { value: "owner", label: "Owner" },
   { value: "architect", label: "Architect" },
   { value: "engineer", label: "Engineer" },
-  { value: "project_manager", label: "Project Manager" },
-  { value: "superintendent", label: "Superintendent" },
   { value: "subcontractor", label: "Subcontractor" },
-  { value: "supplier", label: "Supplier" },
-  { value: "inspector", label: "Inspector" },
-  { value: "consultant", label: "Consultant" },
+  { value: "vendor", label: "Vendor" },
 ]
 
 export function ProjectDirectorySetup({ projectId, onNext, onSkip }: StepComponentProps) {
