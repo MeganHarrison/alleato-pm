@@ -1,7 +1,11 @@
 export interface BudgetLineItem {
   id: string;
+  costCode: string;
   description: string;
   originalBudgetAmount: number;
+  unitQty?: number;
+  uom?: string;
+  unitCost?: number;
   budgetModifications: number;
   approvedCOs: number;
   revisedBudget: number;

@@ -9,7 +9,7 @@ import {
   getExpandedRowModel,
   ExpandedState,
 } from '@tanstack/react-table';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, MoreHorizontal, Trash2 } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -21,6 +21,7 @@ import {
 import { BudgetLineItem, BudgetGrandTotals } from '@/types/budget';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 
 type ColumnTooltip = {
   title: string
@@ -164,6 +165,8 @@ function ColumnHeader({ lines, columnKey }: ColumnHeaderProps) {
 interface BudgetTableProps {
   data: BudgetLineItem[];
   grandTotals: BudgetGrandTotals;
+  onEditLineItem?: (lineItem: BudgetLineItem) => void;
+  onDeleteLineItem?: (lineItem: BudgetLineItem) => void;
 }
 
 function formatCurrency(value: number): string {
@@ -191,6 +194,7 @@ function CurrencyCell({ value }: { value: number }) {
 }
 
 const columnWidthClasses: Record<string, string> = {
+  delete: 'w-8 min-w-[32px]',
   expander: 'w-10 min-w-[40px]',
   description: 'w-[280px] min-w-[240px]',
   originalBudgetAmount: 'w-[130px] min-w-[120px]',
@@ -220,10 +224,35 @@ function getDepthPadding(depth: number) {
   return depthPaddingClasses[index];
 }
 
-export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
+export function BudgetTable({ data, grandTotals, onEditLineItem, onDeleteLineItem }: BudgetTableProps) {
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
   const columns: ColumnDef<BudgetLineItem>[] = [
+    {
+      id: 'delete',
+      header: () => null,
+      cell: ({ row }) => {
+        // Only show delete for leaf nodes (no children)
+        const hasChildren = row.original.children && row.original.children.length > 0;
+        if (hasChildren) {
+          return <div className="w-6" />;
+        }
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-6 p-0 hover:bg-red-50 hover:text-red-600"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteLineItem?.(row.original);
+            }}
+          >
+            <Trash2 className="w-3.5 h-3.5 text-gray-400 hover:text-red-500" />
+          </Button>
+        );
+      },
+      size: 32,
+    },
     {
       id: 'expander',
       header: () => null,
@@ -271,11 +300,28 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
           lines={['Original Budget']}
         />
       ),
-      cell: ({ row }) => (
-        <div className="text-right">
-          <CurrencyCell value={row.getValue('originalBudgetAmount')} />
-        </div>
-      ),
+      cell: ({ row }) => {
+        // Only show edit for leaf nodes (no children)
+        const hasChildren = row.original.children && row.original.children.length > 0;
+        return (
+          <div className="text-right flex items-center justify-end gap-1">
+            <CurrencyCell value={row.getValue('originalBudgetAmount')} />
+            {!hasChildren && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-5 w-5 p-0 hover:bg-gray-100 ml-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditLineItem?.(row.original);
+                }}
+              >
+                <MoreHorizontal className="w-3.5 h-3.5 text-gray-400" />
+              </Button>
+            )}
+          </div>
+        );
+      },
       size: 130,
     },
     {
@@ -536,6 +582,7 @@ export function BudgetTable({ data, grandTotals }: BudgetTableProps) {
           <table className="w-full caption-bottom text-sm table-fixed">
             <tbody>
               <tr className="font-semibold bg-gray-50 border-b transition-colors">
+                <td className={cn('py-3 px-2', getWidthClass('delete'))} />
                 <td className={cn('py-3 px-2', getWidthClass('expander'))} />
                 <td
                   className={cn(

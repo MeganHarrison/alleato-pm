@@ -10,6 +10,7 @@ import type {
 export const budgetLineItems: BudgetLineItem[] = [
   {
     id: 'none',
+    costCode: 'NONE',
     description: 'None',
     originalBudgetAmount: 0,
     budgetModifications: 0,
@@ -28,6 +29,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '01',
+    costCode: '01',
     description: '01 - Requirements',
     originalBudgetAmount: 27604,
     budgetModifications: -4008.94,
@@ -46,6 +48,7 @@ export const budgetLineItems: BudgetLineItem[] = [
     children: [
       {
         id: '01-100',
+        costCode: '01-100',
         description: '01-100 - General Requirements',
         originalBudgetAmount: 15000,
         budgetModifications: -2000,
@@ -64,6 +67,7 @@ export const budgetLineItems: BudgetLineItem[] = [
       },
       {
         id: '01-200',
+        costCode: '01-200',
         description: '01-200 - Project Conditions',
         originalBudgetAmount: 8604,
         budgetModifications: -1508.94,
@@ -82,6 +86,7 @@ export const budgetLineItems: BudgetLineItem[] = [
       },
       {
         id: '01-300',
+        costCode: '01-300',
         description: '01-300 - Administrative Requirements',
         originalBudgetAmount: 4000,
         budgetModifications: -500,
@@ -102,6 +107,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '02',
+    costCode: '02',
     description: '02 - Division 02',
     originalBudgetAmount: 6000,
     budgetModifications: -53395,
@@ -120,6 +126,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '03',
+    costCode: '03',
     description: '03 - Division 03',
     originalBudgetAmount: 0,
     budgetModifications: -10000,
@@ -138,6 +145,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '04',
+    costCode: '04',
     description: '04 - Division 04',
     originalBudgetAmount: 0,
     budgetModifications: 0,
@@ -156,6 +164,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '05',
+    costCode: '05',
     description: '05 - Division 05',
     originalBudgetAmount: 0,
     budgetModifications: 0,
@@ -174,6 +183,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '06',
+    costCode: '06',
     description: '06 - Division 06',
     originalBudgetAmount: 1000,
     budgetModifications: -1923.37,
@@ -192,6 +202,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '07',
+    costCode: '07',
     description: '07 - Division 07',
     originalBudgetAmount: 1000,
     budgetModifications: -3875,
@@ -210,6 +221,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '08',
+    costCode: '08',
     description: '08 - Division 08',
     originalBudgetAmount: 9870,
     budgetModifications: -3911.92,
@@ -228,6 +240,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '09',
+    costCode: '09',
     description: '09 - Division 09',
     originalBudgetAmount: 61413,
     budgetModifications: 103496.80,
@@ -246,6 +259,7 @@ export const budgetLineItems: BudgetLineItem[] = [
     children: [
       {
         id: '09-100',
+        costCode: '09-100',
         description: '09-100 - Stucco',
         originalBudgetAmount: 20000,
         budgetModifications: 35000,
@@ -264,6 +278,7 @@ export const budgetLineItems: BudgetLineItem[] = [
       },
       {
         id: '09-200',
+        costCode: '09-200',
         description: '09-200 - Drywall',
         originalBudgetAmount: 25413,
         budgetModifications: 40496.80,
@@ -282,6 +297,7 @@ export const budgetLineItems: BudgetLineItem[] = [
       },
       {
         id: '09-300',
+        costCode: '09-300',
         description: '09-300 - Tile',
         originalBudgetAmount: 16000,
         budgetModifications: 28000,
@@ -302,6 +318,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '10',
+    costCode: '10',
     description: '10 - Division 10',
     originalBudgetAmount: 3750,
     budgetModifications: -3599.77,
@@ -320,6 +337,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '11',
+    costCode: '11',
     description: '11 - Division 11',
     originalBudgetAmount: 0,
     budgetModifications: 834.58,
@@ -338,6 +356,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '12',
+    costCode: '12',
     description: '12 - Division 12',
     originalBudgetAmount: 0,
     budgetModifications: -1910.55,
@@ -356,6 +375,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '21',
+    costCode: '21',
     description: '21 - Division 21',
     originalBudgetAmount: 4000,
     budgetModifications: -1422.51,
@@ -374,6 +394,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '22',
+    costCode: '22',
     description: '22 - Division 22',
     originalBudgetAmount: 2500,
     budgetModifications: -14584.60,
@@ -392,6 +413,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '23',
+    costCode: '23',
     description: '23 - Division 23',
     originalBudgetAmount: 7500,
     budgetModifications: -10000,
@@ -410,6 +432,7 @@ export const budgetLineItems: BudgetLineItem[] = [
   },
   {
     id: '26',
+    costCode: '26',
     description: '26 - Division 26',
     originalBudgetAmount: 10000,
     budgetModifications: -15000,
@@ -428,6 +451,7 @@ export const budgetLineItems: BudgetLineItem[] = [
     children: [
       {
         id: '26-100',
+        costCode: '26-100',
         description: '26-100 - Electrical General',
         originalBudgetAmount: 3000,
         budgetModifications: -5000,
@@ -446,6 +470,7 @@ export const budgetLineItems: BudgetLineItem[] = [
       },
       {
         id: '26-200',
+        costCode: '26-200',
         description: '26-200 - Power Distribution',
         originalBudgetAmount: 4000,
         budgetModifications: -6000,
@@ -464,6 +489,7 @@ export const budgetLineItems: BudgetLineItem[] = [
       },
       {
         id: '26-300',
+        costCode: '26-300',
         description: '26-300 - Lighting',
         originalBudgetAmount: 3000,
         budgetModifications: -4000,
