@@ -13,10 +13,10 @@ type BudgetCodeResponse = {
   }>;
 };
 
-type BudgetLineRow = {
+type ProjectBudgetCodeRow = {
   id: string;
   cost_code_id: string;
-  description: string | null;
+  description: string;
   cost_codes: {
     title: string | null;
   } | null;
@@ -57,9 +57,9 @@ export async function GET(
 
     const supabase = await createClient();
 
-    // Fetch budget_lines for this project (these are the existing budget lines)
-    const { data: budgetLinesData, error: budgetLinesError } = await supabase
-      .from('budget_lines')
+    // Fetch project_budget_codes for this project (the chart of accounts)
+    const { data: projectBudgetCodesData, error: projectBudgetCodesError } = await supabase
+      .from('project_budget_codes')
       .select(
         `
           id,
@@ -70,20 +70,21 @@ export async function GET(
         `
       )
       .eq('project_id', projectId)
+      .eq('is_active', true)
       .order('cost_code_id', { ascending: true });
 
-    if (budgetLinesError) {
-      console.error('Error fetching budget lines:', budgetLinesError);
+    if (projectBudgetCodesError) {
+      console.error('Error fetching project budget codes:', projectBudgetCodesError);
       return NextResponse.json(
-        { error: 'Failed to load budget codes', details: budgetLinesError.message },
+        { error: 'Failed to load budget codes', details: projectBudgetCodesError.message },
         { status: 500 }
       );
     }
 
     // Transform the data
     const budgetCodes: BudgetCodeResponse['budgetCodes'] =
-      (budgetLinesData || []).map((item: unknown) => {
-        const row = item as BudgetLineRow;
+      (projectBudgetCodesData || []).map((item: unknown) => {
+        const row = item as ProjectBudgetCodeRow;
         const costType = row.cost_code_types?.code || null;
         const costTypeDescription = row.cost_code_types?.description || null;
         const costCodeTitle = Array.isArray(row.cost_codes)
@@ -161,7 +162,7 @@ export async function POST(
     // Resolve cost_type_id to UUID
     let costTypeUuid = cost_type_id;
 
-    // If cost_type_id is a string like 'labor', 'material', etc., look it up
+    // If cost_type_id is a string like 'R', 'L', etc., look it up
     if (typeof cost_type_id === 'string' && !cost_type_id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
       const { data: costTypeData } = await supabase
         .from('cost_code_types')
@@ -174,15 +175,16 @@ export async function POST(
       }
     }
 
-    // Insert new budget line (with original_amount = 0 as default)
-    const { data: newBudgetLine, error: insertError } = await supabase
-      .from('budget_lines')
+    // Insert new project_budget_code (the chart of accounts entry)
+    const { data: newProjectBudgetCode, error: insertError } = await supabase
+      .from('project_budget_codes')
       .insert({
         project_id: projectId,
         cost_code_id,
         cost_type_id: costTypeUuid,
-        description: description || null,
-        original_amount: 0,
+        description: description || '',
+        description_mode: 'concatenated',
+        is_active: true,
         created_by: user.id,
       })
       .select(
@@ -197,7 +199,16 @@ export async function POST(
       .single();
 
     if (insertError) {
-      console.error('Error creating budget line:', insertError);
+      console.error('Error creating project budget code:', insertError);
+
+      // Check if it's a unique constraint violation
+      if (insertError.code === '23505') {
+        return NextResponse.json(
+          { error: 'This budget code already exists for this project' },
+          { status: 409 }
+        );
+      }
+
       return NextResponse.json(
         { error: 'Failed to create budget code', details: insertError.message },
         { status: 500 }
@@ -205,22 +216,21 @@ export async function POST(
     }
 
     // Transform response to match frontend format
-    // Cast to unknown first, then to the proper type structure
-    const typedBudgetLine = newBudgetLine as unknown as BudgetLineRow;
-    const costType = typedBudgetLine.cost_code_types?.code || null;
-    const costTypeDescription = typedBudgetLine.cost_code_types?.description || null;
-    const costCodeTitle = Array.isArray(typedBudgetLine.cost_codes)
-      ? typedBudgetLine.cost_codes[0]?.title
-      : typedBudgetLine.cost_codes?.title;
-    const finalDescription = typedBudgetLine.description || costCodeTitle || '';
+    const typedBudgetCode = newProjectBudgetCode as unknown as ProjectBudgetCodeRow;
+    const costType = typedBudgetCode.cost_code_types?.code || null;
+    const costTypeDescription = typedBudgetCode.cost_code_types?.description || null;
+    const costCodeTitle = Array.isArray(typedBudgetCode.cost_codes)
+      ? typedBudgetCode.cost_codes[0]?.title
+      : typedBudgetCode.cost_codes?.title;
+    const finalDescription = typedBudgetCode.description || costCodeTitle || '';
 
     const budgetCode = {
-      id: newBudgetLine.id,
-      code: newBudgetLine.cost_code_id,
+      id: newProjectBudgetCode.id,
+      code: newProjectBudgetCode.cost_code_id,
       description: finalDescription,
       costType,
       fullLabel: formatBudgetCode({
-        code: newBudgetLine.cost_code_id,
+        code: newProjectBudgetCode.cost_code_id,
         description: finalDescription,
         costType,
         costTypeDescription,

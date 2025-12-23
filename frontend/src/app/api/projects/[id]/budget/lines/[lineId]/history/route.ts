@@ -1,0 +1,114 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
+
+// GET /api/projects/[id]/budget/lines/[lineId]/history - Get change history for a budget line item
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string; lineId: string }> }
+) {
+  try {
+    const { id, lineId } = await params;
+    const projectId = parseInt(id, 10);
+
+    if (Number.isNaN(projectId)) {
+      return NextResponse.json(
+        { error: 'Invalid project ID' },
+        { status: 400 }
+      );
+    }
+
+    const supabase = await createClient();
+
+    // Get current user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error('Auth error or no user:', { userError, hasUser: !!user });
+      return NextResponse.json(
+        { error: 'Unauthorized - please log in' },
+        { status: 401 }
+      );
+    }
+
+    // TODO: Add project membership validation when project_team_members table exists
+    // For now, all authenticated users can view history (will be restricted by RLS)
+
+    // Fetch change history for this budget line
+    const { data: historyData, error: historyError } = await supabase
+      .from('budget_line_history')
+      .select(`
+        id,
+        field_name,
+        old_value,
+        new_value,
+        changed_by,
+        changed_at,
+        change_type,
+        notes
+      `)
+      .eq('budget_line_id', lineId)
+      .eq('project_id', projectId)
+      .order('changed_at', { ascending: false });
+
+    if (historyError) {
+      console.error('Error fetching history:', historyError);
+      return NextResponse.json(
+        { error: 'Failed to fetch change history' },
+        { status: 500 }
+      );
+    }
+
+    // Get unique user IDs from history
+    const userIds = [...new Set(historyData.map(h => h.changed_by))];
+
+    // Fetch user details for all users who made changes
+    const { data: usersData, error: usersError } = await supabase
+      .from('users')
+      .select('id, email, first_name, last_name')
+      .in('id', userIds);
+
+    if (usersError) {
+      console.error('Error fetching users:', usersError);
+      // Don't fail the request - just return history without user details
+    }
+
+    // Create a map of user ID to user details
+    const usersMap = new Map(
+      (usersData || []).map(u => [
+        u.id,
+        {
+          id: u.id,
+          email: u.email,
+          name: u.first_name && u.last_name
+            ? `${u.first_name} ${u.last_name}`
+            : u.first_name || u.last_name || u.email,
+        }
+      ])
+    );
+
+    // Transform history data to include user details
+    const history = historyData.map(h => ({
+      id: h.id,
+      field_name: h.field_name,
+      old_value: h.old_value,
+      new_value: h.new_value,
+      changed_by: usersMap.get(h.changed_by) || {
+        id: h.changed_by,
+        email: 'Unknown User',
+        name: 'Unknown User',
+      },
+      changed_at: h.changed_at,
+      change_type: h.change_type,
+      notes: h.notes,
+    }));
+
+    return NextResponse.json({ history });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch change history';
+    console.error('Error in budget line history GET route:', error);
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
+  }
+}

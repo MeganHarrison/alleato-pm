@@ -85,7 +85,7 @@ export function BudgetLineItemModal({
   const [availableCostCodes, setAvailableCostCodes] = useState<
     Array<{
       id: string;
-      description: string | null;
+      title: string | null;
       status: string | null;
       division_title: string | null;
     }>
@@ -96,7 +96,7 @@ export function BudgetLineItemModal({
       string,
       Array<{
         id: string;
-        description: string | null;
+        title: string | null;
         status: string | null;
         division_title: string | null;
       }>
@@ -159,8 +159,8 @@ export function BudgetLineItemModal({
         // Fetch cost codes from Supabase
         const { data, error } = await supabase
           .from('cost_codes')
-          .select('id, description, status, division_title')
-          .eq('status', 'True')
+          .select('id, title, status, division_title')
+          .eq('status', 'Active')
           .order('id', { ascending: true });
 
         if (error) {
@@ -252,24 +252,39 @@ export function BudgetLineItemModal({
 
       const selectedCostCode = availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId);
       if (!selectedCostCode) {
-        alert('Please select a cost code');
+        toast.error('Please select a cost code');
         return;
       }
 
-      // TODO: API call to create project budget code
-      const newCode: BudgetCode = {
-        id: Date.now().toString(),
-        code: selectedCostCode.division_title || selectedCostCode.id,
-        costType: newCodeData.costType,
-        description: selectedCostCode.description || '',
-        fullLabel: `${selectedCostCode.division_title || selectedCostCode.id}.${newCodeData.costType} – ${selectedCostCode.description} – ${getCostTypeLabel(newCodeData.costType)}`,
-      };
+      // Call API to create project budget code
+      const response = await fetch(`/api/projects/${projectId}/budget-codes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cost_code_id: newCodeData.costCodeId,
+          cost_type_id: newCodeData.costType,
+          description: selectedCostCode.title || null,
+        }),
+      });
 
-      setBudgetCodes([...budgetCodes, newCode]);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error?.error || 'Failed to create budget code');
+      }
+
+      const { budgetCode } = (await response.json()) as { budgetCode: BudgetCode };
+
+      setBudgetCodes([...budgetCodes, budgetCode]);
       setShowCreateCodeModal(false);
       setNewCodeData({ costCodeId: '', costType: 'R' });
+      toast.success('Budget code created successfully');
     } catch (error) {
       console.error('Error creating budget code:', error);
+      toast.error(
+        `Failed to create budget code: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     } finally {
       setLoading(false);
     }
@@ -623,7 +638,7 @@ export function BudgetLineItemModal({
                                     : 'text-gray-700'
                                 }`}
                               >
-                                {costCode.division_title || costCode.id} - {costCode.description}
+                                {costCode.division_title || costCode.id} - {costCode.title}
                               </button>
                             ))}
                           </div>
@@ -661,7 +676,7 @@ export function BudgetLineItemModal({
                     {availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId)?.division_title ||
                      availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId)?.id}.
                     {newCodeData.costType} – {' '}
-                    {availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId)?.description} – {' '}
+                    {availableCostCodes.find((cc) => cc.id === newCodeData.costCodeId)?.title} – {' '}
                     {getCostTypeLabel(newCodeData.costType)}
                   </>
                 ) : (

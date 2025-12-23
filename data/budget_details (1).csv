@@ -1,0 +1,94 @@
+Sub Job,Cost Code Tier 1,Cost Code Tier 2,Cost Type,Budget Code,Budget Code Description,Original Budget Amount,Budget Modifications,Approved COs,Revised Budget,Job to Date Cost Detail,Direct Costs,Pending Budget Changes,Projected Budget,Committed Costs,Pending Cost Changes,Projected Costs,Forecast To Complete,Estimated Cost at Completion,Projected over Under
+None,None,None,None,"","",0.0,0.0,3500.0,3500.0,0.0,0.0,0.0,3500.0,0.0,0.0,0.0,3500.0,3500.0,0.0
+None,01 - Requirements,None,R - Contract Revenue,01.R,General Conditions,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-3120 - Vice President,L - Labor,01-3120.L,Vice President.Labor,0.0,-600.71,18053.8,17453.09,17453.09,17453.09,0.0,17453.09,0.0,0.0,17453.09,0.0,17453.09,0.0
+None,01 - Requirements,01-3128 - Project Manager,E - Equipment,01-3128.E,Project Manager.Equipment,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-3128 - Project Manager,L - Labor,01-3128.L,Project Manager,3893.0,4161.73,31150.0,39204.73,39204.73,39204.73,0.0,39204.73,0.0,0.0,39204.73,0.0,39204.73,0.0
+None,01 - Requirements,01-3129 - Assistant Project Manager (APM),E - Equipment,01-3129.E,PM Fuel,500.0,-1000.0,500.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-3129 - Assistant Project Manager (APM),L - Labor,01-3129.L,Assistant Project Manager (APM).Labor,0.0,0.0,0.0,0.0,582.92,582.92,0.0,0.0,0.0,0.0,582.92,0.0,582.92,-582.92
+None,01 - Requirements,01-3130 - Project Engineer,E - Equipment,01-3130.E,PM Truck,550.0,-1237.5,687.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-3130 - Project Engineer,L - Labor,01-3130.L,Project Engineer.Labor,0.0,20160.13,0.0,20160.13,20160.13,20160.13,0.0,20160.13,0.0,0.0,20160.13,0.0,20160.13,0.0
+None,01 - Requirements,01-3130 - Project Engineer,X - Expense,01-3130.X,Project Engineer.Expense,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-3144 - Superintendent,E - Equipment,01-3144.E,Superintendent.Equipment,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-3144 - Superintendent,L - Labor,01-3144.L,Superintendent,9086.0,-24902.77,51920.0,36103.23,37354.04,37354.04,0.0,36103.23,0.0,0.0,37354.04,0.0,37354.04,-1250.81
+None,01 - Requirements,01-3245 - Office Supplies,E - Equipment,01-3245.E,Office Supplies,150.0,-900.0,750.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-3245 - Office Supplies,X - Expense,01-3245.X,Office Supplies.Expense,0.0,1212.23,0.0,1212.23,1212.23,1212.23,0.0,1212.23,0.0,0.0,1212.23,0.0,1212.23,0.0
+None,01 - Requirements,01-3247 - Printing & Copying,X - Expense,01-3247.X,Printing & Copying.Expense,0.0,-808.3,1250.0,441.7,441.7,441.7,0.0,441.7,0.0,0.0,441.7,0.0,441.7,0.0
+None,01 - Requirements,01-4126 - Permit Requirements,X - Expense,01-4126.X,Permit Requirements.Expense,0.0,3788.58,7990.2,11778.78,11778.78,11778.78,0.0,11778.78,0.0,0.0,11778.78,0.0,11778.78,0.0
+None,01 - Requirements,01-5123 - Temporary HVAC,M - Material,01-5123.M,Temporary HVAC.Material,0.0,414.56,0.0,414.56,414.56,414.56,0.0,414.56,0.0,0.0,414.56,0.0,414.56,0.0
+None,01 - Requirements,01-5123 - Temporary HVAC,X - Expense,01-5123.X,Temporary HVAC.Expense,0.0,53.48,0.0,53.48,53.48,53.48,0.0,53.48,0.0,0.0,53.48,0.0,53.48,0.0
+None,01 - Requirements,01-5133 - Temporary Internet/Telecomm,X - Expense,01-5133.X,Temporary Internet/Telecomm.Expense,0.0,152.06,0.0,152.06,152.06,152.06,0.0,152.06,0.0,0.0,152.06,0.0,152.06,0.0
+None,01 - Requirements,01-5216 - First Aid / Safety Supplies,E - Equipment,01-5216.E,First Aid,75.0,-450.0,375.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-5216 - First Aid / Safety Supplies,X - Expense,01-5216.X,First Aid / Safety Supplies.Expense,0.0,105.87,0.0,105.87,105.87,105.87,0.0,105.87,0.0,0.0,105.87,0.0,105.87,0.0
+None,01 - Requirements,01-5217 - Safety Inspections,E - Equipment,01-5217.E,Safety Inspections,150.0,-900.0,750.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-5219 - Temporary Toilets,E - Equipment,01-5219.E,Temp Toilets,350.0,-1838.28,1750.0,261.72,261.72,261.72,0.0,261.72,0.0,0.0,261.72,0.0,261.72,0.0
+None,01 - Requirements,01-5219 - Temporary Toilets,X - Expense,01-5219.X,Temporary Toilets.Expense,0.0,690.57,0.0,690.57,690.57,690.57,0.0,690.57,0.0,0.0,690.57,0.0,690.57,0.0
+None,01 - Requirements,01-6113 - Software Licensing,X - Expense,01-6113.X,Software Licensing.Expense,0.0,660.63,0.0,660.63,660.63,660.63,0.0,660.63,0.0,0.0,660.63,0.0,660.63,0.0
+None,01 - Requirements,01-6500 - Travel & Entertainment,X - Expense,01-6500.X,Travel,0.0,12174.93,2500.0,14674.93,14674.93,14674.93,0.0,14674.93,0.0,0.0,14674.93,0.0,14674.93,0.0
+None,01 - Requirements,01-6501 - Lunches,X - Expense,01-6501.X,Lunches.Expense,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-6503 - Truck Fuel,X - Expense,01-6503.X,Truck Fuel.Expense,0.0,-1792.39,4000.0,2207.61,2207.61,2207.61,0.0,2207.61,0.0,0.0,2207.61,0.0,2207.61,0.0
+None,01 - Requirements,01-6505 - Marketing,X - Expense,01-6505.X,Marketing.Expense,0.0,230.0,0.0,230.0,230.0,230.0,0.0,230.0,0.0,0.0,230.0,0.0,230.0,0.0
+None,01 - Requirements,01-7333 - Misc Small Tools,E - Equipment,01-7333.E,Misc. Small Tools,1200.0,-2400.0,1200.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-7333 - Misc Small Tools,X - Expense,01-7333.X,Misc Small Tools.Expense,0.0,1550.14,0.0,1550.14,1550.14,1550.14,0.0,1550.14,0.0,0.0,1550.14,0.0,1550.14,0.0
+None,01 - Requirements,01-7336 - Equipment Rental,X - Expense,01-7336.X,Equipment Rental.Expense,0.0,-3750.0,3750.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-7413 - Progress Cleaning,L - Labor,01-7413.L,Progress Cleaning,650.0,-3900.0,3250.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-7419 - Dumpsters,E - Equipment,01-7419.E,Dumpsters,0.0,-6600.0,6600.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,01 - Requirements,01-7419 - Dumpsters,X - Expense,01-7419.X,Dumpsters.Expense,6000.0,12800.6,0.0,18800.6,18800.6,18800.6,0.0,18800.6,0.0,0.0,18800.6,0.0,18800.6,0.0
+None,01 - Requirements,01-7423 - Final Cleaning,S - Subcontract,01-7423.S,Final Cleaning,5000.0,-11084.5,9042.5,2958.0,2958.0,0.0,0.0,2958.0,2958.0,0.0,2958.0,0.0,2958.0,0.0
+None,02 - Division 02,None,R - Contract Revenue,02.R,Existing Conditions,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,02 - Division 02,02-4113 - Selective Interior Demolition,S - Subcontract,02-4113.S,Demolition,6000.0,-53395.0,68487.5,21092.5,21092.5,21092.5,0.0,21092.5,0.0,0.0,21092.5,0.0,21092.5,0.0
+None,02 - Division 02,02-4116 - Structure Demolition,S - Subcontract,02-4116.S,Structure Demolition.Subcontract,0.0,0.0,4500.0,4500.0,4500.0,0.0,0.0,4500.0,4500.0,0.0,4500.0,0.0,4500.0,0.0
+None,03 - Division 03,03-3000 - Cast-in-Place Concrete,M - Material,03-3000.M,Structural Foam Pool Infill,0.0,-4000.0,12218.28,8218.28,8218.29,8218.29,0.0,8218.28,8218.28,0.0,16436.57,-8218.29,8218.28,0.0
+None,03 - Division 03,03-3000 - Cast-in-Place Concrete,S - Subcontract,03-3000.S,Concrete Infill Pool & Sidewalk,0.0,-6000.0,17020.0,11020.0,11020.0,0.0,0.0,11020.0,11020.0,0.0,11020.0,0.0,11020.0,0.0
+None,04 - Division 04,04-2200 - Concrete Unit Masonry-Block,S - Subcontract,04-2200.S,Concrete Unit Masonry-Block.Subcontract,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,05 - Division 05,05-1100 - Miscellaneous Metals,S - Subcontract,05-1100.S,Miscellaneous Metals.Subcontract,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,06 - Division 06,None,R - Contract Revenue,06.R,Woods & Plastics,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,06 - Division 06,06-1000 - Rough Carpentry,S - Subcontract,06-1000.S,Woods & Plastics,1000.0,-2000.0,1000.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,06 - Division 06,06-1100 - Wood Framing,X - Expense,06-1100.X,Wood Framing.Expense,0.0,76.63,0.0,76.63,76.63,76.63,0.0,76.63,0.0,0.0,76.63,0.0,76.63,0.0
+None,07 - Division 07,None,R - Contract Revenue,07.R,Thermal & Moisture,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,07 - Division 07,07-1000 - Dampproofing and Waterproofing,S - Subcontract,07-1000.S,Thermal & Moisture Protection,1000.0,-3875.0,9875.0,7000.0,7000.0,0.0,0.0,7000.0,7000.0,0.0,7000.0,0.0,7000.0,0.0
+None,08 - Division 08,None,R - Contract Revenue,08.R,Openings,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,08 - Division 08,08-1113 - Hollow Metal Door and Frames,M - Material,08-1113.M,Doors & Frames,9870.0,-44516.29,37050.0,2403.71,2403.71,235.89,0.0,2403.71,2167.82,0.0,2403.71,0.0,2403.71,0.0
+None,08 - Division 08,08-1216 - Aluminum Frames,S - Subcontract,08-1216.S,Storefront Exit Door From Daycare,0.0,6411.29,1533.71,7945.0,6435.0,0.0,0.0,7945.0,6435.0,0.0,6435.0,1510.0,7945.0,0.0
+None,08 - Division 08,08-1429 - Prefinished Wood Doors,M - Material,08-1429.M,Phase 1 & 2 Doors Frames & Hardware,0.0,34106.83,3648.6,37755.43,35556.55,32629.62,0.0,37755.43,37755.43,0.0,70385.05,-32629.62,37755.43,0.0
+None,08 - Division 08,08-7900 - Hardware Accessories,X - Expense,08-7900.X,Hardware Accessories.Expense,0.0,86.25,0.0,86.25,86.25,86.25,0.0,86.25,0.0,0.0,86.25,0.0,86.25,0.0
+None,09 - Division 09,None,R - Contract Revenue,09.R,Finishes,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,09 - Division 09,09-2116 - Gypsum Board Assemblies,S - Subcontract,09-2116.S,Gypsum Board Assemblies,27360.0,73756.0,202178.0,303294.0,303294.0,0.0,0.0,303294.0,303294.0,0.0,303294.0,0.0,303294.0,0.0
+None,09 - Division 09,09-2116 - Gypsum Board Assemblies,X - Expense,09-2116.X,Gypsum Board Assemblies.Expense,0.0,44.32,0.0,44.32,44.32,44.32,0.0,44.32,0.0,0.0,44.32,0.0,44.32,0.0
+None,09 - Division 09,09-5100 - Acoustical Ceilings,S - Subcontract,09-5100.S,Acoustical Ceilings,10626.0,3526.0,0.0,14152.0,14152.0,0.0,0.0,14152.0,14152.0,0.0,14152.0,0.0,14152.0,0.0
+None,09 - Division 09,09-6013 - Floor Prep,M - Material,09-6013.M,Floor Prep.Material,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,09 - Division 09,09-6013 - Floor Prep,X - Expense,09-6013.X,Floor Prep.Expense,0.0,473.43,0.0,473.43,473.43,473.43,0.0,473.43,0.0,0.0,473.43,0.0,473.43,0.0
+None,09 - Division 09,09-6800 - Carpeting,S - Subcontract,09-6800.S,Carpet,13305.0,25140.0,52205.0,90650.0,90650.0,0.0,0.0,90650.0,90650.0,0.0,90650.0,0.0,90650.0,0.0
+None,09 - Division 09,09-9123 - Interior Painting,S - Subcontract,09-9123.S,Interior Painting,10122.0,526.0,32182.0,42830.0,42830.0,550.0,0.0,42830.0,42280.0,0.0,42830.0,0.0,42830.0,0.0
+None,09 - Division 09,09-9123 - Interior Painting,X - Expense,09-9123.X,Interior Painting.Expense,0.0,31.05,0.0,31.05,31.05,31.05,0.0,31.05,0.0,0.0,31.05,0.0,31.05,0.0
+None,10 - Division 10,None,R - Contract Revenue,10.R,Specialties,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,10 - Division 10,10-1400 - Signage,M - Material,10-1400.M,Signage.Material,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,10 - Division 10,10-1400 - Signage,X - Expense,10-1400.X,Signage.Expense,0.0,154.21,0.0,154.21,154.21,154.21,0.0,154.21,0.0,0.0,154.21,0.0,154.21,0.0
+None,10 - Division 10,10-2813 - Toilet Accessories,S - Subcontract,10-2813.S,Toilet Accessories,3750.0,-3945.06,16736.1,16541.04,16541.04,38.52,0.0,16541.04,16502.52,0.0,16541.04,0.0,16541.04,0.0
+None,10 - Division 10,10-2813 - Toilet Accessories,X - Expense,10-2813.X,Toilet Accessories.Expense,0.0,191.08,0.0,191.08,191.08,191.08,0.0,191.08,0.0,0.0,191.08,0.0,191.08,0.0
+None,11 - Division 11,11-4000 - Foodservice Equipment,M - Material,11-4000.M,Foodservice Equipment.Material,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,11 - Division 11,11-4000 - Foodservice Equipment,X - Expense,11-4000.X,Foodservice Equipment.Expense,0.0,834.58,0.0,834.58,834.58,834.58,0.0,834.58,0.0,0.0,834.58,0.0,834.58,0.0
+None,12 - Division 12,12-2000 - Window Treatments,S - Subcontract,12-2000.S,Window Treatments.Subcontract,0.0,-3495.55,6268.1,2772.55,2740.45,0.0,0.0,2772.55,2772.55,0.0,2772.55,0.0,2772.55,0.0
+None,12 - Division 12,12-3000 - Casework,S - Subcontract,12-3000.S,Casework.Subcontract,0.0,1585.0,38058.0,39643.0,39643.0,0.0,0.0,39643.0,39643.0,0.0,39643.0,0.0,39643.0,0.0
+None,21 - Division 21,None,R - Contract Revenue,21.R,Fire Suppression,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,21 - Division 21,21-1100 - Facility Fire-Suppresion Water,S - Subcontract,21-1100.S,Sprinkler,4000.0,-4400.0,30307.15,29907.15,29307.15,0.0,0.0,29907.15,29907.15,0.0,29907.15,0.0,29907.15,0.0
+None,21 - Division 21,21-1313 - Wet-Pipe Sprinkler System,X - Expense,21-1313.X,Wet-Pipe Sprinkler System.Expense,0.0,2977.49,0.0,2977.49,2977.49,2977.49,0.0,2977.49,0.0,0.0,2977.49,0.0,2977.49,0.0
+None,22 - Division 22,None,R - Contract Revenue,22.R,Plumbing,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,22 - Division 22,22-1000 - Plumbing Piping,S - Subcontract,22-1000.S,Plumbing,2500.0,-14683.0,171601.0,159418.0,159418.0,0.0,0.0,159418.0,159418.0,0.0,159418.0,0.0,159418.0,0.0
+None,22 - Division 22,22-1000 - Plumbing Piping,X - Expense,22-1000.X,Plumbing Piping.Expense,0.0,98.4,0.0,98.4,98.4,98.4,0.0,98.4,0.0,0.0,98.4,0.0,98.4,0.0
+None,23 - Division 23,None,R - Contract Revenue,23.R,HVAC,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,23 - Division 23,23-3000 - HVAC Air Distribution,S - Subcontract,23-3000.S,HVAC,7500.0,-10000.0,70286.0,67786.0,67786.0,0.0,0.0,67786.0,67786.0,0.0,67786.0,0.0,67786.0,0.0
+None,26 - Division 26,None,R - Contract Revenue,26.R,Electrical,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,26 - Division 26,26-1000 - Med-Volt Elect Distribution,S - Subcontract,26-1000.S,Electrical,10000.0,-15000.0,305674.53,300674.53,300674.53,0.0,0.0,300674.53,300674.53,0.0,300674.53,0.0,300674.53,0.0
+None,27 - Division 27,27-1000 - Access Control,S - Subcontract,27-1000.S,Card Readers Exterior Doors,0.0,13575.0,-3860.0,9715.0,9715.0,0.0,0.0,9715.0,9715.0,0.0,9715.0,0.0,9715.0,0.0
+None,28 - Division 28,None,R - Contract Revenue,28.R,Electronic Safety,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,28 - Division 28,28-4600 - Fire Detection and Alarm,S - Subcontract,28-4600.S,Fire Alarm,4000.0,-26500.0,22500.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,52 - Division 52,52-2000 - Architectural Services,S - Subcontract,52-2000.S,Architectural Services.Subcontract,0.0,-7764.75,40975.04,33210.29,33210.29,33210.29,0.0,33210.29,0.0,0.0,33210.29,0.0,33210.29,0.0
+None,52 - Division 52,52-2000 - Architectural Services,X - Expense,52-2000.X,Scott Design - Christian - Spencer Mechanical,0.0,350.0,0.0,350.0,350.0,350.0,0.0,350.0,0.0,0.0,350.0,0.0,350.0,0.0
+None,55 - Division 55,55-0050 - Insurance,E - Equipment,55-0050.E,Insurance,1770.0,-1770.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,55 - Division 55,55-0050 - Insurance,R - Contract Revenue,55-0050.R,Insurance.Contract Revenue,0.0,1770.0,15960.9,17730.9,0.0,0.0,0.0,17730.9,0.0,0.0,0.0,17730.9,17730.9,0.0
+None,55 - Division 55,55-0099 - Unallocated Costs,E - Equipment,55-0099.E,Sales Tax,2962.0,-2962.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,55 - Division 55,55-0099 - Unallocated Costs,R - Contract Revenue,55-0099.R,Unallocated Costs.Contract Revenue,0.0,43889.03,0.0,43889.03,0.0,0.0,0.0,43889.03,0.0,0.0,0.0,43889.03,43889.03,0.0
+None,55 - Division 55,55-0100 - Contingency,X - Expense,55-0100.X,Owner Contingency & Permit Costs Phase 1 & 2,0.0,-1287.0,1287.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,55 - Division 55,55-0500 - Contractor Fee,E - Equipment,55-0500.E,OH&P,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+None,55 - Division 55,55-0500 - Contractor Fee,R - Contract Revenue,55-0500.R,Contractor Fee.Contract Revenue,14337.0,0.0,130775.98,145112.98,0.0,0.0,0.0,145112.98,0.0,0.0,0.0,145112.98,145112.98,0.0

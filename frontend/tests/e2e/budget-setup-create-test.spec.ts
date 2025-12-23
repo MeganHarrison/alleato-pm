@@ -3,14 +3,14 @@ import { test, expect } from '@playwright/test';
 test.describe('Budget Setup - Create Line Item (Authenticated)', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to dev login first to authenticate
-    await page.goto('http://localhost:3005/dev-login?email=test@example.com&password=testpassword123');
+    await page.goto('http://localhost:3000/dev-login?email=test@example.com&password=testpassword123');
     // Wait for redirect to complete (goes to "/" by default)
-    await page.waitForURL('http://localhost:3005/', { timeout: 10000 });
+    await page.waitForURL('http://localhost:3000/', { timeout: 10000 });
   });
 
   test('should successfully create a budget line item', async ({ page }) => {
     // Navigate to budget setup page (now authenticated)
-    await page.goto('http://localhost:3005/67/budget/setup');
+    await page.goto('http://localhost:3000/67/budget/setup');
 
     // Wait for loading to complete
     await page.waitForSelector('text=Loading project cost codes...', { state: 'hidden', timeout: 15000 });
