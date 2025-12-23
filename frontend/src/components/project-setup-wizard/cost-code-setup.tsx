@@ -423,7 +423,7 @@ export function CostCodeSetup({ projectId, onNext, onSkip }: StepComponentProps)
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{code.id}</TableCell>
-                  <TableCell>{code.description}</TableCell>
+                  <TableCell>{code.title}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

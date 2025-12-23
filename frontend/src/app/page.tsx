@@ -292,6 +292,8 @@ export default function PortfolioPage() {
           categoryOptions={categoryOptions}
           clientOptions={clientOptions}
           onClearFilters={handleClearFilters}
+          onExport={handleExport}
+          onCreateProject={handleCreateProject}
         />
 
         {/* Projects count */}

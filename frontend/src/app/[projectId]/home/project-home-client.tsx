@@ -25,6 +25,8 @@ import { ProjectAccordions } from '@/app/[projectId]/home/project-accordions'
 import type { Database } from '@/types/database.types'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { SidebarProvider } from '@/components/ui/sidebar'
+import { ProjectSidebar } from './project-sidebar'
 
 type Project = Database['public']['Tables']['projects']['Row']
 type Insight = Database['public']['Tables']['ai_insights']['Row']
@@ -169,8 +171,22 @@ export function ProjectHomeClient({
   const changeOrdersTotal = changeOrders.filter(co => co.status === 'approved').length
   const activeTasks = tasks.length
 
+  // Calculate project setup steps completion
+  const projectSteps = [
+    { id: "prime-contract", label: "Prime Contract", completed: contracts.length > 0 },
+    { id: "cost-codes", label: "Cost Codes", completed: budget.length > 0 },
+    { id: "budget", label: "Budget", completed: budget.length > 0 },
+    { id: "schedule", label: "Schedule", completed: schedule.length > 0 },
+    { id: "project-team", label: "Project Team", completed: project.team_members && Array.isArray(project.team_members) && project.team_members.length > 0 },
+    { id: "sov", label: "SOV", completed: sov.length > 0 },
+    { id: "commitments", label: "Commitments", completed: commitments.length > 0 },
+  ]
+
   return (
-    <div className="min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-2 sm:py-6 max-w-[1800px] mx-auto">
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <div className="flex-1 overflow-auto">
+          <div className="min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-2 sm:py-6 max-w-[1800px] mx-auto">
       {/* Header Section - Refined Architectural Hierarchy */}
       <header className="mb-4 pb-4 sm:mb-8 sm:pb-8">
         {/* Client Pre-heading */}
@@ -673,9 +689,13 @@ export function ProjectHomeClient({
             Photos
           </h2>
         </div>
-        
+
       </div>
 
-    </div>
+          </div>
+        </div>
+        <ProjectSidebar projectSteps={projectSteps} />
+      </div>
+    </SidebarProvider>
   )
 }

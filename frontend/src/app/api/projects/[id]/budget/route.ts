@@ -25,7 +25,7 @@ export async function GET(
       .from('v_budget_lines')
       .select(`
         *,
-        cost_code:cost_codes(id, description, division_id),
+        cost_code:cost_codes(id, title, division_id),
         cost_type:cost_code_types(code, description),
         sub_job:sub_jobs(code, name)
       `)
@@ -42,15 +42,15 @@ export async function GET(
 
     // Transform to frontend format (no calculations, just formatting)
     const lineItems = (budgetItems || []).map((item: Record<string, unknown>) => {
-      const costCode = item.cost_code as { id?: string; description?: string; division_id?: string } | undefined;
+      const costCode = item.cost_code as { id?: string; title?: string; division_id?: string } | undefined;
       const costType = item.cost_type as { code?: string; description?: string } | undefined;
       const subJob = item.sub_job as { code?: string; name?: string } | undefined;
 
       return {
         id: item.id as string,
-        description: (item.description as string) || `${item.cost_code_id} - ${costCode?.description || ''} ${costType?.code ? `(${costType.code})` : ''}`,
+        description: (item.description as string) || `${item.cost_code_id} - ${costCode?.title || ''} ${costType?.code ? `(${costType.code})` : ''}`,
         costCode: item.cost_code_id as string,
-        costCodeDescription: costCode?.description || '',
+        costCodeDescription: costCode?.title || '',
         costType: costType?.code || '',
         division: costCode?.division_id || '',
         divisionTitle: '',
@@ -217,14 +217,20 @@ export async function POST(
 
       // Create or update budget_line
       // First try to find existing budget_line
-      const { data: existingBudgetLine } = await supabase
+      let query = supabase
         .from('budget_lines')
         .select('id, original_amount')
         .eq('project_id', projectId)
         .eq('cost_code_id', item.costCodeId)
-        .eq('cost_type_id', item.costTypeId || '')
-        .is('sub_job_id', null)
-        .maybeSingle();
+        .is('sub_job_id', null);
+
+      if (item.costTypeId) {
+        query = query.eq('cost_type_id', item.costTypeId);
+      } else {
+        query = query.is('cost_type_id', null);
+      }
+
+      const { data: existingBudgetLine } = await query.maybeSingle();
 
       let budgetLine: { id: string };
       if (existingBudgetLine) {
@@ -254,7 +260,7 @@ export async function POST(
           .insert({
             project_id: projectId,
             cost_code_id: item.costCodeId,
-            cost_type_id: item.costTypeId || '',
+            cost_type_id: item.costTypeId ?? null,
             sub_job_id: null,
             description: item.description || null,
             original_amount: item.amount || 0,

@@ -10,6 +10,8 @@ import {
   Map as MapIcon,
   X,
   SlidersHorizontal,
+  FileText,
+  Plus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,6 +51,9 @@ interface PortfolioFiltersProps {
   clientFilter?: string | null;
   onClientFilterChange?: (value: string | null) => void;
   clientOptions?: string[];
+  // Action buttons for mobile
+  onExport?: (format: 'pdf' | 'csv') => void;
+  onCreateProject?: () => void;
   // Legacy props for backwards compatibility
   statusFilter?: any;
   onStatusFilterChange?: (value: any) => void;
@@ -78,6 +83,8 @@ export function PortfolioFilters({
   phaseOptions,
   categoryOptions,
   clientOptions,
+  onExport,
+  onCreateProject,
   hideViewToggle = false,
 }: PortfolioFiltersProps) {
   const [filterSheetOpen, setFilterSheetOpen] = React.useState(false);
@@ -93,26 +100,25 @@ export function PortfolioFilters({
     [phaseFilter, categoryFilter, clientFilter].filter((value) => value && value.length > 0).length;
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 gap-3">
+    <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 gap-2">
       {/* Mobile: Compact layout with filter sheet */}
       <div className="flex lg:hidden items-center gap-2 flex-1">
         {/* Search */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-9 h-9"
+            className="pl-8 h-9 text-sm"
           />
         </div>
 
         {/* Filter Sheet Trigger */}
         <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="relative h-9 shrink-0">
-              <SlidersHorizontal className="w-4 h-4 mr-2" />
-              Filters
+            <Button variant="outline" size="sm" className="relative h-9 shrink-0 px-2">
+              <SlidersHorizontal className="w-4 h-4" />
               {activeFiltersCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">
                   {activeFiltersCount}
@@ -274,6 +280,32 @@ export function PortfolioFilters({
             </div>
           </SheetContent>
         </Sheet>
+
+        {/* Export dropdown - Mobile */}
+        {onExport && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="bg-brand text-white hover:bg-brand/90 h-9 px-2 shrink-0">
+                <FileText className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onExport('pdf')}>
+                Export to PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onExport('csv')}>
+                Export to CSV
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* Create Project - Mobile */}
+        {onCreateProject && (
+          <Button onClick={onCreateProject} className="bg-brand text-white hover:bg-brand/90 h-9 px-2 shrink-0">
+            <Plus className="w-4 h-4" />
+          </Button>
+        )}
       </div>
 
       {/* Desktop: Full layout */}

@@ -5,9 +5,13 @@ import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, Search, X } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 interface CostCode {
   id: string;
@@ -68,7 +72,7 @@ export function CostCodesTab({ projectId }: CostCodesTabProps) {
 
   // Group cost codes by division
   const groupedCostCodes = costCodes.reduce((acc, code) => {
-    const divisionKey = `${code.division_id} - ${code.division_title || 'No Division'}`;
+    const divisionKey = code.division_title || 'No Division';
     if (!acc[divisionKey]) {
       acc[divisionKey] = [];
     }
@@ -76,18 +80,20 @@ export function CostCodesTab({ projectId }: CostCodesTabProps) {
     return acc;
   }, {} as Record<string, CostCode[]>);
 
-  // Filter by search query
-  const filteredDivisions = Object.entries(groupedCostCodes).filter(([division, codes]) => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      division.toLowerCase().includes(query) ||
-      codes.some(code =>
-        code.id.toLowerCase().includes(query) ||
-        code.title?.toLowerCase().includes(query)
-      )
-    );
-  });
+  // Filter by search query and sort alphabetically
+  const filteredDivisions = Object.entries(groupedCostCodes)
+    .filter(([division, codes]) => {
+      if (!searchQuery) return true;
+      const query = searchQuery.toLowerCase();
+      return (
+        division.toLowerCase().includes(query) ||
+        codes.some(code =>
+          code.id.toLowerCase().includes(query) ||
+          code.title?.toLowerCase().includes(query)
+        )
+      );
+    })
+    .sort(([divisionA], [divisionB]) => divisionA.localeCompare(divisionB));
 
   const toggleDivision = (division: string) => {
     setExpandedDivisions(prev => {
@@ -125,6 +131,14 @@ export function CostCodesTab({ projectId }: CostCodesTabProps) {
       });
       return next;
     });
+  };
+
+  const selectAll = (select: boolean) => {
+    if (select) {
+      setSelectedCostCodes(new Set(costCodes.map(code => code.id)));
+    } else {
+      setSelectedCostCodes(new Set());
+    }
   };
 
   const handleSave = async () => {
@@ -193,6 +207,8 @@ export function CostCodesTab({ projectId }: CostCodesTabProps) {
     );
   }
 
+  const allCodesSelected = costCodes.length > 0 && selectedCostCodes.size === costCodes.length;
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -203,20 +219,48 @@ export function CostCodesTab({ projectId }: CostCodesTabProps) {
             Select which cost codes are active for this project ({selectedCostCodes.size} selected)
           </p>
         </div>
-        <Button onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </div>
-
-      {/* Search */}
-      <div className="max-w-md">
-        <Label htmlFor="search">Search Cost Codes</Label>
-        <Input
-          id="search"
-          placeholder="Search by code or title..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+        <div className="flex gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Search className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="end">
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Search Cost Codes</h4>
+                <div className="relative">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by code or title..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-8 pr-8"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground"
+                      type="button"
+                      aria-label="Clear search"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <Button
+            variant="outline"
+            onClick={() => selectAll(!allCodesSelected)}
+          >
+            {allCodesSelected ? 'Deselect All' : 'Select All'}
+          </Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </div>
       </div>
 
       {/* Cost Codes List */}
@@ -231,8 +275,8 @@ export function CostCodesTab({ projectId }: CostCodesTabProps) {
             const allSelected = codes.every(code => selectedCostCodes.has(code.id));
 
             return (
-              <div key={division} className="border rounded-lg bg-white">
-                <div className="flex items-center justify-between p-3 hover:bg-gray-50">
+              <div key={division} className="bg-white">
+                <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
                   <button
                     className="flex items-center gap-2 cursor-pointer flex-1 text-left"
                     onClick={() => toggleDivision(division)}
@@ -243,8 +287,8 @@ export function CostCodesTab({ projectId }: CostCodesTabProps) {
                     ) : (
                       <ChevronRight className="h-4 w-4" />
                     )}
-                    <span className="font-medium">{division}</span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm font-medium">{division}</span>
+                    <span className="text-xs text-gray-500">
                       ({codes.filter(c => selectedCostCodes.has(c.id)).length}/{codes.length} selected)
                     </span>
                   </button>
@@ -258,7 +302,7 @@ export function CostCodesTab({ projectId }: CostCodesTabProps) {
                 </div>
 
                 {isExpanded && (
-                  <div className="border-t p-3 space-y-2">
+                  <div className="p-3 space-y-2">
                     {codes.map(code => {
                       const isSelected = selectedCostCodes.has(code.id);
 
@@ -271,10 +315,10 @@ export function CostCodesTab({ projectId }: CostCodesTabProps) {
                             checked={isSelected}
                             onCheckedChange={() => toggleCostCode(code.id)}
                           />
-                          <div className="flex-1">
-                            <div className="font-medium text-sm">{code.id}</div>
+                          <div className="flex-1 text-sm">
+                            <span>{code.id}</span>
                             {code.title && (
-                              <div className="text-xs text-gray-600">{code.title}</div>
+                              <span> - {code.title}</span>
                             )}
                           </div>
                         </label>

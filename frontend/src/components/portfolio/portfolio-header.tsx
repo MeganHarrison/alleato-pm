@@ -54,8 +54,8 @@ export function PortfolioHeader({
         </div>
       </div>
 
-      {/* View tabs */}
-      <div className="px-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-0 sm:pb-0">
+      {/* View tabs - Hidden on mobile */}
+      <div className="px-4 sm:px-6 hidden sm:flex sm:items-center sm:justify-between gap-3 pb-0">
         <nav className="flex items-center gap-0 sm:gap-1 -mb-px overflow-x-auto">
           {views.map((view) => (
             <button
@@ -84,8 +84,7 @@ export function PortfolioHeader({
                       : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
                   )}
                 >
-                  <span className="hidden sm:inline">Financial Views</span>
-                  <span className="sm:hidden">Financial</span>
+                  <span>Financial Views</span>
                   <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
               </DropdownMenuTrigger>
@@ -104,15 +103,15 @@ export function PortfolioHeader({
           )}
         </nav>
 
-        {/* Export and Create Project buttons */}
-        <div className="flex items-center gap-2 flex-shrink-0 -mt-2 sm:mt-0">
+        {/* Export and Create Project buttons - Desktop */}
+        <div className="flex items-center gap-2 flex-shrink-0">
           {/* Export dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-4">
-                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline ml-1">Export</span>
-                <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
+              <Button className="bg-brand text-white hover:bg-brand/90 h-9 text-sm px-4">
+                <FileText className="w-4 h-4 mr-2" />
+                Export
+                <ChevronDown className="w-4 h-4 ml-2" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -130,21 +129,21 @@ export function PortfolioHeader({
             <Button
               onClick={onCreateTestProject}
               variant="outline"
-              className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-4 border-green-500 text-green-600 hover:bg-green-50"
+              className="h-9 text-sm px-4 border-green-500 text-green-600 hover:bg-green-50"
               title="Create fully populated test project"
             >
-              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline ml-1">Create Test Project</span>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Test Project
             </Button>
           )}
 
           {/* Create Project button */}
           <Button
             onClick={onCreateProject}
-            className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange-hover))] text-white h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-4"
+            className="bg-brand text-white hover:bg-brand/90 h-9 text-sm px-4"
           >
-            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline ml-1">Create Project</span>
+            <Plus className="w-4 h-4 mr-2" />
+            Create Project
           </Button>
         </div>
       </div>

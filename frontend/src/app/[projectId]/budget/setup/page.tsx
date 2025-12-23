@@ -2,38 +2,50 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Check, ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
-interface CostCode {
+interface ProjectCostCode {
   id: string;
-  description: string;
-  division_id: string;
-  division_title: string | null;
+  cost_code_id: string;
+  cost_type_id: string | null;
+  is_active: boolean | null;
+  cost_codes: {
+    id: string;
+    title: string | null;
+    division_title: string | null;
+  } | null;
+  cost_code_types: {
+    id: string;
+    code: string;
+    description: string;
+  } | null;
 }
 
-interface CostType {
+interface BudgetLineItem {
   id: string;
-  code: string;
-  description: string;
-}
-
-interface SelectedBudgetLine {
-  costCodeId: string;
-  costTypeId: string;
-  amount: number;
+  projectCostCodeId: string;
+  costCodeLabel: string;
+  qty: string;
+  uom: string;
+  unitCost: string;
+  amount: string;
 }
 
 export default function BudgetSetupPage() {
@@ -42,153 +54,181 @@ export default function BudgetSetupPage() {
   const projectId = params.projectId as string;
 
   const [loading, setLoading] = useState(false);
-  const [costCodes, setCostCodes] = useState<CostCode[]>([]);
-  const [costTypes, setCostTypes] = useState<CostType[]>([]);
   const [loadingData, setLoadingData] = useState(true);
-
-  // Group cost codes by division
-  const [expandedDivisions, setExpandedDivisions] = useState<Set<string>>(new Set());
-  const [selectedLines, setSelectedLines] = useState<Map<string, SelectedBudgetLine>>(new Map());
+  const [projectCostCodes, setProjectCostCodes] = useState<ProjectCostCode[]>([]);
+  const [lineItems, setLineItems] = useState<BudgetLineItem[]>([
+    {
+      id: crypto.randomUUID(),
+      projectCostCodeId: '',
+      costCodeLabel: '',
+      qty: '',
+      uom: '',
+      unitCost: '',
+      amount: '',
+    },
+  ]);
+  const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCostType, setSelectedCostType] = useState<string>('all');
-  const [defaultAmount, setDefaultAmount] = useState<string>('0');
 
-  // Load cost codes and cost types
+  // Load active project cost codes
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoadingData(true);
         const supabase = createClient();
 
-        const [codesRes, typesRes] = await Promise.all([
-          supabase
-            .from('cost_codes')
-            .select('id, description, division_id, division_title')
-            .order('division_id', { ascending: true })
-            .order('id', { ascending: true }),
-          supabase
-            .from('cost_code_types')
-            .select('id, code, description')
-            .order('code', { ascending: true }),
-        ]);
+        const { data, error } = await supabase
+          .from('project_cost_codes')
+          .select(`
+            id,
+            cost_code_id,
+            cost_type_id,
+            is_active,
+            cost_codes!inner (
+              id,
+              title,
+              division_title
+            ),
+            cost_code_types (
+              id,
+              code,
+              description
+            )
+          `)
+          .eq('project_id', parseInt(projectId, 10))
+          .eq('is_active', true)
+          .order('cost_code_id', { ascending: true });
 
-        if (codesRes.error) throw codesRes.error;
-        if (typesRes.error) throw typesRes.error;
+        if (error) throw error;
 
-        setCostCodes(codesRes.data || []);
-        setCostTypes(typesRes.data || []);
+        console.warn('Loaded project cost codes:', data);
+        setProjectCostCodes((data as unknown as ProjectCostCode[]) || []);
       } catch (error) {
-        console.error('Error loading data:', error);
-        toast.error('Failed to load cost codes and types');
+        console.error('Error loading project cost codes:', error);
+        toast.error('Failed to load project cost codes');
       } finally {
         setLoadingData(false);
       }
     };
 
     loadData();
-  }, []);
+  }, [projectId]);
 
-  // Group cost codes by division
-  const groupedCostCodes = costCodes.reduce((acc, code) => {
-    const divisionKey = `${code.division_id} - ${code.division_title || 'No Division'}`;
-    if (!acc[divisionKey]) {
-      acc[divisionKey] = [];
+  const handleAddRow = () => {
+    setLineItems([
+      ...lineItems,
+      {
+        id: crypto.randomUUID(),
+        projectCostCodeId: '',
+        costCodeLabel: '',
+        qty: '',
+        uom: '',
+        unitCost: '',
+        amount: '',
+      },
+    ]);
+  };
+
+  const handleRemoveRow = (id: string) => {
+    if (lineItems.length === 1) {
+      toast.error('At least one line item is required');
+      return;
     }
-    acc[divisionKey].push(code);
-    return acc;
-  }, {} as Record<string, CostCode[]>);
+    setLineItems(lineItems.filter(item => item.id !== id));
+  };
 
-  // Filter cost codes by search query
-  const filteredDivisions = Object.entries(groupedCostCodes).filter(([division, codes]) => {
+  const handleBudgetCodeSelect = (rowId: string, costCode: ProjectCostCode) => {
+    console.warn('Selected cost code:', costCode);
+    const costCodeTitle = costCode.cost_codes?.title || '';
+    console.warn('Cost code title:', costCodeTitle);
+    const label = `${costCode.cost_code_id} – ${costCodeTitle}`;
+    console.warn('Generated label:', label);
+
+    setLineItems(
+      lineItems.map(item =>
+        item.id === rowId
+          ? {
+              ...item,
+              projectCostCodeId: costCode.id,
+              costCodeLabel: label,
+            }
+          : item
+      )
+    );
+    setOpenPopoverId(null);
+  };
+
+  const handleFieldChange = (id: string, field: keyof BudgetLineItem, value: string) => {
+    setLineItems(
+      lineItems.map(item => {
+        if (item.id !== id) return item;
+
+        const updated = { ...item, [field]: value };
+
+        // Auto-calculate amount when qty or unitCost changes
+        if (field === 'qty' || field === 'unitCost') {
+          const qty = parseFloat(field === 'qty' ? value : item.qty) || 0;
+          const unitCost = parseFloat(field === 'unitCost' ? value : item.unitCost) || 0;
+          updated.amount = (qty * unitCost).toFixed(2);
+        }
+
+        return updated;
+      })
+    );
+  };
+
+  const filteredCostCodes = projectCostCodes.filter(code => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
+    const costCodeTitle = code.cost_codes?.title || '';
+    const costTypeCode = code.cost_code_types?.code || '';
+    const costTypeDesc = code.cost_code_types?.description || '';
     return (
-      division.toLowerCase().includes(query) ||
-      codes.some(code =>
-        code.id.toLowerCase().includes(query) ||
-        code.description?.toLowerCase().includes(query)
-      )
+      code.cost_code_id.toLowerCase().includes(query) ||
+      costCodeTitle.toLowerCase().includes(query) ||
+      costTypeCode.toLowerCase().includes(query) ||
+      costTypeDesc.toLowerCase().includes(query)
     );
   });
 
-  const toggleDivision = (division: string) => {
-    setExpandedDivisions(prev => {
-      const next = new Set(prev);
-      if (next.has(division)) {
-        next.delete(division);
-      } else {
-        next.add(division);
-      }
-      return next;
-    });
-  };
-
-  const toggleCostCodeSelection = (costCodeId: string, costTypeId: string) => {
-    const key = `${costCodeId}-${costTypeId}`;
-    setSelectedLines(prev => {
-      const next = new Map(prev);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.set(key, {
-          costCodeId,
-          costTypeId,
-          amount: parseFloat(defaultAmount) || 0,
-        });
-      }
-      return next;
-    });
-  };
-
-  const selectAllInDivision = (codes: CostCode[], costTypeId: string) => {
-    setSelectedLines(prev => {
-      const next = new Map(prev);
-      codes.forEach(code => {
-        const key = `${code.id}-${costTypeId}`;
-        if (!next.has(key)) {
-          next.set(key, {
-            costCodeId: code.id,
-            costTypeId,
-            amount: parseFloat(defaultAmount) || 0,
-          });
-        }
-      });
-      return next;
-    });
-  };
-
   const handleSubmit = async () => {
-    if (selectedLines.size === 0) {
-      toast.error('Please select at least one cost code');
+    // Validate that all rows have a budget code selected
+    const invalidRows = lineItems.filter(item => !item.projectCostCodeId);
+    if (invalidRows.length > 0) {
+      toast.error('Please select a budget code for all line items');
       return;
     }
 
     try {
       setLoading(true);
 
-      const lineItems = Array.from(selectedLines.values()).map(line => ({
-        costCodeId: line.costCodeId,
-        costType: line.costTypeId,
-        amount: line.amount.toString(),
-        description: null,
-        qty: null,
-        uom: null,
-        unitCost: null,
-      }));
+      const formattedLineItems = lineItems.map(item => {
+        const costCode = projectCostCodes.find(cc => cc.id === item.projectCostCodeId);
+        return {
+          costCodeId: costCode?.cost_code_id || '',
+          costType: costCode?.cost_type_id ?? null,
+          amount: item.amount || '0',
+          description: null,
+          qty: item.qty ? item.qty : null,
+          uom: item.uom ? item.uom : null,
+          unitCost: item.unitCost ? item.unitCost : null,
+        };
+      });
 
       const response = await fetch(`/api/projects/${projectId}/budget`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lineItems }),
+        body: JSON.stringify({ lineItems: formattedLineItems }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
+        console.error('API Error Response:', result);
         throw new Error(result.error || 'Failed to create budget lines');
       }
 
-      toast.success(`Successfully created ${selectedLines.size} budget line(s)`);
+      toast.success(`Successfully created ${lineItems.length} budget line(s)`);
       router.push(`/${projectId}/budget`);
     } catch (error) {
       console.error('Error creating budget lines:', error);
@@ -198,13 +238,15 @@ export default function BudgetSetupPage() {
     }
   };
 
+  const totalAmount = lineItems.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="border-b bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div>
               <Button
                 variant="ghost"
                 size="sm"
@@ -213,184 +255,184 @@ export default function BudgetSetupPage() {
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Budget
               </Button>
-              <div>
-                <h1 className="text-2xl font-semibold text-gray-900">Budget Setup</h1>
+
+              {/* Heading */}
+              <div className="mt-2">
+                <h1 className="text-2xl font-semibold mb-2">Add Budget Line Items</h1>
                 <p className="text-sm text-gray-600">
-                  Select cost codes and types to add to your budget
+                  Add new line items to your project budget
                 </p>
               </div>
             </div>
-            <Button onClick={handleSubmit} disabled={loading || selectedLines.size === 0}>
-              {loading ? 'Creating...' : `Create ${selectedLines.size} Budget Line${selectedLines.size !== 1 ? 's' : ''}`}
-            </Button>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={handleAddRow}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Row
+              </Button>
+              <Button onClick={handleSubmit} disabled={loading || lineItems.length === 0}>
+                {loading ? 'Creating...' : `Create ${lineItems.length} Line Item${lineItems.length !== 1 ? 's' : ''}`}
+              </Button>
+            </div>
+
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Left Panel - Selection Controls */}
-          <div className="space-y-6">
-            <div className="rounded-lg border bg-white p-6 shadow-sm">
-              <h2 className="mb-4 text-lg font-semibold">Filters</h2>
-
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="search">Search Cost Codes</Label>
-                  <Input
-                    id="search"
-                    placeholder="Search by code or description..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="costType">Cost Type</Label>
-                  <Select value={selectedCostType} onValueChange={setSelectedCostType}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Types</SelectItem>
-                      {costTypes.map(type => (
-                        <SelectItem key={type.id} value={type.id}>
-                          {type.code} - {type.description}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="defaultAmount">Default Amount</Label>
-                  <Input
-                    id="defaultAmount"
-                    type="number"
-                    placeholder="0.00"
-                    value={defaultAmount}
-                    onChange={(e) => setDefaultAmount(e.target.value)}
-                  />
-                  <p className="mt-1 text-xs text-gray-500">
-                    Amount applied to newly selected items
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-lg border bg-white p-6 shadow-sm">
-              <h2 className="mb-4 text-lg font-semibold">Summary</h2>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Selected Lines:</span>
-                  <span className="font-medium">{selectedLines.size}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Total Budget:</span>
-                  <span className="font-medium">
-                    ${Array.from(selectedLines.values())
-                      .reduce((sum, line) => sum + line.amount, 0)
-                      .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
-                </div>
-              </div>
+      <div className="mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div className="rounded-lg border bg-white shadow-sm">
+          {/* Summary Bar */}
+          <div className="border-b bg-gray-50 px-6 py-3">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium text-gray-700">
+                {lineItems.length} Line Item{lineItems.length !== 1 ? 's' : ''}
+              </span>
+              <span className="font-semibold text-gray-900">
+                Total: ${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
             </div>
           </div>
 
-          {/* Right Panel - Cost Code Selection */}
-          <div className="lg:col-span-2">
-            <div className="rounded-lg border bg-white shadow-sm">
-              <div className="border-b p-4">
-                <h2 className="text-lg font-semibold">Cost Codes by Division</h2>
-              </div>
-
-              <div className="max-h-[calc(100vh-300px)] overflow-y-auto p-4">
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="border-b bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Budget Code
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Qty
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    UOM
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Unit Cost
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Amount
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
                 {loadingData ? (
-                  <div className="py-8 text-center text-gray-500">Loading cost codes...</div>
-                ) : filteredDivisions.length === 0 ? (
-                  <div className="py-8 text-center text-gray-500">
-                    No cost codes found matching your search
-                  </div>
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                      Loading project cost codes...
+                    </td>
+                  </tr>
+                ) : lineItems.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                      No line items. Click "Add Row" to get started.
+                    </td>
+                  </tr>
                 ) : (
-                  <div className="space-y-2">
-                    {filteredDivisions.map(([division, codes]) => {
-                      const isExpanded = expandedDivisions.has(division);
-                      const displayedCostTypes = selectedCostType === 'all'
-                        ? costTypes
-                        : costTypes.filter(t => t.id === selectedCostType);
+                  lineItems.map((row) => (
+                    <tr key={row.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3">
+                        <Popover
+                          open={openPopoverId === row.id}
+                          onOpenChange={(open) => setOpenPopoverId(open ? row.id : null)}
+                        >
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full justify-start text-left font-normal"
+                            >
+                              <span className={row.costCodeLabel ? 'text-gray-900' : 'text-gray-500'}>
+                                {row.costCodeLabel || 'Select budget code...'}
+                              </span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[500px] p-0" align="start">
+                            <Command>
+                              <CommandInput
+                                placeholder="Search budget codes..."
+                                value={searchQuery}
+                                onValueChange={setSearchQuery}
+                                className="border-0"
+                              />
+                              <CommandList>
+                                <CommandEmpty>No budget codes found.</CommandEmpty>
+                                <CommandGroup>
+                                  {filteredCostCodes.map((code) => {
+                                    const costCodeTitle = code.cost_codes?.title || '';
+                                    const displayLabel = `${code.cost_code_id} – ${costCodeTitle}`;
 
-                      return (
-                        <div key={division} className="border rounded-lg">
-                          <div
-                            className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50"
-                            onClick={() => toggleDivision(division)}
-                          >
-                            <div className="flex items-center gap-2">
-                              {isExpanded ? (
-                                <ChevronDown className="h-4 w-4" />
-                              ) : (
-                                <ChevronRight className="h-4 w-4" />
-                              )}
-                              <span className="font-medium">{division}</span>
-                              <span className="text-sm text-gray-500">({codes.length} codes)</span>
-                            </div>
-                            {displayedCostTypes.length > 0 && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  selectAllInDivision(codes, displayedCostTypes[0].id);
-                                }}
-                              >
-                                Select All
-                              </Button>
-                            )}
-                          </div>
-
-                          {isExpanded && (
-                            <div className="border-t p-3 space-y-2">
-                              {codes.map(code => (
-                                <div key={code.id} className="space-y-1">
-                                  <div className="text-sm font-medium text-gray-700">
-                                    {code.id} - {code.description}
-                                  </div>
-                                  <div className="ml-4 flex flex-wrap gap-2">
-                                    {displayedCostTypes.map(type => {
-                                      const key = `${code.id}-${type.id}`;
-                                      const isSelected = selectedLines.has(key);
-
-                                      return (
-                                        <label
-                                          key={type.id}
-                                          className={`flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm cursor-pointer transition-colors ${
-                                            isSelected
-                                              ? 'border-brand bg-brand/5 text-brand'
-                                              : 'border-gray-200 hover:border-gray-300'
-                                          }`}
-                                        >
-                                          <Checkbox
-                                            checked={isSelected}
-                                            onCheckedChange={() => toggleCostCodeSelection(code.id, type.id)}
-                                          />
-                                          <span className="font-medium">{type.code}</span>
-                                          <span className="text-gray-600">- {type.description}</span>
-                                        </label>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                                    return (
+                                      <CommandItem
+                                        key={code.id}
+                                        value={displayLabel}
+                                        onSelect={() => handleBudgetCodeSelect(row.id, code)}
+                                      >
+                                        {displayLabel}
+                                      </CommandItem>
+                                    );
+                                  })}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          value={row.qty}
+                          onChange={(e) => handleFieldChange(row.id, 'qty', e.target.value)}
+                          className="w-24"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Input
+                          placeholder="EA"
+                          value={row.uom}
+                          onChange={(e) => handleFieldChange(row.id, 'uom', e.target.value)}
+                          className="w-20"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Input
+                          type="number"
+                          placeholder="0.00"
+                          value={row.unitCost}
+                          onChange={(e) => handleFieldChange(row.id, 'unitCost', e.target.value)}
+                          className="w-32"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Input
+                          type="number"
+                          placeholder="0.00"
+                          value={row.amount}
+                          onChange={(e) => handleFieldChange(row.id, 'amount', e.target.value)}
+                          className="w-32"
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveRow(row.id)}
+                          disabled={lineItems.length === 1}
+                        >
+                          <Trash2 className="h-4 w-4 text-gray-500 hover:text-red-600" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
                 )}
-              </div>
-            </div>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

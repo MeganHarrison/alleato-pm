@@ -38,8 +38,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { getDivisionMetadataFromCostCodeId } from '@/lib/cost-code-divisions';
-
 interface BudgetCode {
   id: string;
   code: string;
@@ -60,10 +58,11 @@ interface BudgetLineItemRow {
 
 type CostCodeOption = {
   id: string;
-  description: string | null;
+  title: string | null;
   status: string | null;
-  divisionCode: string;
-  divisionTitle: string;
+  division_id: string;
+  division_code: string;
+  division_title: string;
 };
 
 export default function NewBudgetLineItemPage() {
@@ -116,7 +115,16 @@ export default function NewBudgetLineItemPage() {
 
         const { data, error } = await supabase
           .from('cost_codes')
-          .select('id, description, status')
+          .select(`
+            id,
+            title,
+            status,
+            division_id,
+            cost_code_divisions!inner (
+              code,
+              title
+            )
+          `)
           .eq('status', 'True')
           .order('id', { ascending: true });
 
@@ -125,13 +133,19 @@ export default function NewBudgetLineItemPage() {
           return;
         }
 
-        const codesWithDivisions =
+        const codesWithDivisions: CostCodeOption[] =
           data?.map((code) => {
-            const { divisionCode, divisionTitle } = getDivisionMetadataFromCostCodeId(code.id);
+            const division = Array.isArray(code.cost_code_divisions)
+              ? code.cost_code_divisions[0]
+              : code.cost_code_divisions;
+
             return {
-              ...code,
-              divisionCode,
-              divisionTitle,
+              id: code.id,
+              title: code.title,
+              status: code.status,
+              division_id: code.division_id,
+              division_code: division?.code || '',
+              division_title: division?.title || '',
             };
           }) ?? [];
 
@@ -139,7 +153,7 @@ export default function NewBudgetLineItemPage() {
 
         // Group cost codes by division_title
         const grouped = codesWithDivisions.reduce((acc, code) => {
-          const divisionKey = code.divisionTitle || 'Other';
+          const divisionKey = code.division_title || 'Other';
           if (!acc[divisionKey]) {
             acc[divisionKey] = [];
           }
@@ -241,7 +255,7 @@ export default function NewBudgetLineItemPage() {
         body: JSON.stringify({
           cost_code_id: newCodeData.costCodeId,
           cost_type_id: costTypeMap[newCodeData.costType] || null,
-          description: selectedCostCode.description,
+          description: selectedCostCode.title,
         }),
       });
 
@@ -682,7 +696,7 @@ export default function NewBudgetLineItemPage() {
                                   : 'text-gray-700'
                               }`}
                             >
-                              {costCode.id} – {costCode.description}
+                              {costCode.id} – {costCode.title}
                             </button>
                           ))}
                         </div>
@@ -720,7 +734,7 @@ export default function NewBudgetLineItemPage() {
               <p className="text-sm text-gray-600 mt-1">
                 {newCodeData.costCodeId && previewCostCode ? (
                   <>
-                    {previewCostCode.id}.{newCodeData.costType} – {previewCostCode.description} –{' '}
+                    {previewCostCode.id}.{newCodeData.costType} – {previewCostCode.title} –{' '}
                     {getCostTypeLabel(newCodeData.costType)}
                   </>
                 ) : (

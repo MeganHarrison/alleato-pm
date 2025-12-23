@@ -102,7 +102,7 @@ export function ProjectAccordions({
           viewport={{ once: true }}
           transition={{ delay: 0 * 0.1 }}
         >
-        <AccordionItem value="meetings" className="border px-2 bg-white">
+        <AccordionItem value="meetings" className="px-2 bg-white">
           <AccordionTrigger className="hover:no-underline">
             <div className="flex items-center justify-between w-full mr-4">
               <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ export function ProjectAccordions({
           viewport={{ once: true }}
           transition={{ delay: 1 * 0.1 }}
         >
-        <AccordionItem value="budget" className="border px-2 bg-white">
+        <AccordionItem value="budget" className="px-2 bg-white">
           <AccordionTrigger className="hover:no-underline">
             <div className="flex items-center justify-between w-full mr-4">
               <div className="flex items-center gap-2">
@@ -218,7 +218,7 @@ export function ProjectAccordions({
           viewport={{ once: true }}
           transition={{ delay: 2 * 0.1 }}
         >
-        <AccordionItem value="prime-contracts" className="border px-2 bg-white">
+        <AccordionItem value="prime-contracts" className="px-2 bg-white">
           <AccordionTrigger className="hover:no-underline">
             <div className="flex items-center justify-between w-full mr-4">
               <div className="flex items-center gap-2">
@@ -275,7 +275,7 @@ export function ProjectAccordions({
           viewport={{ once: true }}
           transition={{ delay: 3 * 0.1 }}
         >
-        <AccordionItem value="change-orders" className="border px-2 bg-white">
+        <AccordionItem value="change-orders" className="px-2 bg-white">
           <AccordionTrigger className="hover:no-underline">
             <div className="flex items-center justify-between w-full mr-4">
               <div className="flex items-center gap-2">

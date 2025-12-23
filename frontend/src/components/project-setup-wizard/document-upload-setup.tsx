@@ -109,14 +109,17 @@ export function DocumentUploadSetup({ projectId, onNext, onSkip }: StepComponent
         const { error: uploadError, data } = await supabase.storage
           .from("documents")
           .upload(filePath, uploadFile.file)
-        
-        if (uploadError) throw uploadError
-        
+
+        if (uploadError) {
+          console.error("Storage upload error:", uploadError);
+          throw new Error(`Storage upload failed: ${uploadError.message || JSON.stringify(uploadError)}`);
+        }
+
         // Get public URL
         const { data: { publicUrl } } = supabase.storage
           .from("documents")
           .getPublicUrl(filePath)
-        
+
         // Create document record
         const { data: document, error: dbError } = await supabase
           .from("documents")
@@ -135,8 +138,11 @@ export function DocumentUploadSetup({ projectId, onNext, onSkip }: StepComponent
           })
           .select()
           .single()
-        
-        if (dbError) throw dbError
+
+        if (dbError) {
+          console.error("Database insert error:", dbError);
+          throw new Error(`Database insert failed: ${dbError.message || JSON.stringify(dbError)}`);
+        }
         
         // Update file status
         setUploadingFiles(prev =>
@@ -150,7 +156,17 @@ export function DocumentUploadSetup({ projectId, onNext, onSkip }: StepComponent
         setUploadedDocuments(prev => [...prev, document])
         
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Upload failed';
+        let errorMessage = 'Upload failed';
+
+        // Handle Supabase errors which have a message property
+        if (err && typeof err === 'object' && 'message' in err) {
+          errorMessage = String(err.message);
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        } else if (typeof err === 'string') {
+          errorMessage = err;
+        }
+
         console.error("Upload error:", errorMessage, err);
         setUploadingFiles(prev =>
           prev.map(f =>

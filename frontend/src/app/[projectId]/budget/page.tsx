@@ -16,7 +16,6 @@ import {
   budgetViews,
   budgetSnapshots,
   budgetGroups,
-  budgetSyncStatus,
   budgetGrandTotals,
 } from '@/config/budget';
 import { useParams, useRouter } from 'next/navigation';
@@ -201,7 +200,6 @@ export default function ProjectBudgetPage() {
     <div className="flex flex-1 flex-col bg-muted/30">
       <BudgetPageHeader
         title="Budget"
-        isSynced={budgetSyncStatus.isSynced}
         isLocked={isLocked}
         lockedAt={lockedAt}
         lockedBy={lockedBy}

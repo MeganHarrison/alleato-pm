@@ -38,7 +38,7 @@ export function HeroMetrics({
   }
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:gap-6 lg:mb-20 mb-8">
+    <div className="flex flex-col gap-4 md:flex-row md:gap-6 lg:mb-12 mb-8">
       {/* Primary Metric - Budget Remaining */}
       <Link
         href={`/${projectId}/budget`}

@@ -1349,6 +1349,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "budget_lines_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes_with_division_title"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "budget_lines_cost_type_id_fkey"
             columns: ["cost_type_id"]
             isOneToOne: false
@@ -1463,6 +1470,13 @@ export type Database = {
             columns: ["cost_code_id"]
             isOneToOne: false
             referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_mod_lines_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes_with_division_title"
             referencedColumns: ["id"]
           },
           {
@@ -1884,6 +1898,13 @@ export type Database = {
             columns: ["cost_code_id"]
             isOneToOne: false
             referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_order_lines_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes_with_division_title"
             referencedColumns: ["id"]
           },
           {
@@ -2995,8 +3016,6 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean
-          name: string | null
-          sort_order: number
           title: string
           updated_at: string
         }
@@ -3005,8 +3024,6 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
-          name?: string | null
-          sort_order: number
           title: string
           updated_at?: string
         }
@@ -3015,8 +3032,6 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
-          name?: string | null
-          sort_order?: number
           title?: string
           updated_at?: string
         }
@@ -3049,29 +3064,29 @@ export type Database = {
       cost_codes: {
         Row: {
           created_at: string | null
-          description: string | null
           division_id: string
           division_title: string | null
           id: string
           status: string | null
+          title: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
-          description?: string | null
           division_id: string
           division_title?: string | null
           id: string
           status?: string | null
+          title?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
-          description?: string | null
           division_id?: string
           division_title?: string | null
           id?: string
           status?: string | null
+          title?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -3668,6 +3683,13 @@ export type Database = {
             columns: ["cost_code_id"]
             isOneToOne: false
             referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "direct_cost_line_items_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes_with_division_title"
             referencedColumns: ["id"]
           },
           {
@@ -7562,6 +7584,13 @@ export type Database = {
             columns: ["cost_code_id"]
             isOneToOne: false
             referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_cost_codes_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes_with_division_title"
             referencedColumns: ["id"]
           },
           {
@@ -11552,6 +11581,27 @@ export type Database = {
         }
         Relationships: []
       }
+      cost_codes_with_division_title: {
+        Row: {
+          created_at: string | null
+          division_id: string | null
+          division_title: string | null
+          division_title_current: string | null
+          id: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_codes_division_id_fkey"
+            columns: ["division_id"]
+            isOneToOne: false
+            referencedRelation: "cost_code_divisions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_metadata_manual_only: {
         Row: {
           access_level: string | null
@@ -12311,6 +12361,13 @@ export type Database = {
             columns: ["cost_code_id"]
             isOneToOne: false
             referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_lines_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes_with_division_title"
             referencedColumns: ["id"]
           },
           {

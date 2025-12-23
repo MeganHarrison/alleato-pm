@@ -14,7 +14,7 @@ import {
   getFilteredRowModel,
   ColumnFiltersState,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { ArrowUpDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Pencil } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -26,6 +26,7 @@ import {
 import { Project } from '@/types/portfolio';
 import { cn } from '@/lib/utils';
 import { EditableCell } from './editable-cell';
+import { EditProjectDialog } from './edit-project-dialog';
 import { toast } from 'sonner';
 
 interface ProjectsTableProps {
@@ -41,6 +42,8 @@ export function ProjectsTable({ data, onProjectClick, viewType = 'list' }: Proje
     pageSize: viewType === 'grid' ? 24 : 50,
   });
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [editingProject, setEditingProject] = React.useState<Project | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
 
   // Update page size when view type changes
   React.useEffect(() => {
@@ -52,14 +55,35 @@ export function ProjectsTable({ data, onProjectClick, viewType = 'list' }: Proje
   }, [viewType]);
 
   // Function to update project field
+  // Maps camelCase field names to database column names (with spaces)
   const updateProject = async (projectId: string, field: string, value: string) => {
     try {
+      // Map camelCase to database field names
+      const fieldMap: Record<string, string> = {
+        'jobNumber': 'job number',
+        'client': 'client',
+        'startDate': 'start date',
+        'state': 'state',
+        'phase': 'phase',
+        'estRevenue': 'est revenue',
+        'estProfit': 'est profit',
+        'category': 'category',
+      };
+
+      const dbField = fieldMap[field] || field;
+      let dbValue: string | number | null = value;
+
+      // Convert numeric fields
+      if (field === 'estRevenue' || field === 'estProfit') {
+        dbValue = value ? parseFloat(value) : null;
+      }
+
       const response = await fetch(`/api/projects/${projectId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ [field]: value }),
+        body: JSON.stringify({ [dbField]: dbValue }),
       });
 
       if (!response.ok) {
@@ -67,6 +91,9 @@ export function ProjectsTable({ data, onProjectClick, viewType = 'list' }: Proje
       }
 
       toast.success(`Updated ${field}`);
+
+      // Reload the page to show updated data
+      window.location.reload();
     } catch (error) {
       console.error('Error updating project:', error);
       toast.error(`Failed to update ${field}`);
@@ -118,7 +145,7 @@ export function ProjectsTable({ data, onProjectClick, viewType = 'list' }: Proje
       cell: ({ row }) => (
         <EditableCell
           value={row.getValue('jobNumber')}
-          onSave={(value) => updateProject(row.original.id, 'job number', value)}
+          onSave={(value) => updateProject(row.original.id, 'jobNumber', value)}
         />
       ),
       size: 130,
@@ -162,7 +189,7 @@ export function ProjectsTable({ data, onProjectClick, viewType = 'list' }: Proje
           <EditableCell
             value={displayDate}
             type="date"
-            onSave={(value) => updateProject(row.original.id, 'start date', value)}
+            onSave={(value) => updateProject(row.original.id, 'startDate', value)}
           />
         );
       },
@@ -239,7 +266,7 @@ export function ProjectsTable({ data, onProjectClick, viewType = 'list' }: Proje
           <EditableCell
             value={revenue?.toString() || ''}
             type="number"
-            onSave={(value) => updateProject(row.original.id, 'est revenue', value)}
+            onSave={(value) => updateProject(row.original.id, 'estRevenue', value)}
           />
         );
       },
@@ -263,7 +290,7 @@ export function ProjectsTable({ data, onProjectClick, viewType = 'list' }: Proje
           <EditableCell
             value={profit?.toString() || ''}
             type="number"
-            onSave={(value) => updateProject(row.original.id, 'est profit', value)}
+            onSave={(value) => updateProject(row.original.id, 'estProfit', value)}
           />
         );
       },
@@ -288,6 +315,25 @@ export function ProjectsTable({ data, onProjectClick, viewType = 'list' }: Proje
         />
       ),
       size: 150,
+    },
+    {
+      id: 'actions',
+      header: () => <span className="sr-only">Actions</span>,
+      cell: ({ row }) => (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setEditingProject(row.original);
+            setIsEditDialogOpen(true);
+          }}
+          className="p-2 hover:bg-gray-100 rounded transition-colors"
+          aria-label="Edit project"
+        >
+          <Pencil className="w-4 h-4 text-gray-600" />
+        </button>
+      ),
+      size: 60,
     },
   ];
 
@@ -613,6 +659,19 @@ export function ProjectsTable({ data, onProjectClick, viewType = 'list' }: Proje
         </button>
       </div>
     </div>
+
+    {/* Edit Project Dialog */}
+    {editingProject && (
+      <EditProjectDialog
+        project={editingProject}
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onSuccess={() => {
+          // Reload the page to show updated data
+          window.location.reload();
+        }}
+      />
+    )}
     </div>
   );
 }

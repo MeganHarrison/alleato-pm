@@ -36,7 +36,6 @@ import { ProjectPageHeader } from '@/components/layout/ProjectPageHeader';
 
 interface BudgetPageHeaderProps {
   title?: string;
-  isSynced?: boolean;
   isLocked?: boolean;
   lockedAt?: string | null;
   lockedBy?: string | null;
@@ -50,7 +49,6 @@ interface BudgetPageHeaderProps {
 
 export function BudgetPageHeader({
   title = 'Budget',
-  isSynced = true,
   isLocked = false,
   lockedAt,
   lockedBy,
@@ -99,9 +97,7 @@ export function BudgetPageHeader({
 
   const statusDescription = isLocked && lockedAt
     ? `Locked ${formatDate(lockedAt)}${lockedBy ? ` by ${lockedBy}` : ''}`
-    : isSynced
-      ? 'Synced with ERP'
-      : 'Out of sync · Review before exporting';
+    : undefined;
 
   const actionButtons = (
     <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center md:justify-end">

@@ -1,7 +1,6 @@
 "use client"
 
 import {
-  IconBell,
   IconCreditCard,
   IconDotsVertical,
   IconLogout,
@@ -36,8 +35,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 
 function getInitials(name: string | null | undefined): string {
@@ -53,7 +50,6 @@ export function NavUser() {
   const { isMobile } = useSidebar()
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
-  const [showNotifications, setShowNotifications] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -94,44 +90,6 @@ export function NavUser() {
             </div>
           </div>
         </div>
-      </SidebarMenuItem>
-
-      <Separator className="my-2" />
-
-      {/* Notifications Section */}
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          onClick={() => setShowNotifications(!showNotifications)}
-          className="w-full"
-        >
-          <IconBell className="h-4 w-4" />
-          <span>Notifications</span>
-          <Badge variant="destructive" className="ml-auto h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-            3
-          </Badge>
-        </SidebarMenuButton>
-        {showNotifications && (
-          <div className="mt-2 space-y-2 rounded-lg border bg-muted/50 p-3">
-            <div className="text-xs font-semibold text-muted-foreground">Recent Notifications</div>
-            <div className="space-y-2">
-              <div className="rounded-md bg-background p-2 text-xs">
-                <p className="font-medium">New message in project chat</p>
-                <p className="text-muted-foreground">Just now</p>
-              </div>
-              <div className="rounded-md bg-background p-2 text-xs">
-                <p className="font-medium">Budget update approved</p>
-                <p className="text-muted-foreground">30m ago</p>
-              </div>
-              <div className="rounded-md bg-background p-2 text-xs">
-                <p className="font-medium">New document shared</p>
-                <p className="text-muted-foreground">1h ago</p>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" className="w-full" asChild>
-              <Link href="/notifications">View All</Link>
-            </Button>
-          </div>
-        )}
       </SidebarMenuItem>
 
       <Separator className="my-2" />
