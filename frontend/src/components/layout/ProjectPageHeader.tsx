@@ -32,7 +32,7 @@ export function ProjectPageHeader({
   const { selectedProject, isLoading } = useProject()
 
   return (
-    <div className={cn("border-b", className)}>
+    <div className={cn(className)}>
       <div className="px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         {breadcrumbs && breadcrumbs.length > 0 && (
@@ -62,7 +62,7 @@ export function ProjectPageHeader({
         )}
 
         {/* Title and Actions */}
-        <div className="flex flex-col gap-4 py-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 py-4 md:flex-row md:items-center md:justify-between">
           <div>
             {/* Project Name - Displayed prominently above page title */}
             {showProjectName && (
