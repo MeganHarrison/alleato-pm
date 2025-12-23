@@ -1,0 +1,292 @@
+# Production Readiness Plan: Database Integration
+
+**Created:** 2025-12-12
+**Status:** Planning Phase
+**Goal:** Replace all demo/mock data with real Supabase database connections
+
+This plan documents every form, page, and component that currently uses hardcoded demo data and needs to be connected to the production Supabase database.
+
+---
+
+## Purpose / Big Picture
+
+The Alleato-Procore application currently has many forms and pages using hardcoded demo data instead of real database connections. This creates a non-functional production experience. This plan systematically identifies and replaces all demo content with real Supabase queries, ensuring:
+
+1. All dropdown fields pull from actual database tables
+2. All forms submit to real database tables
+3. All list pages display real data from Supabase
+4. Users can add new records (clients, companies, users, etc.) where needed
+
+---
+
+## Database Tables Available
+
+Based on the generated Supabase types, the following key tables exist:
+
+| Table | Purpose | Key Columns |
+|-------|---------|-------------|
+| `companies` | Vendors, subcontractors, clients | id, name, address, city, state, website |
+| `clients` | Client companies | id, name, company_id, status |
+| `projects` | Project records | id, name, client, client_id, budget, phase, project_manager |
+| `users` | System users | id, email |
+| `app_users` | Application users with profiles | id, email, full_name, role, avatar_url |
+| `employees` | Employee records | id (references project_manager) |
+| `contacts` | Contact information | id, first_name, last_name, email, phone, role, department |
+| `contracts` | Prime contracts | id, client_id, contract_number, original_contract_amount, status |
+| `commitments` | Subcontracts/POs | id, project_id, vendor_id, contract_amount, status |
+| `change_orders` | Change orders | id, project_id, status, amount |
+| `cost_codes` | Cost code definitions | id, description, status |
+| `budget_items` | Budget line items | id, project_id, cost_code_id, original_budget |
+| `invoices` | Invoice records | Various financial fields |
+
+---
+
+## Master Checklist
+
+### Phase 1: Create Reusable Data Hooks & API Routes
+
+These hooks will be used across multiple forms and pages.
+
+- [ ] **1.1** Create `/frontend/src/hooks/use-companies.ts` - Hook to fetch companies from Supabase
+- [ ] **1.2** Create `/frontend/src/hooks/use-clients.ts` - Hook to fetch clients from Supabase
+- [ ] **1.3** Create `/frontend/src/hooks/use-users.ts` - Hook to fetch app_users/employees from Supabase
+- [ ] **1.4** Create `/frontend/src/hooks/use-projects.ts` - Hook to fetch projects from Supabase
+- [ ] **1.5** Create `/frontend/src/hooks/use-cost-codes.ts` - Hook to fetch cost_codes from Supabase
+- [ ] **1.6** Create `/frontend/src/hooks/use-contracts.ts` - Hook to fetch contracts from Supabase
+- [ ] **1.7** Create `/frontend/src/hooks/use-contacts.ts` - Hook to fetch contacts from Supabase
+- [ ] **1.8** Update `/frontend/src/app/api/companies/route.ts` - Ensure GET/POST endpoints work
+- [ ] **1.9** Update `/frontend/src/app/api/clients/route.ts` - Create/update endpoints for clients
+- [ ] **1.10** Update `/frontend/src/app/api/contracts/route.ts` - Create/update endpoints for contracts
+
+### Phase 2: Financial Module - Contract Forms
+
+#### 2.1 Prime Contract Creation (`/contracts/new`)
+**File:** `frontend/src/app/(procore)/(financial)/contracts/new/page.tsx`
+**Components to update:**
+
+- [ ] **2.1.1** `ContractGeneralSection.tsx` - Replace hardcoded contractors with companies query
+  - Current: `["ABC Construction Co.", "XYZ Builders Inc.", "Premier Contractors LLC"]`
+  - Target: Query `companies` table
+  - Add: "Add New Company" option with modal
+
+- [ ] **2.1.2** `ContractPrivacySection.tsx` - Replace hardcoded users with database users
+  - Current: `["John Smith", "Jane Doe", "Bob Johnson", "Sarah Williams"]`
+  - Target: Query `app_users` or `employees` table
+
+- [ ] **2.1.3** `CostCodeSelector.tsx` - Replace hardcoded cost codes with database query
+  - Current: 16 hardcoded CSI divisions
+  - Target: Query `cost_codes` table
+  - Add: Ability to add new cost codes if needed
+
+- [ ] **2.1.4** Contract form submission - Connect to `contracts` table
+  - Create API route for contract creation
+  - Wire up form submission
+
+#### 2.2 Subcontract Creation (`/commitments/subcontracts/new`)
+**File:** `frontend/src/app/(procore)/(financial)/commitments/subcontracts/new/page.tsx`
+
+- [ ] **2.2.1** Replace hardcoded contractor companies
+  - Current: `["ABC Electric Contractors", "XYZ Plumbing Services", etc.]`
+  - Target: Query `companies` table filtered by type
+
+- [ ] **2.2.2** Wire subcontract form to `commitments` table
+
+#### 2.3 Purchase Order Creation (`/commitments/purchase-orders/new`)
+**File:** `frontend/src/app/(procore)/(financial)/commitments/purchase-orders/new/page.tsx`
+**Component:** `PurchaseOrderForm.tsx`
+
+- [ ] **2.3.1** Replace hardcoded vendors
+  - Current: `["ABC Supply Co.", "Building Materials Inc.", "Industrial Equipment LLC"]`
+  - Target: Query `companies` table
+
+- [ ] **2.3.2** Replace hardcoded projects
+  - Current: `["Downtown Office Building", "Riverside Apartments", etc.]`
+  - Target: Query `projects` table
+
+- [ ] **2.3.3** Wire PO form to `commitments` table (type='purchase_order')
+
+#### 2.4 Change Orders (`/change-orders/new`)
+**File:** `frontend/src/app/(procore)/(financial)/change-orders/new/page.tsx`
+
+- [ ] **2.4.1** Replace hardcoded contract options
+  - Current: `["PC-001 - Main Construction Contract", etc.]`
+  - Target: Query `contracts` table
+
+- [ ] **2.4.2** Wire change order form to `change_orders` table
+
+#### 2.5 Invoices (`/invoices/new`)
+**File:** `frontend/src/app/(procore)/(financial)/invoices/new/page.tsx`
+
+- [ ] **2.5.1** Replace hardcoded contract options
+  - Current: Hardcoded contract list
+  - Target: Query `contracts` and `commitments` tables
+
+- [ ] **2.5.2** Wire invoice form to appropriate table
+
+#### 2.6 Budget Page (`/budget`)
+**File:** `frontend/src/app/(procore)/(financial)/budget/page.tsx`
+**Config:** `frontend/src/config/budget.ts`
+
+- [ ] **2.6.1** Replace mock budget data in config
+  - Current: ~150 lines of hardcoded budget items
+  - Target: Query `budget_items` table
+
+- [ ] **2.6.2** Wire budget line item creation to database
+
+#### 2.7 Prime Contracts List (`/contracts`)
+**File:** `frontend/src/app/(procore)/(financial)/contracts/page.tsx`
+
+- [ ] **2.7.1** Connect contracts list to `contracts` table
+  - Currently shows empty state
+  - Need to fetch and display real contracts
+
+#### 2.8 Commitments List (`/commitments`)
+**File:** `frontend/src/app/(procore)/(financial)/commitments/page.tsx`
+
+- [ ] **2.8.1** Verify `/api/commitments` endpoint returns real data
+- [ ] **2.8.2** Ensure financial store is populated from API
+
+### Phase 3: Directory Module
+
+#### 3.1 User Directory (`/directory/users`)
+**File:** `frontend/src/app/(procore)/directory/users/page.tsx`
+
+- [ ] **3.1.1** Replace mockUsers array with Supabase query
+  - Current: 3 hardcoded users (John Smith, Jane Doe, Mike Johnson)
+  - Target: Query `app_users` or `employees` table
+
+- [ ] **3.1.2** Add user creation/editing capability
+
+#### 3.2 Client Directory (`/directory/clients`)
+**File:** `frontend/src/app/(procore)/directory/clients/page.tsx`
+
+- [ ] **3.2.1** Replace mockClients array with Supabase query
+  - Current: 2 hardcoded clients (Acme Corporation, Global Industries)
+  - Target: Query `clients` table joined with `companies`
+
+- [ ] **3.2.2** Add client creation form/modal
+
+#### 3.3 Company Directory (`/directory/companies`)
+**File:** `frontend/src/app/(procore)/directory/companies/page.tsx`
+
+- [ ] **3.3.1** Verify existing Supabase integration works correctly
+  - Already appears to use `useInfiniteQuery` with Supabase
+  - May need cleanup/optimization
+
+### Phase 4: Project Creation & Management
+
+#### 4.1 Create Project (`/create-project`)
+**File:** `frontend/src/app/(procore)/(forms)/create-project/page.tsx`
+
+- [ ] **4.1.1** Connect client dropdown to `clients` table
+- [ ] **4.1.2** Connect project manager dropdown to `employees` table
+- [ ] **4.1.3** Wire project creation to `projects` table
+- [ ] **4.1.4** Keep standard options hardcoded (project types, stages, etc. - these are enums)
+
+#### 4.2 New Commitment (`/commitments/new`)
+**File:** `frontend/src/app/(procore)/(financial)/commitments/new/page.tsx`
+
+- [ ] **4.2.1** Replace mock users with real database users
+  - Current: 2 hardcoded users
+  - Target: Query `app_users` table
+
+### Phase 5: Config Files Cleanup
+
+- [ ] **5.1** `frontend/src/config/budget.ts` - Remove/replace mock budgetLineItems
+- [ ] **5.2** `frontend/src/config/project-home.ts` - Update to use real data patterns
+- [ ] **5.3** `frontend/src/data/` directory - Review and update/remove mock data files
+
+### Phase 6: State Management Updates
+
+- [ ] **6.1** Update `financial-store.ts` to populate from real API endpoints
+- [ ] **6.2** Ensure all stores fetch real data on initialization
+- [ ] **6.3** Add proper error handling for failed database queries
+
+### Phase 7: Testing & Validation
+
+- [ ] **7.1** Test each form submission creates real database records
+- [ ] **7.2** Test all dropdowns populate from database
+- [ ] **7.3** Test "Add New" functionality for companies, clients
+- [ ] **7.4** Run Playwright E2E tests
+- [ ] **7.5** Verify no console errors related to mock/demo data
+
+---
+
+## Detailed Implementation Notes
+
+### Standard Dropdown Options (Keep Hardcoded)
+
+These options are standard industry values and should remain hardcoded as they represent enums:
+
+- Contract statuses: Draft, Out for Signature, Executed, Closed
+- Billing methods: Progress Billing, Unit Price, Time & Materials, Lump Sum
+- Payment terms: Net 30, Net 45, Net 60, Due on Receipt
+- Project stages: Planning, Design, Bidding, Construction, Closeout
+- Project types: Commercial, Residential, Industrial, etc.
+
+### Dynamic Dropdown Options (Must Query Database)
+
+These must be connected to real database tables:
+
+| Dropdown | Table | Filter |
+|----------|-------|--------|
+| Companies/Contractors | `companies` | None or type filter |
+| Clients | `clients` | Active status |
+| Users | `app_users` / `employees` | None |
+| Projects | `projects` | Not archived |
+| Cost Codes | `cost_codes` | Active status |
+| Contracts | `contracts` | By project |
+| Vendors | `companies` | Type = vendor |
+
+### "Add New" Functionality Required
+
+For a production-ready experience, users need ability to add new records inline:
+
+1. **Add New Company** - Modal in contract forms
+2. **Add New Client** - Modal in client dropdown
+3. **Add New Contact** - Modal in contact selectors
+4. **Add New Cost Code** - Modal in cost code selector (admin only)
+
+---
+
+## Priority Order
+
+1. **Phase 2.1** - Contract forms (most visible/critical)
+2. **Phase 3** - Directory pages (user-facing data)
+3. **Phase 2.2-2.5** - Other financial forms
+4. **Phase 1** - Reusable hooks (can be built alongside Phase 2)
+5. **Phase 4** - Project creation
+6. **Phase 5-6** - Cleanup
+7. **Phase 7** - Testing
+
+---
+
+## Progress Log
+
+(To be updated as work proceeds)
+
+- **2025-12-12**: Plan created based on comprehensive codebase analysis
+
+---
+
+## Decision Log
+
+- **2025-12-12**: Decided to keep standard industry options (statuses, billing methods, payment terms) as hardcoded values since these are effectively enums that rarely change. Dynamic data (companies, users, projects) will be queried from Supabase.
+
+---
+
+## Validation Requirements
+
+Before marking this plan complete:
+
+1. [ ] All forms submit to real Supabase tables
+2. [ ] All dropdowns that reference entities pull from database
+3. [ ] No "ABC Construction", "John Smith", or other demo text appears in UI
+4. [ ] Users can create new companies/clients/contacts inline
+5. [ ] All list pages display real database records
+6. [ ] Playwright tests pass with real data
+7. [ ] No TypeScript errors related to demo data removal
+
+---
+
+**End of Production Readiness Plan**

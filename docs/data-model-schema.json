@@ -1,0 +1,926 @@
+{
+  "enums": {
+    "project_status": [
+      "active",
+      "inactive",
+      "complete"
+    ],
+    "company_type": [
+      "vendor",
+      "subcontractor",
+      "owner",
+      "architect",
+      "other"
+    ],
+    "budget_status": [
+      "locked",
+      "unlocked"
+    ],
+    "erp_sync_status": [
+      "pending",
+      "synced",
+      "failed",
+      "resyncing"
+    ],
+    "calculation_method": [
+      "unit_price",
+      "lump_sum",
+      "percentage"
+    ],
+    "contract_status": [
+      "draft",
+      "pending",
+      "executed",
+      "closed",
+      "terminated"
+    ],
+    "commitment_type": [
+      "subcontract",
+      "purchase_order",
+      "service_order"
+    ],
+    "contract_type": [
+      "prime_contract",
+      "commitment"
+    ],
+    "change_event_status": [
+      "open",
+      "closed"
+    ],
+    "change_order_status": [
+      "draft",
+      "pending",
+      "approved",
+      "void"
+    ],
+    "billing_period_status": [
+      "open",
+      "closed",
+      "approved"
+    ],
+    "invoice_status": [
+      "draft",
+      "pending",
+      "approved",
+      "paid",
+      "void"
+    ]
+  },
+  "tables": {
+    "projects": {
+      "name": "projects",
+      "description": "Core project entity",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "company_id": {
+          "type": "uuid",
+          "references": "companies.id",
+          "nullable": false
+        },
+        "name": {
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        "job_number": {
+          "type": "varchar(50)",
+          "unique": true
+        },
+        "address": {
+          "type": "text"
+        },
+        "city": {
+          "type": "varchar(100)"
+        },
+        "state": {
+          "type": "varchar(50)"
+        },
+        "zip": {
+          "type": "varchar(20)"
+        },
+        "phone": {
+          "type": "varchar(50)"
+        },
+        "status": {
+          "type": "project_status",
+          "default": "'active'"
+        },
+        "phase": {
+          "type": "varchar(100)"
+        },
+        "category": {
+          "type": "varchar(100)"
+        },
+        "archived": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "summary": {
+          "type": "text"
+        },
+        "summary_metadata": {
+          "type": "jsonb"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "created_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        },
+        "updated_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        }
+      },
+      "indexes": [
+        "CREATE INDEX idx_projects_company_id ON projects(company_id)",
+        "CREATE INDEX idx_projects_status ON projects(status)",
+        "CREATE INDEX idx_projects_archived ON projects(archived)"
+      ]
+    },
+    "companies": {
+      "name": "companies",
+      "description": "Company/Vendor entities",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        "type": {
+          "type": "company_type",
+          "default": "'vendor'"
+        },
+        "address": {
+          "type": "text"
+        },
+        "city": {
+          "type": "varchar(100)"
+        },
+        "state": {
+          "type": "varchar(50)"
+        },
+        "zip": {
+          "type": "varchar(20)"
+        },
+        "phone": {
+          "type": "varchar(50)"
+        },
+        "email": {
+          "type": "varchar(255)"
+        },
+        "website": {
+          "type": "varchar(255)"
+        },
+        "active": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "created_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        },
+        "updated_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        }
+      },
+      "indexes": [
+        "CREATE INDEX idx_companies_type ON companies(type)",
+        "CREATE INDEX idx_companies_active ON companies(active)"
+      ]
+    },
+    "cost_codes": {
+      "name": "cost_codes",
+      "description": "Cost code hierarchy",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "project_id": {
+          "type": "uuid",
+          "references": "projects.id",
+          "nullable": false
+        },
+        "code": {
+          "type": "varchar(50)",
+          "nullable": false
+        },
+        "description": {
+          "type": "text"
+        },
+        "parent_id": {
+          "type": "uuid",
+          "references": "cost_codes.id"
+        },
+        "path": {
+          "type": "ltree"
+        },
+        "active": {
+          "type": "boolean",
+          "default": "true"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "created_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        },
+        "updated_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        }
+      },
+      "constraints": [
+        "CONSTRAINT uk_project_cost_code UNIQUE(project_id, code)"
+      ],
+      "indexes": [
+        "CREATE INDEX idx_cost_codes_project_id ON cost_codes(project_id)",
+        "CREATE INDEX idx_cost_codes_parent_id ON cost_codes(parent_id)",
+        "CREATE INDEX idx_cost_codes_path ON cost_codes USING gist(path)"
+      ]
+    },
+    "budgets": {
+      "name": "budgets",
+      "description": "Project budgets",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "project_id": {
+          "type": "uuid",
+          "references": "projects.id",
+          "nullable": false,
+          "unique": true
+        },
+        "name": {
+          "type": "varchar(255)",
+          "default": "'Budget'"
+        },
+        "status": {
+          "type": "budget_status",
+          "default": "'unlocked'"
+        },
+        "erp_sync_status": {
+          "type": "erp_sync_status",
+          "default": "'pending'"
+        },
+        "locked_at": {
+          "type": "timestamp with time zone"
+        },
+        "locked_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "created_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        },
+        "updated_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        }
+      },
+      "indexes": [
+        "CREATE INDEX idx_budgets_project_id ON budgets(project_id)",
+        "CREATE INDEX idx_budgets_status ON budgets(status)"
+      ]
+    },
+    "budget_line_items": {
+      "name": "budget_line_items",
+      "description": "Budget line items",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "budget_id": {
+          "type": "uuid",
+          "references": "budgets.id",
+          "nullable": false
+        },
+        "cost_code_id": {
+          "type": "uuid",
+          "references": "cost_codes.id",
+          "nullable": false
+        },
+        "calculation_method": {
+          "type": "calculation_method",
+          "default": "'unit_price'"
+        },
+        "unit_qty": {
+          "type": "decimal(12,2)"
+        },
+        "uom": {
+          "type": "varchar(50)"
+        },
+        "unit_cost": {
+          "type": "money"
+        },
+        "original_budget": {
+          "type": "money",
+          "nullable": false,
+          "default": "0"
+        },
+        "revised_budget": {
+          "type": "money"
+        },
+        "forecast_to_complete": {
+          "type": "money"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        }
+      },
+      "indexes": [
+        "CREATE INDEX idx_budget_line_items_budget_id ON budget_line_items(budget_id)",
+        "CREATE INDEX idx_budget_line_items_cost_code_id ON budget_line_items(cost_code_id)"
+      ]
+    },
+    "prime_contracts": {
+      "name": "prime_contracts",
+      "description": "Prime contracts with owners",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "project_id": {
+          "type": "uuid",
+          "references": "projects.id",
+          "nullable": false
+        },
+        "number": {
+          "type": "varchar(50)",
+          "nullable": false
+        },
+        "title": {
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        "owner_id": {
+          "type": "uuid",
+          "references": "companies.id"
+        },
+        "architect_id": {
+          "type": "uuid",
+          "references": "companies.id"
+        },
+        "contract_date": {
+          "type": "date"
+        },
+        "status": {
+          "type": "contract_status",
+          "default": "'draft'"
+        },
+        "original_amount": {
+          "type": "money",
+          "default": "0"
+        },
+        "erp_sync_status": {
+          "type": "erp_sync_status",
+          "default": "'pending'"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "created_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        },
+        "updated_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        }
+      },
+      "constraints": [
+        "CONSTRAINT uk_project_prime_number UNIQUE(project_id, number)"
+      ],
+      "indexes": [
+        "CREATE INDEX idx_prime_contracts_project_id ON prime_contracts(project_id)",
+        "CREATE INDEX idx_prime_contracts_status ON prime_contracts(status)"
+      ]
+    },
+    "commitments": {
+      "name": "commitments",
+      "description": "Subcontracts and purchase orders",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "project_id": {
+          "type": "uuid",
+          "references": "projects.id",
+          "nullable": false
+        },
+        "number": {
+          "type": "varchar(50)",
+          "nullable": false
+        },
+        "title": {
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        "type": {
+          "type": "commitment_type",
+          "default": "'subcontract'"
+        },
+        "company_id": {
+          "type": "uuid",
+          "references": "companies.id",
+          "nullable": false
+        },
+        "contract_date": {
+          "type": "date"
+        },
+        "status": {
+          "type": "contract_status",
+          "default": "'draft'"
+        },
+        "original_amount": {
+          "type": "money",
+          "default": "0"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "created_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        },
+        "updated_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        }
+      },
+      "constraints": [
+        "CONSTRAINT uk_project_commitment_number UNIQUE(project_id, number)"
+      ],
+      "indexes": [
+        "CREATE INDEX idx_commitments_project_id ON commitments(project_id)",
+        "CREATE INDEX idx_commitments_company_id ON commitments(company_id)",
+        "CREATE INDEX idx_commitments_status ON commitments(status)",
+        "CREATE INDEX idx_commitments_type ON commitments(type)"
+      ]
+    },
+    "contract_line_items": {
+      "name": "contract_line_items",
+      "description": "Line items for contracts",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "contract_id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "contract_type": {
+          "type": "contract_type",
+          "nullable": false
+        },
+        "cost_code_id": {
+          "type": "uuid",
+          "references": "cost_codes.id"
+        },
+        "line_number": {
+          "type": "integer"
+        },
+        "description": {
+          "type": "text"
+        },
+        "amount": {
+          "type": "money",
+          "nullable": false,
+          "default": "0"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        }
+      },
+      "indexes": [
+        "CREATE INDEX idx_contract_line_items_contract ON contract_line_items(contract_id, contract_type)",
+        "CREATE INDEX idx_contract_line_items_cost_code ON contract_line_items(cost_code_id)"
+      ]
+    },
+    "change_events": {
+      "name": "change_events",
+      "description": "Potential change events",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "project_id": {
+          "type": "uuid",
+          "references": "projects.id",
+          "nullable": false
+        },
+        "number": {
+          "type": "integer",
+          "nullable": false
+        },
+        "title": {
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        "description": {
+          "type": "text"
+        },
+        "status": {
+          "type": "change_event_status",
+          "default": "'open'"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "created_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        },
+        "updated_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        }
+      },
+      "constraints": [
+        "CONSTRAINT uk_project_change_event_number UNIQUE(project_id, number)"
+      ],
+      "indexes": [
+        "CREATE INDEX idx_change_events_project_id ON change_events(project_id)",
+        "CREATE INDEX idx_change_events_status ON change_events(status)"
+      ]
+    },
+    "change_orders": {
+      "name": "change_orders",
+      "description": "Change orders linked to contracts",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "project_id": {
+          "type": "uuid",
+          "references": "projects.id",
+          "nullable": false
+        },
+        "change_event_id": {
+          "type": "uuid",
+          "references": "change_events.id"
+        },
+        "contract_id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "contract_type": {
+          "type": "contract_type",
+          "nullable": false
+        },
+        "number": {
+          "type": "varchar(50)",
+          "nullable": false
+        },
+        "title": {
+          "type": "varchar(255)",
+          "nullable": false
+        },
+        "status": {
+          "type": "change_order_status",
+          "default": "'draft'"
+        },
+        "amount": {
+          "type": "money",
+          "nullable": false,
+          "default": "0"
+        },
+        "approved_date": {
+          "type": "date"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "created_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        },
+        "updated_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        }
+      },
+      "constraints": [
+        "CONSTRAINT uk_contract_change_order_number UNIQUE(contract_id, contract_type, number)"
+      ],
+      "indexes": [
+        "CREATE INDEX idx_change_orders_project_id ON change_orders(project_id)",
+        "CREATE INDEX idx_change_orders_change_event_id ON change_orders(change_event_id)",
+        "CREATE INDEX idx_change_orders_contract ON change_orders(contract_id, contract_type)",
+        "CREATE INDEX idx_change_orders_status ON change_orders(status)"
+      ]
+    },
+    "billing_periods": {
+      "name": "billing_periods",
+      "description": "Billing periods for invoicing",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "project_id": {
+          "type": "uuid",
+          "references": "projects.id",
+          "nullable": false
+        },
+        "period_number": {
+          "type": "integer",
+          "nullable": false
+        },
+        "period_start": {
+          "type": "date",
+          "nullable": false
+        },
+        "period_end": {
+          "type": "date",
+          "nullable": false
+        },
+        "status": {
+          "type": "billing_period_status",
+          "default": "'open'"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        }
+      },
+      "constraints": [
+        "CONSTRAINT uk_project_billing_period UNIQUE(project_id, period_number)"
+      ],
+      "indexes": [
+        "CREATE INDEX idx_billing_periods_project_id ON billing_periods(project_id)",
+        "CREATE INDEX idx_billing_periods_status ON billing_periods(status)"
+      ]
+    },
+    "invoices": {
+      "name": "invoices",
+      "description": "Invoices for contracts",
+      "columns": {
+        "id": {
+          "type": "uuid",
+          "primaryKey": true,
+          "default": "gen_random_uuid()"
+        },
+        "project_id": {
+          "type": "uuid",
+          "references": "projects.id",
+          "nullable": false
+        },
+        "billing_period_id": {
+          "type": "uuid",
+          "references": "billing_periods.id"
+        },
+        "contract_id": {
+          "type": "uuid",
+          "nullable": false
+        },
+        "contract_type": {
+          "type": "contract_type",
+          "nullable": false
+        },
+        "invoice_number": {
+          "type": "varchar(50)",
+          "nullable": false
+        },
+        "invoice_date": {
+          "type": "date",
+          "nullable": false
+        },
+        "amount": {
+          "type": "money",
+          "nullable": false
+        },
+        "status": {
+          "type": "invoice_status",
+          "default": "'draft'"
+        },
+        "paid_amount": {
+          "type": "money",
+          "default": "0"
+        },
+        "paid_date": {
+          "type": "date"
+        },
+        "created_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "updated_at": {
+          "type": "timestamp with time zone",
+          "default": "now()"
+        },
+        "created_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        },
+        "updated_by": {
+          "type": "uuid",
+          "references": "auth.users.id"
+        }
+      },
+      "constraints": [
+        "CONSTRAINT uk_invoice_number UNIQUE(project_id, invoice_number)"
+      ],
+      "indexes": [
+        "CREATE INDEX idx_invoices_project_id ON invoices(project_id)",
+        "CREATE INDEX idx_invoices_billing_period_id ON invoices(billing_period_id)",
+        "CREATE INDEX idx_invoices_contract ON invoices(contract_id, contract_type)",
+        "CREATE INDEX idx_invoices_status ON invoices(status)"
+      ]
+    }
+  },
+  "views": {
+    "budget_summary_view": {
+      "name": "budget_summary_view",
+      "description": "Aggregated budget data with commitments and costs",
+      "sql": "\nCREATE VIEW budget_summary_view AS\nSELECT \n  b.id AS budget_id,\n  b.project_id,\n  bli.cost_code_id,\n  cc.code AS cost_code,\n  cc.description AS cost_code_description,\n  bli.original_budget,\n  COALESCE(bli.revised_budget, bli.original_budget) AS revised_budget,\n  COALESCE(comm.committed_amount, 0) AS committed_amount,\n  COALESCE(co.pending_changes, 0) AS pending_changes,\n  COALESCE(co.approved_changes, 0) AS approved_changes,\n  COALESCE(inv.invoiced_amount, 0) AS invoiced_amount,\n  COALESCE(bli.revised_budget, bli.original_budget) - \n    COALESCE(comm.committed_amount, 0) - \n    COALESCE(co.approved_changes, 0) AS remaining_budget\nFROM budgets b\nJOIN budget_line_items bli ON b.id = bli.budget_id\nJOIN cost_codes cc ON bli.cost_code_id = cc.id\nLEFT JOIN (\n  SELECT \n    cli.cost_code_id,\n    c.project_id,\n    SUM(cli.amount) AS committed_amount\n  FROM commitments c\n  JOIN contract_line_items cli ON c.id = cli.contract_id AND cli.contract_type = 'commitment'\n  WHERE c.status IN ('pending', 'executed')\n  GROUP BY cli.cost_code_id, c.project_id\n) comm ON comm.cost_code_id = bli.cost_code_id AND comm.project_id = b.project_id\nLEFT JOIN (\n  SELECT \n    co.project_id,\n    cc.id AS cost_code_id,\n    SUM(CASE WHEN co.status = 'pending' THEN co.amount ELSE 0 END) AS pending_changes,\n    SUM(CASE WHEN co.status = 'approved' THEN co.amount ELSE 0 END) AS approved_changes\n  FROM change_orders co\n  JOIN contract_line_items cli ON co.id = cli.contract_id\n  JOIN cost_codes cc ON cli.cost_code_id = cc.id\n  GROUP BY co.project_id, cc.id\n) co ON co.cost_code_id = bli.cost_code_id AND co.project_id = b.project_id\nLEFT JOIN (\n  SELECT \n    i.project_id,\n    cli.cost_code_id,\n    SUM(i.amount) AS invoiced_amount\n  FROM invoices i\n  JOIN contract_line_items cli ON i.contract_id = cli.contract_id AND i.contract_type = cli.contract_type\n  WHERE i.status IN ('approved', 'paid')\n  GROUP BY i.project_id, cli.cost_code_id\n) inv ON inv.cost_code_id = bli.cost_code_id AND inv.project_id = b.project_id;\n"
+    },
+    "contract_summary_view": {
+      "name": "contract_summary_view",
+      "description": "Summary of all contracts with changes and billing",
+      "sql": "\nCREATE VIEW contract_summary_view AS\nWITH contracts_union AS (\n  SELECT \n    id AS contract_id,\n    'prime_contract' AS contract_type,\n    project_id,\n    number,\n    title,\n    status,\n    original_amount\n  FROM prime_contracts\n  UNION ALL\n  SELECT \n    id AS contract_id,\n    'commitment' AS contract_type,\n    project_id,\n    number,\n    title,\n    status,\n    original_amount\n  FROM commitments\n)\nSELECT \n  cu.*,\n  COALESCE(co.approved_changes, 0) AS approved_changes,\n  COALESCE(co.pending_changes, 0) AS pending_changes,\n  cu.original_amount + COALESCE(co.approved_changes, 0) AS revised_amount,\n  COALESCE(inv.invoiced_amount, 0) AS invoiced_amount,\n  COALESCE(inv.paid_amount, 0) AS paid_amount,\n  cu.original_amount + COALESCE(co.approved_changes, 0) - COALESCE(inv.invoiced_amount, 0) AS remaining_to_invoice,\n  ROUND(\n    CASE \n      WHEN cu.original_amount + COALESCE(co.approved_changes, 0) > 0 \n      THEN (COALESCE(inv.invoiced_amount, 0) * 100.0) / (cu.original_amount + COALESCE(co.approved_changes, 0))\n      ELSE 0\n    END, 2\n  ) AS percent_invoiced\nFROM contracts_union cu\nLEFT JOIN (\n  SELECT \n    contract_id,\n    contract_type,\n    SUM(CASE WHEN status = 'approved' THEN amount ELSE 0 END) AS approved_changes,\n    SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS pending_changes\n  FROM change_orders\n  GROUP BY contract_id, contract_type\n) co ON co.contract_id = cu.contract_id AND co.contract_type = cu.contract_type\nLEFT JOIN (\n  SELECT \n    contract_id,\n    contract_type,\n    SUM(amount) AS invoiced_amount,\n    SUM(paid_amount) AS paid_amount\n  FROM invoices\n  WHERE status IN ('approved', 'paid')\n  GROUP BY contract_id, contract_type\n) inv ON inv.contract_id = cu.contract_id AND inv.contract_type = cu.contract_type;\n"
+    }
+  },
+  "relationships": [
+    {
+      "from": "projects.company_id",
+      "to": "companies.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "cost_codes.project_id",
+      "to": "projects.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "cost_codes.parent_id",
+      "to": "cost_codes.id",
+      "type": "self-reference"
+    },
+    {
+      "from": "budgets.project_id",
+      "to": "projects.id",
+      "type": "one-to-one"
+    },
+    {
+      "from": "budget_line_items.budget_id",
+      "to": "budgets.id",
+      "type": "many-to-one",
+      "cascade": "delete"
+    },
+    {
+      "from": "budget_line_items.cost_code_id",
+      "to": "cost_codes.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "prime_contracts.project_id",
+      "to": "projects.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "prime_contracts.owner_id",
+      "to": "companies.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "prime_contracts.architect_id",
+      "to": "companies.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "commitments.project_id",
+      "to": "projects.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "commitments.company_id",
+      "to": "companies.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "contract_line_items.cost_code_id",
+      "to": "cost_codes.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "change_events.project_id",
+      "to": "projects.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "change_orders.project_id",
+      "to": "projects.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "change_orders.change_event_id",
+      "to": "change_events.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "billing_periods.project_id",
+      "to": "projects.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "invoices.project_id",
+      "to": "projects.id",
+      "type": "many-to-one"
+    },
+    {
+      "from": "invoices.billing_period_id",
+      "to": "billing_periods.id",
+      "type": "many-to-one"
+    }
+  ]
+}

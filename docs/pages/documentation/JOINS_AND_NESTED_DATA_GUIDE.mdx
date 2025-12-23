@@ -1,0 +1,417 @@
+# Joins and Nested Data Guide
+
+## Overview
+
+This guide shows how to use Supabase joins to display related data from other tables using the data access layer and generic table factory.
+
+## Example: Decisions with Meeting Metadata
+
+### Problem
+
+The `decisions` table has a `metadata_id` foreign key that links to the `document_metadata` table. We want to display the meeting title alongside each decision.
+
+### Solution: Data Access Layer with Joins
+
+#### 1. Update Data Access Layer
+
+**File**: `frontend/src/lib/db/decisions.ts`
+
+```typescript
+import { createClient } from '@/lib/supabase/server'
+import type { Database } from '@/types/database.types'
+
+export type Decision = Database['public']['Tables']['decisions']['Row']
+export type DocumentMetadata = Database['public']['Tables']['document_metadata']['Row']
+
+// Create a type that includes the joined data
+export interface DecisionWithMetadata extends Decision {
+  document_metadata: Pick<DocumentMetadata, 'id' | 'title' | 'date' | 'type' | 'project'> | null
+}
+
+/**
+ * Get all decisions with meeting metadata, ordered by creation date (newest first)
+ */
+export async function getDecisions(): Promise<DecisionWithMetadata[]> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('decisions')
+    .select(`
+      *,
+      document_metadata:metadata_id (
+        id,
+        title,
+        date,
+        type,
+        project
+      )
+    `)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching decisions:', error)
+    throw error
+  }
+
+  return data as DecisionWithMetadata[]
+}
+```
+
+**Key Points:**
+
+1. **Type the joined data** - Create a type that extends the base table with the joined fields
+2. **Use Supabase's join syntax** - `document_metadata:metadata_id (fields)`
+3. **Select specific fields** - Only select what you need from the joined table
+4. **Return typed data** - Cast to your custom type for full type safety
+
+#### 2. Add Nested Render Config to Factory
+
+**File**: `frontend/src/components/tables/generic-table-factory.tsx`
+
+Add a new render config type for nested objects:
+
+```typescript
+// Serializable nested object render configuration
+export interface NestedRenderConfig {
+  type: 'nested'
+  path: string // e.g., "title" for document_metadata.title
+  fallback?: string
+}
+
+export type RenderConfig =
+  | BadgeRenderConfig
+  | CurrencyRenderConfig
+  | TruncateRenderConfig
+  | ArrayRenderConfig
+  | JsonRenderConfig
+  | NestedRenderConfig // Add this
+```
+
+Add the render logic:
+
+```typescript
+case 'nested': {
+  // Access nested property using path like "title"
+  const parts = renderConfig.path.split('.')
+  let result: unknown = value
+
+  for (const part of parts) {
+    if (result && typeof result === 'object' && part in result) {
+      result = (result as Record<string, unknown>)[part]
+    } else {
+      return renderConfig.fallback || 'N/A'
+    }
+  }
+
+  return result ? String(result) : renderConfig.fallback || 'N/A'
+}
+```
+
+#### 3. Update Page Configuration
+
+**File**: `frontend/src/app/(tables)/decisions/page.tsx`
+
+Add a column for the joined data:
+
+```typescript
+columns: [
+  {
+    id: 'description',
+    label: 'Description',
+    defaultVisible: true,
+    type: 'text',
+  },
+  {
+    id: 'document_metadata',  // This matches the key in your joined data
+    label: 'Meeting',
+    defaultVisible: true,
+    renderConfig: {
+      type: 'nested',
+      path: 'title',  // Access document_metadata.title
+      fallback: 'No meeting',
+    },
+  },
+  // ... other columns
+]
+```
+
+Pass the data with type assertion:
+
+```typescript
+export default async function DecisionsPage() {
+  try {
+    const decisions = await getDecisions()
+
+    return (
+      <div className="container mx-auto py-10">
+        <GenericDataTable
+          data={decisions as unknown as Record<string, unknown>[]}
+          config={config}
+        />
+      </div>
+    )
+  } catch (error) {
+    // ... error handling
+  }
+}
+```
+
+## Advanced Patterns
+
+### Multiple Joins
+
+Join multiple tables at once:
+
+```typescript
+export async function getRisksWithMetadata() {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('risks')
+    .select(`
+      *,
+      document_metadata:metadata_id (
+        id,
+        title,
+        date,
+        type
+      ),
+      project:project_id (
+        id,
+        name,
+        status
+      )
+    `)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data
+}
+```
+
+Then in your page config:
+
+```typescript
+columns: [
+  {
+    id: 'document_metadata',
+    label: 'Meeting',
+    defaultVisible: true,
+    renderConfig: {
+      type: 'nested',
+      path: 'title',
+    },
+  },
+  {
+    id: 'project',
+    label: 'Project',
+    defaultVisible: true,
+    renderConfig: {
+      type: 'nested',
+      path: 'name',
+    },
+  },
+]
+```
+
+### Deeply Nested Paths
+
+For deeply nested data, use dot notation:
+
+```typescript
+{
+  id: 'user',
+  label: 'User Email',
+  defaultVisible: true,
+  renderConfig: {
+    type: 'nested',
+    path: 'profile.email',  // Access user.profile.email
+    fallback: 'No email',
+  },
+}
+```
+
+### Conditional Display
+
+Show different fields based on availability:
+
+```typescript
+{
+  id: 'document_metadata',
+  label: 'Source',
+  defaultVisible: true,
+  renderConfig: {
+    type: 'nested',
+    path: 'title',
+    fallback: 'Direct entry',  // Show this if no metadata exists
+  },
+}
+```
+
+## Common Join Patterns
+
+### 1. One-to-Many Relationship
+
+```typescript
+// Get project with all its tasks
+const { data } = await supabase
+  .from('projects')
+  .select(`
+    *,
+    tasks (
+      id,
+      title,
+      status
+    )
+  `)
+```
+
+### 2. Many-to-One Relationship
+
+```typescript
+// Get tasks with their project
+const { data } = await supabase
+  .from('tasks')
+  .select(`
+    *,
+    project:project_id (
+      id,
+      name
+    )
+  `)
+```
+
+### 3. Through Table
+
+```typescript
+// Get user with their roles through user_roles
+const { data } = await supabase
+  .from('users')
+  .select(`
+    *,
+    user_roles (
+      role:role_id (
+        name,
+        permissions
+      )
+    )
+  `)
+```
+
+## Best Practices
+
+### ✅ Do
+
+1. **Type your joins** - Create interface types for joined data
+2. **Select only what you need** - Don't `select('*')` on joins
+3. **Use aliases** - `document_metadata:metadata_id` for clarity
+4. **Provide fallbacks** - Handle null relationships gracefully
+5. **Document relationships** - Comment foreign keys in types
+
+### ❌ Don't
+
+1. **Don't over-join** - Only join what you'll display
+2. **Don't nest too deeply** - Max 2-3 levels deep
+3. **Don't forget null checks** - Relationships may not exist
+4. **Don't fetch all fields** - Be explicit about fields needed
+5. **Don't ignore performance** - Consider query cost for large joins
+
+## Performance Considerations
+
+### Use Views for Complex Joins
+
+For frequently used complex joins, create a Postgres view:
+
+```sql
+-- In Supabase SQL Editor
+create view decisions_with_metadata as
+select
+  d.*,
+  dm.title as meeting_title,
+  dm.date as meeting_date,
+  dm.type as meeting_type
+from decisions d
+left join document_metadata dm on dm.id = d.metadata_id;
+```
+
+Then query the view like a table:
+
+```typescript
+export async function getDecisions() {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('decisions_with_metadata')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data
+}
+```
+
+### Index Foreign Keys
+
+Ensure foreign keys are indexed for join performance:
+
+```sql
+-- In Supabase SQL Editor
+create index if not exists idx_decisions_metadata_id
+  on decisions(metadata_id);
+
+create index if not exists idx_risks_metadata_id
+  on risks(metadata_id);
+```
+
+## Testing Joins
+
+```typescript
+// __tests__/lib/db/decisions.test.ts
+import { getDecisions } from '@/lib/db/decisions'
+
+describe('getDecisions', () => {
+  it('should include document metadata', async () => {
+    const decisions = await getDecisions()
+
+    expect(decisions).toBeDefined()
+    expect(decisions.length).toBeGreaterThan(0)
+
+    // Check that metadata is included
+    const firstDecision = decisions[0]
+    expect(firstDecision).toHaveProperty('document_metadata')
+
+    // Check metadata structure if it exists
+    if (firstDecision.document_metadata) {
+      expect(firstDecision.document_metadata).toHaveProperty('title')
+      expect(firstDecision.document_metadata).toHaveProperty('date')
+    }
+  })
+})
+```
+
+## Summary
+
+The nested render config pattern allows you to:
+
+- ✅ **Display joined data** without custom components
+- ✅ **Keep configuration serializable** - No functions needed
+- ✅ **Maintain type safety** with proper TypeScript types
+- ✅ **Handle null relationships** gracefully with fallbacks
+- ✅ **Access deeply nested data** with dot notation
+
+This pattern scales to any relationship in your database and keeps your code clean and maintainable.
+
+## Next Steps
+
+Apply this pattern to other tables:
+
+1. **Risks** - Show meeting title via `metadata_id`
+2. **Opportunities** - Show meeting title via `metadata_id`
+3. **Issues** - Show project name via `project_id`
+4. **Tasks** - Show project and assignee via foreign keys
+5. **Meeting Segments** - Show document title via `metadata_id`
+
+---
+
+**Last Updated**: 2025-12-16
+**Version**: 1.0

@@ -1,0 +1,133 @@
+# Form Validation Inventory
+
+This document captures all form fields, their validation rules, and UI behaviors based on the implemented components.
+
+## Contract Forms
+
+### Prime Contract Form (ContractForm)
+Location: `/components/domain/contracts/ContractForm.tsx`
+
+#### General Information Section
+| Field | Type | Required | Validation Rules | Default Value | Notes |
+|-------|------|----------|-----------------|---------------|-------|
+| Contract Number | Text | Yes | - | "2" | Unique identifier |
+| Contract Title | Text | Yes | - | - | Full width field |
+| Contract Company | Select | Yes | Must be valid company ID | - | Dropdown from companies list |
+| Status | Select | Yes | Valid status enum | "draft" | Options: draft, out_for_signature, executed, closed |
+| Original Contract Amount | Number | Yes | `>= 0`, currency format | - | Prefixed with $ |
+| Revised Contract Amount | Number | No | `>= 0`, currency format | - | Prefixed with $, includes change orders |
+| Retention Percentage | Number | No | 0-100 | - | Suffixed with % |
+
+#### Billing Configuration Section
+| Field | Type | Required | Validation Rules | Default Value | Notes |
+|-------|------|----------|-----------------|---------------|-------|
+| Billing Method | Select | Yes | Valid enum | "progress" | Options: progress, unit_price, time_materials, lump_sum |
+| Payment Terms | Select | Yes | Valid enum | "net_30" | Options: net_30, net_45, net_60, due_on_receipt |
+| Billing Day of Month | Number | No | 1-31 | 25 | Day when progress billing is due |
+| Allow billing over contract value | Toggle | No | Boolean | false | For change orders exceeding original |
+| Apply retention | Toggle | No | Boolean | true | - |
+| Labor Retention % | Number | No | 0-100 | 10 | When retention is enabled |
+| Materials Retention % | Number | No | 0-100 | 0 | Often 0% for materials |
+| Release retention with final payment | Toggle | No | Boolean | true | - |
+
+#### Dates & Milestones Section
+| Field | Type | Required | Validation Rules | Default Value | Notes |
+|-------|------|----------|-----------------|---------------|-------|
+| Contract Execution Date | Date | No | Valid date | - | Date picker |
+| Start Date | Date | Yes | Valid date | - | Must be before completion date |
+| Substantial Completion Date | Date | Yes | Valid date, after start | - | - |
+| Final Completion Date | Date | No | Valid date, after substantial | - | - |
+| Contract Duration | Number | No | Calculated field | - | Days, disabled/readonly |
+| Liquidated Damages | Number | No | `>= 0` | 1000 | $/day penalty |
+| Include weather days | Toggle | No | Boolean | true | - |
+| Include holidays in schedule | Toggle | No | Boolean | false | - |
+
+#### Privacy Settings Section
+| Field | Type | Required | Validation Rules | Default Value | Notes |
+|-------|------|----------|-----------------|---------------|-------|
+| Make this contract private | Toggle | No | Boolean | true | Controls visibility |
+| Allowed Users | MultiSelect | Conditional | Required if private | - | User list |
+| Allowed Roles | MultiSelect | Conditional | Required if private | - | Role list |
+| Allow subcontractors to view amount | Checkbox | No | Boolean | false | - |
+| Show in company directory | Checkbox | No | Boolean | true | - |
+| Allow change order creation | Checkbox | No | Boolean | true | - |
+| Require approval for all invoices | Checkbox | No | Boolean | true | - |
+
+#### Schedule of Values Grid
+| Field | Type | Required | Validation Rules | Default Value | Notes |
+|-------|------|----------|-----------------|---------------|-------|
+| Description | Text | Yes per row | - | - | Line item description |
+| Cost Code | Select | No | Valid cost code | - | Searchable dropdown |
+| Scheduled Value | Number | Yes per row | `>= 0` | 0 | Currency |
+| Work Completed | Number | No | `>= 0`, `<= scheduled` | 0 | Currency |
+| Materials Stored | Number | No | `>= 0` | 0 | Currency |
+| % Complete | Number | Auto-calculated | 0-100 | 0 | (work + materials) / scheduled |
+
+### Purchase Order Form
+Location: `/components/domain/contracts/PurchaseOrderForm.tsx`
+
+#### General Details
+| Field | Type | Required | Validation Rules | Default Value | Notes |
+|-------|------|----------|-----------------|---------------|-------|
+| PO Number | Text | Yes | - | "PO-005" | Unique identifier |
+| Vendor | Select | Yes | Valid vendor ID | - | From vendors list |
+| Project | Select | Yes | Valid project ID | - | From projects list |
+| Status | Select | Yes | Valid status enum | "draft" | Options: draft, pending_approval, approved, sent, acknowledged, completed |
+| Issue Date | Date | No | Valid date | - | - |
+| Due Date | Date | Yes | Valid date | - | - |
+| Total Amount | Number | Yes | `>= 0` | - | Currency, full width |
+| Description | Textarea | No | - | - | Multi-line, full width |
+
+#### Attachments
+| Field | Type | Required | Validation Rules | Default Value | Notes |
+|-------|------|----------|-----------------|---------------|-------|
+| Upload Documents | FileUpload | No | .pdf, .doc, .docx, .xls, .xlsx | - | Multiple files, max 10MB each |
+
+## Commitments Form
+Location: `/components/financial/commitments/commitment-form.tsx`
+
+#### General Information
+| Field | Type | Required | Validation Rules | Default Value | Notes |
+|-------|------|----------|-----------------|---------------|-------|
+| Number | Text | Yes | - | - | Commitment number |
+| Contract Company | Select | Yes | Valid company ID | - | - |
+| Title | Text | Yes | - | - | - |
+| Type | Select | Yes | subcontract or purchase_order | - | - |
+| Status | Select | Yes | Valid status | "draft" | - |
+| Executed | Checkbox | No | Boolean | false | - |
+| Original Amount | Number | Yes | `>= 0` | - | Currency |
+| Retention % | Number | No | 0-100 | - | Percentage |
+
+## Common Validation Patterns
+
+### Date Validations
+- Start dates must be before end dates
+- Execution dates typically before or equal to start dates
+- Future dates may be restricted for certain fields
+
+### Number Validations
+- Currency fields: `>= 0`, formatted with commas and 2 decimal places
+- Percentages: 0-100 range
+- Day of month: 1-31 range
+
+### Status Workflows
+- Draft → Sent → Approved → Executed → Closed (typical flow)
+- Some statuses may be irreversible (e.g., Executed, Void)
+
+### Conditional Fields
+- Privacy settings only show user/role selectors when "private" is enabled
+- Retention fields only show when "apply retention" is enabled
+- Some fields may be readonly based on status (e.g., executed contracts)
+
+### File Upload Constraints
+- Accepted formats typically: PDF, Word docs, Excel files
+- Size limits: Usually 10MB per file
+- Multiple file support varies by form
+
+## Notes for Schema Design
+1. All currency amounts should be stored as decimal/numeric types
+2. Percentages can be stored as decimal (0.10 for 10%) or integer (10 for 10%)
+3. Status fields should use ENUMs for consistency
+4. File attachments need separate table with metadata (name, size, type, url)
+5. Many-to-many relationships needed for user/role permissions
+6. Audit trail needed for status changes

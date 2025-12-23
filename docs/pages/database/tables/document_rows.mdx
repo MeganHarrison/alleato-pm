@@ -1,0 +1,21 @@
+# Table: `document_rows`
+
+**Category:** Other
+**Column Count:** 1
+
+[← Back to Schema Index](../INDEX.md)
+
+---
+
+`document_rows`
+**Columns:** 1
+
+| Column | Type | Constraints | Default |
+|--------|------|-------------|----------|
+| `id` | `integer` | NOT NULL | - |
+
+
+
+---
+
+**Generated:** 2025-12-17
