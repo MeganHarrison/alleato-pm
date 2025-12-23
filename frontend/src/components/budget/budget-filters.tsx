@@ -50,7 +50,7 @@ export function BudgetFilters({
     groups.find((g) => g.id === selectedGroup)?.name || 'Select Group';
 
   return (
-    <div className="flex items-center justify-between px-4 py-4 bg-white">
+    <div className="flex items-center justify-between py-4 bg-white">
       {/* Left side - Filter controls */}
       <div className="flex items-center gap-4">
         {/* View Selector */}

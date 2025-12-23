@@ -35,8 +35,6 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { useProjectTitle } from '@/hooks/useProjectTitle';
 import { toast } from 'sonner';
-import { PageContainer } from '@/components/layout/PageContainer';
-
 export default function ProjectBudgetPage() {
   const router = useRouter();
   const params = useParams();
@@ -323,7 +321,7 @@ export default function ProjectBudgetPage() {
 
       <BudgetTabs activeTab={activeTab} onTabChange={handleTabChange} />
 
-      <PageContainer className="flex flex-1 flex-col gap-4 py-6" maxWidth="full">
+      <div className="flex flex-1 flex-col gap-4 py-6">
         {activeTab === 'settings' ? (
           <div className="flex-1 rounded-lg border bg-white shadow-sm">
             <VerticalMarkupSettings projectId={projectId} />
@@ -387,7 +385,7 @@ export default function ProjectBudgetPage() {
             </div>
           </>
         )}
-      </PageContainer>
+      </div>
 
       <BudgetLineItemModal
         open={showLineItemModal}
