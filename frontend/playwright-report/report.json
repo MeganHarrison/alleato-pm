@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 2
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "reporter": [
@@ -39,7 +39,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "setup",
         "name": "setup",
@@ -48,14 +48,14 @@
         "testMatch": [
           "/.*\\.setup\\.ts/"
         ],
-        "timeout": 30000
+        "timeout": 90000
       },
       {
         "outputDir": "/Users/meganharrison/Documents/github/alleato-procore/frontend/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 2
+          "actualWorkers": 1
         },
         "id": "chromium",
         "name": "chromium",
@@ -64,7 +64,7 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 90000
       }
     ],
     "shard": null,
@@ -88,11 +88,11 @@
       "specs": [
         {
           "title": "authenticate",
-          "ok": false,
+          "ok": true,
           "tags": [],
           "tests": [
             {
-              "timeout": 30000,
+              "timeout": 90000,
               "annotations": [],
               "expectedStatus": "passed",
               "projectId": "setup",
@@ -101,40 +101,18 @@
                 {
                   "workerIndex": 0,
                   "parallelIndex": 0,
-                  "status": "timedOut",
-                  "duration": 41001,
-                  "error": {
-                    "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                    "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                  },
-                  "errors": [
-                    {
-                      "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                    },
-                    {
-                      "location": {
-                        "file": "/Users/meganharrison/Documents/github/alleato-procore/frontend/tests/auth.setup.ts",
-                        "column": 14,
-                        "line": 7
-                      },
-                      "message": "Error: page.goto: net::ERR_ABORTED; maybe frame was detached?\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/dev-login?email=test@example.com&password=testpassword123\", waiting until \"load\"\u001b[22m\n\n\n   5 | setup('authenticate', async ({ page }) => {\n   6 |   // Use dev-login for testing\n>  7 |   await page.goto('/dev-login?email=test@example.com&password=testpassword123');\n     |              ^\n   8 |\n   9 |   // Wait for any redirect to complete\n  10 |   await page.waitForLoadState('networkidle');\n    at /Users/meganharrison/Documents/github/alleato-procore/frontend/tests/auth.setup.ts:7:14"
-                    }
-                  ],
+                  "status": "passed",
+                  "duration": 3998,
+                  "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-12-23T20:59:17.971Z",
+                  "startTime": "2025-12-24T01:06:58.124Z",
                   "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "video",
-                      "contentType": "video/webm",
-                      "path": "/Users/meganharrison/Documents/github/alleato-procore/frontend/test-results/auth.setup.ts-authenticate-setup/video.webm"
-                    }
-                  ]
+                  "attachments": []
                 }
               ],
-              "status": "unexpected"
+              "status": "expected"
             }
           ],
           "id": "17e3fe6f4d9d8bd79c6b-60f085b113a677673906",
@@ -145,56 +123,126 @@
       ]
     },
     {
-      "title": "e2e/portfolio-table-columns.spec.ts",
-      "file": "e2e/portfolio-table-columns.spec.ts",
+      "title": "e2e/complete-project-creation-flow.spec.ts",
+      "file": "e2e/complete-project-creation-flow.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Portfolio Table Columns",
-          "file": "e2e/portfolio-table-columns.spec.ts",
+          "title": "Complete Project Creation and Setup Flow",
+          "file": "e2e/complete-project-creation-flow.spec.ts",
           "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "should not display est revenue and est profit columns",
+              "title": "should create new project and complete full setup wizard",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 90000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 22809,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [
+                        {
+                          "text": "Testing setup wizard flow with project ID: 118\n"
+                        },
+                        {
+                          "text": "On setup page: http://localhost:3000/118/setup\n"
+                        },
+                        {
+                          "text": "Step 1: Cost Code Configuration\n"
+                        },
+                        {
+                          "text": "Imported standard cost codes\n"
+                        },
+                        {
+                          "text": "Step 2: Project Directory\n"
+                        },
+                        {
+                          "text": "Step 3: Drawings\n"
+                        },
+                        {
+                          "text": "Step 4: Specifications\n"
+                        },
+                        {
+                          "text": "Step 5: Schedule\n"
+                        },
+                        {
+                          "text": "Step 6: Budget Setup\n"
+                        },
+                        {
+                          "text": "Found 310 budget line items\n"
+                        },
+                        {
+                          "text": "Budget row 1: Site Work - $10000\n"
+                        },
+                        {
+                          "text": "Budget row 2: Concrete - $15000\n"
+                        },
+                        {
+                          "text": "Total budget: $25,000\n"
+                        },
+                        {
+                          "text": "✅ Budget saved successfully\n"
+                        },
+                        {
+                          "text": "Step 7: Prime Contract\n"
+                        },
+                        {
+                          "text": "Final URL: http://localhost:3000/118/home\n"
+                        },
+                        {
+                          "text": "✅ Project setup completed successfully\n"
+                        },
+                        {
+                          "text": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                        },
+                        {
+                          "text": "✅ COMPLETE PROJECT SETUP FLOW TEST PASSED\n"
+                        },
+                        {
+                          "text": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                        },
+                        {
+                          "text": "Project ID: 118\n"
+                        },
+                        {
+                          "text": "Budget Items: 2\n"
+                        },
+                        {
+                          "text": "Total Budget: $25,000\n"
+                        },
+                        {
+                          "text": "Final URL: http://localhost:3000/118/home\n"
+                        },
+                        {
+                          "text": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2025-12-24T01:07:02.611Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "id": "6b3cf4413058737d08b2-85dadb9cde57c7917803",
-              "file": "e2e/portfolio-table-columns.spec.ts",
-              "line": 4,
-              "column": 7
-            },
-            {
-              "title": "should not display revenue and profit in grid view cards",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "6b3cf4413058737d08b2-5d307073bc15ea93768b",
-              "file": "e2e/portfolio-table-columns.spec.ts",
-              "line": 28,
+              "id": "50bf362a9237bbbed3f2-b0ca770970a4e8516f8e",
+              "file": "e2e/complete-project-creation-flow.spec.ts",
+              "line": 6,
               "column": 7
             }
           ]
@@ -204,11 +252,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-12-23T20:59:17.594Z",
-    "duration": 41785.001,
-    "expected": 0,
-    "skipped": 2,
-    "unexpected": 1,
+    "startTime": "2025-12-24T01:06:57.787Z",
+    "duration": 27774.543,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
     "flaky": 0
   }
 }
