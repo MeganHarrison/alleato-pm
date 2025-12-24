@@ -168,3 +168,104 @@ export async function PATCH(
     );
   }
 }
+
+// DELETE /api/projects/[id]/budget/lines/[lineId] - Delete a budget line item
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string; lineId: string }> }
+) {
+  try {
+    const { id, lineId } = await params;
+    const projectId = parseInt(id, 10);
+
+    if (Number.isNaN(projectId)) {
+      return NextResponse.json(
+        { error: 'Invalid project ID' },
+        { status: 400 }
+      );
+    }
+
+    const supabase = await createClient();
+
+    // Get current user
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error('Auth error or no user:', { userError, hasUser: !!user });
+      return NextResponse.json(
+        { error: 'Unauthorized - please log in' },
+        { status: 401 }
+      );
+    }
+
+    // Check if budget is locked
+    const { data: project, error: projectError } = await supabase
+      .from('projects')
+      .select('budget_locked')
+      .eq('id', projectId)
+      .single();
+
+    if (projectError) {
+      console.error('Error fetching project:', projectError);
+      return NextResponse.json(
+        { error: 'Failed to verify project status' },
+        { status: 500 }
+      );
+    }
+
+    if (project.budget_locked) {
+      return NextResponse.json(
+        { error: 'Budget is locked and cannot be deleted' },
+        { status: 403 }
+      );
+    }
+
+    // Verify the budget line exists and belongs to this project
+    const { data: existingLine, error: lineError } = await supabase
+      .from('budget_lines')
+      .select('id, project_id')
+      .eq('id', lineId)
+      .single();
+
+    if (lineError || !existingLine) {
+      console.error('Budget line not found:', { lineError, hasLine: !!existingLine });
+      return NextResponse.json(
+        { error: 'Budget line item not found' },
+        { status: 404 }
+      );
+    }
+
+    if (existingLine.project_id !== projectId) {
+      return NextResponse.json(
+        { error: 'Budget line does not belong to this project' },
+        { status: 403 }
+      );
+    }
+
+    // Delete the budget line
+    const { error: deleteError } = await supabase
+      .from('budget_lines')
+      .delete()
+      .eq('id', lineId);
+
+    if (deleteError) {
+      console.error('Error deleting budget line:', deleteError);
+      return NextResponse.json(
+        { error: 'Failed to delete budget line', details: deleteError.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Budget line deleted successfully',
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to delete budget line';
+    console.error('Error in budget line DELETE route:', error);
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
+  }
+}
