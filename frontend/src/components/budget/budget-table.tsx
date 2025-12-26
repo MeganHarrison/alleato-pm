@@ -255,12 +255,14 @@ export function BudgetTable({ data, grandTotals, onEditLineItem, onSelectionChan
           return <div className="w-4" />;
         }
         return (
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-            className="h-4 w-4"
-          />
+          <div onClick={(e) => e.stopPropagation()}>
+            <Checkbox
+              checked={row.getIsSelected()}
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              aria-label="Select row"
+              className="h-4 w-4"
+            />
+          </div>
         );
       },
       size: 40,
@@ -275,7 +277,10 @@ export function BudgetTable({ data, grandTotals, onEditLineItem, onSelectionChan
         }
         return (
           <button
-            onClick={() => row.toggleExpanded()}
+            onClick={(e) => {
+              e.stopPropagation();
+              row.toggleExpanded();
+            }}
             className="p-1 hover:bg-gray-100 rounded"
           >
             {row.getIsExpanded() ? (
