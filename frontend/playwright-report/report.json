@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 2
     },
     "preserveOutput": "always",
     "reporter": [
@@ -39,7 +39,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 2
         },
         "id": "setup",
         "name": "setup",
@@ -55,7 +55,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 2
         },
         "id": "chromium",
         "name": "chromium",
@@ -88,7 +88,7 @@
       "specs": [
         {
           "title": "authenticate",
-          "ok": false,
+          "ok": true,
           "tags": [],
           "tests": [
             {
@@ -101,50 +101,18 @@
                 {
                   "workerIndex": 0,
                   "parallelIndex": 0,
-                  "status": "timedOut",
-                  "duration": 30571,
-                  "error": {
-                    "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
-                    "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                  },
-                  "errors": [
-                    {
-                      "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
-                    },
-                    {
-                      "location": {
-                        "file": "/Users/meganharrison/Documents/github/alleato-procore/frontend/tests/auth.setup.ts",
-                        "column": 14,
-                        "line": 10
-                      },
-                      "message": "Error: page.waitForLoadState: Test timeout of 30000ms exceeded.\n\n   8 |\n   9 |   // Wait for any redirect to complete\n> 10 |   await page.waitForLoadState('networkidle');\n     |              ^\n  11 |   await page.waitForTimeout(2000);\n  12 |\n  13 |   // Save signed-in state\n    at /Users/meganharrison/Documents/github/alleato-procore/frontend/tests/auth.setup.ts:10:14"
-                    }
-                  ],
+                  "status": "passed",
+                  "duration": 7575,
+                  "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-12-24T03:58:38.431Z",
+                  "startTime": "2025-12-26T05:18:10.785Z",
                   "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "screenshot",
-                      "contentType": "image/png",
-                      "path": "/Users/meganharrison/Documents/github/alleato-procore/frontend/test-results/auth.setup.ts-authenticate-setup/test-failed-1.png"
-                    },
-                    {
-                      "name": "video",
-                      "contentType": "video/webm",
-                      "path": "/Users/meganharrison/Documents/github/alleato-procore/frontend/test-results/auth.setup.ts-authenticate-setup/video.webm"
-                    },
-                    {
-                      "name": "error-context",
-                      "contentType": "text/markdown",
-                      "path": "/Users/meganharrison/Documents/github/alleato-procore/frontend/test-results/auth.setup.ts-authenticate-setup/error-context.md"
-                    }
-                  ]
+                  "attachments": []
                 }
               ],
-              "status": "unexpected"
+              "status": "expected"
             }
           ],
           "id": "17e3fe6f4d9d8bd79c6b-60f085b113a677673906",
@@ -155,20 +123,110 @@
       ]
     },
     {
-      "title": "e2e/budget-cost-code-type.spec.ts",
-      "file": "e2e/budget-cost-code-type.spec.ts",
+      "title": "e2e/form-commitments-company-dropdown.spec.ts",
+      "file": "e2e/form-commitments-company-dropdown.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Budget Setup Wizard - Cost Code Type Display",
-          "file": "e2e/budget-cost-code-type.spec.ts",
+          "title": "Form Commitments - Company Dropdown",
+          "file": "e2e/form-commitments-company-dropdown.spec.ts",
           "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "should display cost code type column and auto-populate description",
+              "title": "should display and populate company dropdown on form-commitments page",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 20202,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /Users/meganharrison/Documents/github/alleato-procore/frontend/tests/e2e/form-commitments-company-dropdown.spec.ts:70:25",
+                        "location": {
+                          "file": "/Users/meganharrison/Documents/github/alleato-procore/frontend/tests/e2e/form-commitments-company-dropdown.spec.ts",
+                          "column": 25,
+                          "line": 70
+                        },
+                        "snippet": "  68 |\n  69 |     // Verify that we have at least some companies loaded\n> 70 |     expect(optionCount).toBeGreaterThan(0);\n     |                         ^\n  71 |   });\n  72 |\n  73 |   test('should check if companies are loaded in the store', async ({ page }) => {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/meganharrison/Documents/github/alleato-procore/frontend/tests/e2e/form-commitments-company-dropdown.spec.ts",
+                            "column": 25,
+                            "line": 70
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  68 |\n  69 |     // Verify that we have at least some companies loaded\n> 70 |     expect(optionCount).toBeGreaterThan(0);\n     |                         ^\n  71 |   });\n  72 |\n  73 |   test('should check if companies are loaded in the store', async ({ page }) => {\n    at /Users/meganharrison/Documents/github/alleato-procore/frontend/tests/e2e/form-commitments-company-dropdown.spec.ts:70:25"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "No options found after 10 seconds\n"
+                        },
+                        {
+                          "text": "Number of company options: \u001b[33m0\u001b[39m\n"
+                        },
+                        {
+                          "text": "Page has \"Radial\": \u001b[33mtrue\u001b[39m\n"
+                        },
+                        {
+                          "text": "Page has \"Ceva\": \u001b[33mtrue\u001b[39m\n"
+                        },
+                        {
+                          "text": "Debug info: {\n  selectCount: \u001b[33m4\u001b[39m,\n  buttonCount: \u001b[33m30\u001b[39m,\n  bodyText: \u001b[32m'Alleato\\n'\u001b[39m +\n    \u001b[32m'Projects\\n'\u001b[39m +\n    \u001b[32m'Tasks\\n'\u001b[39m +\n    \u001b[32m'Meetings\\n'\u001b[39m +\n    \u001b[32m'Directory\\n'\u001b[39m +\n    \u001b[32m'AI Chat\\n'\u001b[39m +\n    \u001b[32m'Project Tools\\n'\u001b[39m +\n    \u001b[32m'Drawings\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Photos\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Submittals\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Punch List\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Financial\\n'\u001b[39m +\n    \u001b[32m'Budget\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Contracts\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Commitments\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Change Orders\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Change Events\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Invoices\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Billing Periods\\n'\u001b[39m +\n    \u001b[32m'More\\n'\u001b[39m +\n    \u001b[32m'Executive\\n'\u001b[39m +\n    \u001b[32m'Test User\\n'\u001b[39m +\n    \u001b[32m'test@example.com\\n'\u001b[39m +\n    \u001b[32m'Toggle Sidebar\\n'\u001b[39m +\n    \u001b[32m'Form Commitments\\n'\u001b[39m +\n    \u001b[32m'Project\\n'\u001b[39m +\n    \u001b[32m'|\\n'\u001b[39m +\n    \u001b[32m'Select Project\\n'\u001b[39m +\n    \u001b[32m'Project Tools\\n'\u001b[39m +\n    \u001b[32m'Home\\n'\u001b[39m +\n    \u001b[32m'New Commitment\\n'\u001b[39m +\n    \u001b[32m'\\n'\u001b[39m +\n    \u001b[32m'Create a new purchase order or subcontract\\n'\u001b[39m +\n    \u001b[32m'\\n'\u001b[39m +\n    \u001b[32m'Commitment Number*\\n'\u001b[39m +\n    \u001b[32m'Contract Company*\\n'\u001b[39m +\n    \u001b[32m'Select a company\\n'\u001b[39m +\n    \u001b[32m'ABC Electrical Contracto'\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-26T05:18:18.865Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/meganharrison/Documents/github/alleato-procore/frontend/test-results/e2e-form-commitments-compa-b6602-wn-on-form-commitments-page-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/meganharrison/Documents/github/alleato-procore/frontend/test-results/e2e-form-commitments-compa-b6602-wn-on-form-commitments-page-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/meganharrison/Documents/github/alleato-procore/frontend/test-results/e2e-form-commitments-compa-b6602-wn-on-form-commitments-page-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/meganharrison/Documents/github/alleato-procore/frontend/tests/e2e/form-commitments-company-dropdown.spec.ts",
+                        "column": 25,
+                        "line": 70
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "b40f7b015310aac5034a-643bb310eb361c4c9178",
+              "file": "e2e/form-commitments-company-dropdown.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "should check if companies are loaded in the store",
               "ok": true,
               "tags": [],
               "tests": [
@@ -178,13 +236,34 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 5881,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Store state: {\n  location: \u001b[32m'http://localhost:3000/form-commitments?projectId=118&type=subcontract'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "Select placeholder/value: Select a company\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-26T05:18:18.863Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "id": "26e5911fb34cb2fd5060-223a91415ee6e46dc4ca",
-              "file": "e2e/budget-cost-code-type.spec.ts",
-              "line": 11,
+              "id": "b40f7b015310aac5034a-c12cf0ba37bc528da65d",
+              "file": "e2e/form-commitments-company-dropdown.spec.ts",
+              "line": 73,
               "column": 7
             }
           ]
@@ -194,10 +273,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-12-24T03:58:38.093Z",
-    "duration": 31247.86,
-    "expected": 0,
-    "skipped": 1,
+    "startTime": "2025-12-26T05:18:09.601Z",
+    "duration": 29688.322999999997,
+    "expected": 2,
+    "skipped": 0,
     "unexpected": 1,
     "flaky": 0
   }

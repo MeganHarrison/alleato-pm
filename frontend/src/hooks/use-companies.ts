@@ -1,19 +1,9 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
 import { useCallback, useEffect, useState } from 'react'
 
-export interface Company {
-  id: string
-  name: string
-  address: string | null
-  city: string | null
-  state: string | null
-  website: string | null
-  notes: string | null
-  created_at: string | null
-  updated_at: string | null
-}
+import { createClient } from '@/lib/supabase/client'
+import type { Company } from '@/types/financial'
 
 export interface CompanyOption {
   value: string

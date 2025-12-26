@@ -1,10 +1,17 @@
 export interface Company {
   id: string;
   name: string;
-  type: 'vendor' | 'subcontractor' | 'supplier' | 'owner';
+  type?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  website?: string | null;
+  title?: string | null;
+  notes?: string | null;
+  currency_code?: string | null;
+  currency_symbol?: string | null;
   contact_email?: string;
   contact_phone?: string;
-  address?: string;
   tax_id?: string;
   created_at: string;
   updated_at: string;

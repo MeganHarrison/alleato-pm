@@ -77,7 +77,7 @@ export function CommitmentForm({
   };
 
   const vendorCompanies = companies.filter(
-    (company) => company.type === 'vendor' || company.type === 'subcontractor'
+    (company) => !company.type || company.type === 'vendor' || company.type === 'subcontractor'
   );
 
   return (

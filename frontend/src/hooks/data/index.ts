@@ -3,7 +3,8 @@
  * These hooks provide consistent patterns for fetching and creating records
  */
 
-export { useCompanies, type Company, type CompanyOption } from '../use-companies'
+export type { Company } from '@/types/financial'
+export { useCompanies, type CompanyOption } from '../use-companies'
 export { useClients, type Client, type ClientOption } from '../use-clients'
 export { useUsers, useEmployees, type AppUser, type Employee, type UserOption } from '../use-users'
 export { useProjects, type Project, type ProjectOption } from '../use-projects'

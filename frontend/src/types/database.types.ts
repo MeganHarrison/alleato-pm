@@ -395,387 +395,6 @@ export type Database = {
         }
         Relationships: []
       }
-      archon_code_examples: {
-        Row: {
-          chunk_number: number
-          content: string
-          created_at: string
-          embedding: string | null
-          id: number
-          metadata: Json
-          source_id: string
-          summary: string
-          url: string
-        }
-        Insert: {
-          chunk_number: number
-          content: string
-          created_at?: string
-          embedding?: string | null
-          id?: number
-          metadata?: Json
-          source_id: string
-          summary: string
-          url: string
-        }
-        Update: {
-          chunk_number?: number
-          content?: string
-          created_at?: string
-          embedding?: string | null
-          id?: number
-          metadata?: Json
-          source_id?: string
-          summary?: string
-          url?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "archon_code_examples_source_id_fkey"
-            columns: ["source_id"]
-            isOneToOne: false
-            referencedRelation: "archon_sources"
-            referencedColumns: ["source_id"]
-          },
-        ]
-      }
-      archon_crawled_pages: {
-        Row: {
-          chunk_number: number
-          content: string
-          created_at: string
-          embedding: string | null
-          id: number
-          metadata: Json
-          source_id: string
-          url: string
-        }
-        Insert: {
-          chunk_number: number
-          content: string
-          created_at?: string
-          embedding?: string | null
-          id?: number
-          metadata?: Json
-          source_id: string
-          url: string
-        }
-        Update: {
-          chunk_number?: number
-          content?: string
-          created_at?: string
-          embedding?: string | null
-          id?: number
-          metadata?: Json
-          source_id?: string
-          url?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "archon_crawled_pages_source_id_fkey"
-            columns: ["source_id"]
-            isOneToOne: false
-            referencedRelation: "archon_sources"
-            referencedColumns: ["source_id"]
-          },
-        ]
-      }
-      archon_document_versions: {
-        Row: {
-          change_summary: string | null
-          change_type: string | null
-          content: Json
-          created_at: string | null
-          created_by: string | null
-          document_id: string | null
-          field_name: string
-          id: string
-          project_id: string | null
-          task_id: string | null
-          version_number: number
-        }
-        Insert: {
-          change_summary?: string | null
-          change_type?: string | null
-          content: Json
-          created_at?: string | null
-          created_by?: string | null
-          document_id?: string | null
-          field_name: string
-          id?: string
-          project_id?: string | null
-          task_id?: string | null
-          version_number: number
-        }
-        Update: {
-          change_summary?: string | null
-          change_type?: string | null
-          content?: Json
-          created_at?: string | null
-          created_by?: string | null
-          document_id?: string | null
-          field_name?: string
-          id?: string
-          project_id?: string | null
-          task_id?: string | null
-          version_number?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "archon_document_versions_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "archon_projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "archon_document_versions_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "archon_tasks"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      archon_project_sources: {
-        Row: {
-          created_by: string | null
-          id: string
-          linked_at: string | null
-          notes: string | null
-          project_id: string | null
-          source_id: string
-        }
-        Insert: {
-          created_by?: string | null
-          id?: string
-          linked_at?: string | null
-          notes?: string | null
-          project_id?: string | null
-          source_id: string
-        }
-        Update: {
-          created_by?: string | null
-          id?: string
-          linked_at?: string | null
-          notes?: string | null
-          project_id?: string | null
-          source_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "archon_project_sources_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "archon_projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      archon_projects: {
-        Row: {
-          created_at: string | null
-          data: Json | null
-          description: string | null
-          docs: Json | null
-          features: Json | null
-          github_repo: string | null
-          id: string
-          pinned: boolean | null
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          data?: Json | null
-          description?: string | null
-          docs?: Json | null
-          features?: Json | null
-          github_repo?: string | null
-          id?: string
-          pinned?: boolean | null
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          data?: Json | null
-          description?: string | null
-          docs?: Json | null
-          features?: Json | null
-          github_repo?: string | null
-          id?: string
-          pinned?: boolean | null
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      archon_prompts: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          prompt: string
-          prompt_name: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          prompt: string
-          prompt_name: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          prompt?: string
-          prompt_name?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      archon_settings: {
-        Row: {
-          category: string | null
-          created_at: string | null
-          description: string | null
-          encrypted_value: string | null
-          id: string
-          is_encrypted: boolean | null
-          key: string
-          updated_at: string | null
-          value: string | null
-        }
-        Insert: {
-          category?: string | null
-          created_at?: string | null
-          description?: string | null
-          encrypted_value?: string | null
-          id?: string
-          is_encrypted?: boolean | null
-          key: string
-          updated_at?: string | null
-          value?: string | null
-        }
-        Update: {
-          category?: string | null
-          created_at?: string | null
-          description?: string | null
-          encrypted_value?: string | null
-          id?: string
-          is_encrypted?: boolean | null
-          key?: string
-          updated_at?: string | null
-          value?: string | null
-        }
-        Relationships: []
-      }
-      archon_sources: {
-        Row: {
-          created_at: string
-          metadata: Json | null
-          source_id: string
-          summary: string | null
-          title: string | null
-          total_word_count: number | null
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          metadata?: Json | null
-          source_id: string
-          summary?: string | null
-          title?: string | null
-          total_word_count?: number | null
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          metadata?: Json | null
-          source_id?: string
-          summary?: string | null
-          title?: string | null
-          total_word_count?: number | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      archon_tasks: {
-        Row: {
-          archived: boolean | null
-          archived_at: string | null
-          archived_by: string | null
-          assignee: string | null
-          code_examples: Json | null
-          created_at: string | null
-          description: string | null
-          feature: string | null
-          id: string
-          parent_task_id: string | null
-          project_id: string | null
-          sources: Json | null
-          status: Database["public"]["Enums"]["task_status"] | null
-          task_order: number | null
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          archived?: boolean | null
-          archived_at?: string | null
-          archived_by?: string | null
-          assignee?: string | null
-          code_examples?: Json | null
-          created_at?: string | null
-          description?: string | null
-          feature?: string | null
-          id?: string
-          parent_task_id?: string | null
-          project_id?: string | null
-          sources?: Json | null
-          status?: Database["public"]["Enums"]["task_status"] | null
-          task_order?: number | null
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          archived?: boolean | null
-          archived_at?: string | null
-          archived_by?: string | null
-          assignee?: string | null
-          code_examples?: Json | null
-          created_at?: string | null
-          description?: string | null
-          feature?: string | null
-          id?: string
-          parent_task_id?: string | null
-          project_id?: string | null
-          sources?: Json | null
-          status?: Database["public"]["Enums"]["task_status"] | null
-          task_order?: number | null
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "archon_tasks_parent_task_id_fkey"
-            columns: ["parent_task_id"]
-            isOneToOne: false
-            referencedRelation: "archon_tasks"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "archon_tasks_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "archon_projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       asrs_blocks: {
         Row: {
           block_type: string
@@ -1300,6 +919,160 @@ export type Database = {
           },
         ]
       }
+      budget_line_history: {
+        Row: {
+          budget_line_id: string
+          change_type: string
+          changed_at: string
+          changed_by: string | null
+          field_name: string
+          id: string
+          new_value: string | null
+          notes: string | null
+          old_value: string | null
+          project_id: number
+        }
+        Insert: {
+          budget_line_id: string
+          change_type: string
+          changed_at?: string
+          changed_by?: string | null
+          field_name: string
+          id?: string
+          new_value?: string | null
+          notes?: string | null
+          old_value?: string | null
+          project_id: number
+        }
+        Update: {
+          budget_line_id?: string
+          change_type?: string
+          changed_at?: string
+          changed_by?: string | null
+          field_name?: string
+          id?: string
+          new_value?: string | null
+          notes?: string | null
+          old_value?: string | null
+          project_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_line_history_budget_line_id_fkey"
+            columns: ["budget_line_id"]
+            isOneToOne: false
+            referencedRelation: "budget_lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_line_history_budget_line_id_fkey"
+            columns: ["budget_line_id"]
+            isOneToOne: false
+            referencedRelation: "v_budget_lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_line_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_activity_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "budget_line_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_line_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard_no_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_line_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_issue_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "budget_line_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_with_manager"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_line_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_line_history_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "submittal_project_dashboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budget_line_item_history: {
+        Row: {
+          budget_code: string
+          budget_line_item_id: string
+          changed_field: string | null
+          description: string
+          event_type: string
+          from_value: string | null
+          id: string
+          notes: string | null
+          performed_at: string
+          performed_by: string | null
+          performed_by_name: string | null
+          project_id: number
+          source: string
+          to_value: string | null
+        }
+        Insert: {
+          budget_code: string
+          budget_line_item_id: string
+          changed_field?: string | null
+          description: string
+          event_type: string
+          from_value?: string | null
+          id?: string
+          notes?: string | null
+          performed_at?: string
+          performed_by?: string | null
+          performed_by_name?: string | null
+          project_id: number
+          source?: string
+          to_value?: string | null
+        }
+        Update: {
+          budget_code?: string
+          budget_line_item_id?: string
+          changed_field?: string | null
+          description?: string
+          event_type?: string
+          from_value?: string | null
+          id?: string
+          notes?: string | null
+          performed_at?: string
+          performed_by?: string | null
+          performed_by_name?: string | null
+          project_id?: number
+          source?: string
+          to_value?: string | null
+        }
+        Relationships: []
+      }
       budget_lines: {
         Row: {
           cost_code_id: string
@@ -1309,10 +1082,15 @@ export type Database = {
           description: string | null
           id: string
           original_amount: number
+          project_budget_code_id: string | null
           project_id: number
+          quantity: number | null
           sub_job_id: string | null
           sub_job_key: string | null
+          unit_cost: number | null
+          unit_of_measure: string | null
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           cost_code_id: string
@@ -1322,10 +1100,15 @@ export type Database = {
           description?: string | null
           id?: string
           original_amount?: number
+          project_budget_code_id?: string | null
           project_id: number
+          quantity?: number | null
           sub_job_id?: string | null
           sub_job_key?: string | null
+          unit_cost?: number | null
+          unit_of_measure?: string | null
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           cost_code_id?: string
@@ -1335,10 +1118,15 @@ export type Database = {
           description?: string | null
           id?: string
           original_amount?: number
+          project_budget_code_id?: string | null
           project_id?: number
+          quantity?: number | null
           sub_job_id?: string | null
           sub_job_key?: string | null
+          unit_cost?: number | null
+          unit_of_measure?: string | null
           updated_at?: string
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -1360,6 +1148,13 @@ export type Database = {
             columns: ["cost_type_id"]
             isOneToOne: false
             referencedRelation: "cost_code_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budget_lines_project_budget_code_id_fkey"
+            columns: ["project_budget_code_id"]
+            isOneToOne: false
+            referencedRelation: "project_budget_codes"
             referencedColumns: ["id"]
           },
           {
@@ -4676,36 +4471,95 @@ export type Database = {
       }
       files: {
         Row: {
+          category: string | null
           content: string
           created_at: string
           embedding: string | null
           id: string
           metadata: Json | null
+          project_id: number | null
           status: string | null
+          title: string | null
           updated_at: string
           url: string | null
         }
         Insert: {
+          category?: string | null
           content: string
           created_at?: string
           embedding?: string | null
           id: string
           metadata?: Json | null
+          project_id?: number | null
           status?: string | null
+          title?: string | null
           updated_at?: string
           url?: string | null
         }
         Update: {
+          category?: string | null
           content?: string
           created_at?: string
           embedding?: string | null
           id?: string
           metadata?: Json | null
+          project_id?: number | null
           status?: string | null
+          title?: string | null
           updated_at?: string
           url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_activity_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard_no_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_issue_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_with_manager"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "submittal_project_dashboard"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       financial_contracts: {
         Row: {
@@ -7202,6 +7056,7 @@ export type Database = {
           fullpage_storage_path: string | null
           id: string
           name: string
+          new_url: string | null
           page_title: string | null
           session_id: string | null
           source_url: string | null
@@ -7226,6 +7081,7 @@ export type Database = {
           fullpage_storage_path?: string | null
           id?: string
           name: string
+          new_url?: string | null
           page_title?: string | null
           session_id?: string | null
           source_url?: string | null
@@ -7250,6 +7106,7 @@ export type Database = {
           fullpage_storage_path?: string | null
           id?: string
           name?: string
+          new_url?: string | null
           page_title?: string | null
           session_id?: string | null
           source_url?: string | null
@@ -7549,6 +7406,129 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "submittal_project_dashboard"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_budget_codes: {
+        Row: {
+          cost_code_id: string
+          cost_type_id: string
+          created_at: string
+          created_by: string | null
+          description: string
+          description_mode: string
+          id: string
+          is_active: boolean
+          project_id: number
+          sub_job_id: string | null
+          sub_job_key: string | null
+          updated_at: string
+        }
+        Insert: {
+          cost_code_id: string
+          cost_type_id: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          description_mode?: string
+          id?: string
+          is_active?: boolean
+          project_id: number
+          sub_job_id?: string | null
+          sub_job_key?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cost_code_id?: string
+          cost_type_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          description_mode?: string
+          id?: string
+          is_active?: boolean
+          project_id?: number
+          sub_job_id?: string | null
+          sub_job_key?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_budget_codes_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_budget_codes_cost_code_id_fkey"
+            columns: ["cost_code_id"]
+            isOneToOne: false
+            referencedRelation: "cost_codes_with_division_title"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_budget_codes_cost_type_id_fkey"
+            columns: ["cost_type_id"]
+            isOneToOne: false
+            referencedRelation: "cost_code_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_budget_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_activity_view"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_budget_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_budget_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_health_dashboard_no_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_budget_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_issue_summary"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "project_budget_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project_with_manager"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_budget_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_budget_codes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "submittal_project_dashboard"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_budget_codes_sub_job_id_fkey"
+            columns: ["sub_job_id"]
+            isOneToOne: false
+            referencedRelation: "sub_jobs"
             referencedColumns: ["id"]
           },
         ]

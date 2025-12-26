@@ -1,14 +1,24 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { CommitmentForm } from '@/components/financial/commitments/commitment-form';
 import { useFinancialStore } from '@/lib/stores/financial-store';
 import { CommitmentFormData } from '@/lib/schemas/financial-schemas';
+import { useCompanies } from '@/hooks/use-companies';
 
 export default function NewCommitmentPage() {
   const router = useRouter();
-  const { companies, addCommitment, setError } = useFinancialStore();
+  const { companies, addCommitment, setError, setCompanies } = useFinancialStore();
+  const { companies: fetchedCompanies } = useCompanies();
+
+  // Load companies into the financial store
+  useEffect(() => {
+    if (fetchedCompanies.length > 0) {
+      setCompanies(fetchedCompanies);
+    }
+  }, [fetchedCompanies, setCompanies]);
 
   const handleSubmit = async (data: CommitmentFormData) => {
     try {
