@@ -113,9 +113,8 @@ const REGION_OPTIONS = [
 ];
 
 const OFFICE_OPTIONS = [
-  { value: 'Alleato Group', label: 'Alleato Group' },
-  { value: 'Alleato Group West', label: 'Alleato Group West' },
-  { value: 'Alleato Group Southeast', label: 'Alleato Group Southeast' },
+  { value: 'Alleato Group Indianapolis', label: 'Alleato Group Indianapolis' },
+  { value: 'Alleato Group Tampa', label: 'Alleato Group Tampa' },
 ];
 
 const US_STATE_OPTIONS = [
