@@ -296,17 +296,27 @@ export function BudgetTable({ data, grandTotals, onEditLineItem, onSelectionChan
     {
       accessorKey: 'description',
       header: 'Description',
-      cell: ({ row }) => (
-        <div
-          className={cn(
-            'font-medium text-gray-900',
-            row.depth > 0 && 'text-gray-700',
-            getDepthPadding(row.depth)
-          )}
-        >
-          {row.getValue('description')}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const hasChildren = row.original.children && row.original.children.length > 0;
+        const isGroupRow = hasChildren;
+
+        return (
+          <div
+            className={cn(
+              'font-medium',
+              isGroupRow ? 'text-gray-900 font-semibold' : 'text-gray-700',
+              getDepthPadding(row.depth)
+            )}
+          >
+            {isGroupRow && (
+              <span className="text-gray-600 font-mono mr-2">
+                {row.original.costCode}
+              </span>
+            )}
+            {row.getValue('description')}
+          </div>
+        );
+      },
       size: 250,
     },
     {
@@ -567,6 +577,7 @@ export function BudgetTable({ data, grandTotals, onEditLineItem, onSelectionChan
               table.getRowModel().rows.map((row, index) => {
                 const hasChildren = row.original.children && row.original.children.length > 0;
                 const isClickable = !hasChildren && onEditLineItem;
+                const isGroupRow = hasChildren;
 
                 return (
                   <TableRow
@@ -578,9 +589,10 @@ export function BudgetTable({ data, grandTotals, onEditLineItem, onSelectionChan
                     }}
                     className={cn(
                       "border-b border-gray-100 transition-colors",
-                      isClickable && "cursor-pointer hover:bg-blue-50/50",
-                      !isClickable && "hover:bg-gray-100",
-                      row.depth > 0 && "bg-gray-50",
+                      isGroupRow && "bg-gray-100/80 hover:bg-gray-200/80 font-semibold",
+                      !isGroupRow && isClickable && "cursor-pointer hover:bg-blue-50/50",
+                      !isGroupRow && !isClickable && "hover:bg-gray-100",
+                      !isGroupRow && row.depth > 0 && "bg-gray-50",
                       row.getIsSelected() && "bg-blue-50",
                       !row.getIsSelected() && index % 2 === 1 && "bg-gray-100"
                     )}

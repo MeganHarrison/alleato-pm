@@ -44,6 +44,7 @@ import {
   saveQuickFilterPreference
 } from '@/lib/budget-filters';
 import type { QuickFilterType } from '@/components/budget/budget-filters';
+import { applyGrouping, type GroupingType } from '@/lib/budget-grouping';
 
 export default function ProjectBudgetPage() {
   const router = useRouter();
@@ -122,9 +123,16 @@ export default function ProjectBudgetPage() {
   }, [projectId, fetchLockStatus]);
 
   // Apply quick filter to budget data
+  // Apply filtering and grouping to budget data
   const filteredData = React.useMemo(() => {
-    return applyQuickFilter(budgetData, quickFilter);
-  }, [budgetData, quickFilter]);
+    // First apply quick filter
+    const filtered = applyQuickFilter(budgetData, quickFilter);
+
+    // Then apply grouping
+    const grouped = applyGrouping(filtered, selectedGroup as GroupingType);
+
+    return grouped;
+  }, [budgetData, quickFilter, selectedGroup]);
 
   // Handle quick filter change
   const handleQuickFilterChange = React.useCallback((filter: QuickFilterType) => {

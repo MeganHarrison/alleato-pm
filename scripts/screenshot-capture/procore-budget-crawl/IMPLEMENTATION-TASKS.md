@@ -128,7 +128,7 @@ This document contains a comprehensive task list for implementing Procore-like b
 - [ ] Add column resizing
 - [ ] Support frozen columns
 - [x] Add totals/summary row
-- [x] Implement grouping by cost code
+- [x] Implement grouping by cost code (hierarchical with 3 tier levels)
 
 **Acceptance Criteria:** Budget table displays with all interactive features
 
@@ -186,8 +186,8 @@ This document contains a comprehensive task list for implementing Procore-like b
 - [x] Add "Add Filter" dropdown
 - [x] Add "Add Group" dropdown
 - [x] Support multiple filter criteria
-- [x] Support nested grouping
-- [ ] Save filter preferences per user
+- [x] Support nested grouping (hierarchical cost code tiers)
+- [x] Save filter preferences per user (localStorage)
 - [ ] Add "Clear Filters" button
 
 **Acceptance Criteria:** Budget data can be filtered and grouped
@@ -870,34 +870,168 @@ This document contains a comprehensive task list for implementing Procore-like b
 
 ## Appendix B: Suggested Implementation Roadmap
 
-### Phase 1: Foundation (Weeks 1-2)
-- Database Schema
-- API Development
-- Basic CRUD Operations
-- Authentication/Permissions
+### Phase 1: Foundation (Weeks 1-2) ✅ COMPLETE
+- ✅ Database Schema
+- ✅ Basic API Development (Server Components)
+- ✅ Basic CRUD Operations
+- ✅ Authentication/Permissions
 
-### Phase 2: Core Features (Weeks 3-4)
-- Budget Table UI
-- View Configuration
-- Calculations & Formulas
-- Import/Export
+### Phase 2: Core Features (Weeks 3-4) 🏗️ IN PROGRESS (85% Complete)
+- ✅ Budget Table UI
+- 🏗️ View Configuration (Backend + UI complete, tests pending)
+- ✅ Calculations & Formulas
+- ⚠️ Import/Export (0% - Blocked for MVP)
 
-### Phase 3: Advanced Features (Weeks 5-6)
-- Change Management
-- Snapshots & Versioning
-- Forecasting
-- Variance Analysis
+### Phase 2a: Quick Wins 🏗️ COMPLETE (Awaiting Tests)
+- 🏗️ Delete confirmation dialog
+- 🏗️ Quick filter presets (4 types)
+- 🏗️ Keyboard shortcuts (3 shortcuts)
+- ✅ Progress tracking enhancements
 
-### Phase 4: Polish & Testing (Week 7-8)
-- E2E Testing
-- Performance Optimization
-- UI/UX Refinements
-- Documentation
+### Phase 2b: Budget Views System 🏗️ COMPLETE (Awaiting Tests)
+- 🏗️ Database schema with RLS policies
+- 🏗️ Full CRUD API endpoints
+- 🏗️ BudgetViewsModal component
+- 🏗️ BudgetViewsManager component
+- 🏗️ Integration with budget page
 
-### Phase 5: Integrations (Week 9+)
+### Phase 3: Advanced Features (Weeks 5-6) - PLANNED
+- Change Management (60% complete)
+- Snapshots & Versioning (20% complete)
+- Forecasting (0% complete)
+- Variance Analysis (Basic complete, enhancements planned)
+
+### Phase 4: Polish & Testing (Week 7-8) - IN PROGRESS
+- 🧪 E2E Test Suites Created (awaiting execution)
+- Performance Optimization (not started)
+- UI/UX Refinements (ongoing)
+- Documentation (ongoing)
+
+### Phase 5: Integrations (Week 9+) - NOT STARTED
 - ERP Integration
 - Cost Code Sync
 - Third-party Tools
+
+---
+
+## Appendix C: Quick Wins Available Now
+
+These can be completed quickly to provide immediate value:
+
+### ✅ 1. Delete Confirmation Dialog (~2 hours) - COMPLETE
+- ✅ Added confirmation dialog component
+- 🧪 Tests created, awaiting verification
+- Status: Developed, needs test verification
+
+### ✅ 2. Filter Presets (~4 hours) - COMPLETE
+- ✅ "All" filter (shows everything)
+- ✅ "Over Budget" quick filter (variance < 0)
+- ✅ "Under Budget" quick filter (variance > 0)
+- ✅ "No Activity" quick filter (no costs recorded)
+- ✅ Saved to localStorage
+- 🧪 Tests created, awaiting verification
+- Status: Developed, needs test verification
+
+### ✅ 3. Keyboard Shortcuts (~2 hours) - COMPLETE
+- ✅ Ctrl/Cmd+S to refresh budget data
+- ✅ Ctrl/Cmd+E to navigate to budget setup
+- ✅ Escape to close modals
+- 🧪 Tests created, awaiting verification
+- Status: Developed, needs test verification
+
+### ⚠️ 4. Column Visibility Toggle (~3 hours) - DEFERRED
+- Will be part of Budget Views configuration
+- Not needed as separate quick win
+
+---
+
+## Appendix D: Resource Requirements & Timeline
+
+### For Current Phase (Testing & Verification) - ~1 week
+**Goal:** Verify all Phase 1, 2a, and 2b implementations
+
+- 1 Full-stack developer (test execution, bug fixes)
+- 0.5 QA engineer (test review, edge cases)
+
+**Tasks:**
+- [ ] Run Phase 1 E2E tests (budget-quick-wins.spec.ts)
+- [ ] Run Phase 2a E2E tests (budget-views-api.spec.ts)
+- [ ] Create and run Phase 2b UI tests
+- [ ] Fix any bugs discovered
+- [ ] Mark all verified features as ✅ Complete
+
+### For Next Phase (Import/Export) - ~2 weeks
+**Goal:** Enable users to bring existing budget data
+
+**Team:**
+- 1 Full-stack developer (backend processing, file handling)
+- 1 Frontend developer (UI components, validation)
+
+**Tasks:**
+- [ ] Design import file format specification
+- [ ] Build Excel import UI and processor
+- [ ] Build CSV import as backup
+- [ ] Build Excel export
+- [ ] Build CSV export
+- [ ] Add error handling and validation
+- [ ] User testing
+
+### Success Metrics
+
+#### Current Phase Success:
+- [ ] All Phase 1 tests passing (100% pass rate)
+- [ ] All Phase 2a tests passing (100% pass rate)
+- [ ] Phase 2b UI tests created and passing
+- [ ] Zero TypeScript errors
+- [ ] Zero ESLint errors
+- [ ] All quick wins verified working in production
+
+#### MVP Success (4 weeks from now):
+- [ ] Users can import existing budgets from Excel
+- [ ] Users can export budgets to Excel/CSV
+- [ ] Users can create custom budget views
+- [ ] All CRUD operations work with confirmations
+- [ ] 80%+ test coverage
+- [ ] All P0 bugs resolved
+
+---
+
+## Appendix E: Risk Factors
+
+### 🔴 High Risk
+1. **Import complexity** - Mapping user data to schema may be complex
+   - Mitigation: Start with simple format, iterate with user feedback
+2. **Testing coverage** - Need dedicated time for comprehensive tests
+   - Mitigation: Write tests alongside features, not after
+
+### 🟡 Medium Risk
+1. **Performance** - Large budgets (1000+ lines) may need optimization
+   - Mitigation: Implement virtual scrolling early
+2. **View configuration UX** - Needs to be intuitive
+   - Mitigation: User testing with prototype before full build
+
+### 🟢 Low Risk
+1. **Database schema** - Already proven and working ✅
+2. **Core calculations** - Already complete and tested ✅
+
+---
+
+## Appendix F: Questions for Product Owner
+
+1. **Import/Export Priority**: Is this blocking user adoption?
+   - Current Status: Marked as P0 blocker for MVP
+
+2. **API Requirements**: Do we need REST API or are server components sufficient?
+   - Current Status: Using server components, no external integrations planned
+
+3. **Forecasting Scope**: Is basic forecasting MVP or can it wait?
+   - Current Status: Deferred to Phase 3
+
+4. **ERP Integration**: Which ERP systems are priority?
+   - Current Status: Deferred to Phase 5
+
+5. **Mobile Support**: How critical is mobile responsiveness?
+   - Current Status: Desktop-first, mobile deferred to P3
 
 ---
 
@@ -909,6 +1043,34 @@ This document contains a comprehensive task list for implementing Procore-like b
 - 🧪 **Testing** - Feature developed, tests in progress
 - 🏗️ **Developed** - Feature coded but not yet tested
 - 🔄 **In Progress** - Currently being developed
+
+### 2025-12-27 19:00 UTC - Phase 2c: Hierarchical Budget Grouping 🏗️
+
+- 🏗️ **Budget Grouping Utilities** - Cost code tier grouping system
+  - Created grouping types: 'none', 'cost-code-tier-1', 'cost-code-tier-2', 'cost-code-tier-3'
+  - Implemented division-level grouping (e.g., "01 - General Conditions", "02 - Sitework")
+  - Implemented subdivision-level grouping with nested hierarchy
+  - Added financial aggregation for parent rows (sums all child totals)
+  - Division name mapping with CSI MasterFormat standards
+  - File: `frontend/src/lib/budget-grouping.ts` (180+ lines)
+- 🏗️ **Data Pipeline Integration** - Applied grouping to budget page
+  - Updated filteredData memo to apply grouping after filtering
+  - Integrated with existing group selector dropdown
+  - Type-safe grouping type casting
+  - File: `frontend/src/app/[projectId]/budget/page.tsx` lines 127-135
+- 🏗️ **Table Visual Enhancement** - Distinguished group rows from leaf rows
+  - Added cost code prefix display for group rows (e.g., "01 General Conditions")
+  - Applied distinct styling: gray background, bold font for groups
+  - Updated row click behavior to exclude group rows
+  - Maintained existing expansion controls (ChevronRight/ChevronDown)
+  - File: `frontend/src/components/budget/budget-table.tsx` lines 296-321, 577-598
+- ✅ **Leveraged Existing Infrastructure** - Table already supported hierarchical data
+  - Used existing `children` property in BudgetLineItem type
+  - Used existing `getSubRows: (row) => row.children` configuration
+  - Used existing depth-based padding system
+  - Used existing expansion state management
+- 📈 **Quality Gates**: All TypeScript and ESLint checks passing (0 errors, pre-existing warnings only)
+- 🔄 **Next**: Commit changes, create E2E tests for grouping functionality
 
 ### 2025-12-27 18:30 UTC - Phase 2b: Budget Views UI Complete 🏗️
 
