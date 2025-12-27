@@ -18,7 +18,6 @@ export default function ProjectChangeEventsPage() {
         actions={
           <Button
             size="sm"
-            className="bg-orange-500 hover:bg-orange-600"
             onClick={() => router.push(`/${projectId}/change-events/new`)}
           >
             <Plus className="h-4 w-4 mr-2" />

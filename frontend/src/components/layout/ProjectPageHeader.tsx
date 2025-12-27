@@ -121,8 +121,8 @@ export function ProjectPageHeader({
               {showExportButton && (onExportCSV || onExportPDF) && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2">
-                      <Download className="h-4 w-4" />
+                    <Button variant="outline" size="sm">
+                      <Download className="h-4 w-4 mr-2" />
                       {exportLabel}
                     </Button>
                   </DropdownMenuTrigger>

@@ -28,24 +28,27 @@ export function BudgetTabs({
   onTabChange,
 }: BudgetTabsProps) {
   return (
-    <div>
-      <nav className="flex gap-6 overflow-x-auto whitespace-nowrap" aria-label="Budget tabs">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => onTabChange?.(tab.id)}
-            className={cn(
-              'py-3 text-xs font-medium border-b-2 transition-colors md:text-sm',
-              activeTab === tab.id
-                ? 'border-primary text-primary'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
+    <div className="border-b bg-white">
+      <div className="px-4 sm:px-6 lg:px-12">
+        <nav className="-mb-px flex space-x-8" aria-label="Budget tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onTabChange?.(tab.id)}
+              className={cn(
+                'group inline-flex items-center gap-2 border-b-2 py-4 px-1 text-sm font-medium transition-colors',
+                activeTab === tab.id
+                  ? 'border-brand text-brand'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+              )}
+              aria-current={activeTab === tab.id ? 'page' : undefined}
+            >
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
     </div>
   );
 }
