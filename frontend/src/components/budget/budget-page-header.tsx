@@ -125,10 +125,12 @@ export function BudgetPageHeader({
           <DropdownMenuItem onClick={onCreateClick}>
             Budget Line Item
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onModificationClick}>
-            Budget Modification
-          </DropdownMenuItem>
-          <DropdownMenuItem>Change Order</DropdownMenuItem>
+          <DropdownMenuItem>Snapshot</DropdownMenuItem>
+          {isLocked && (
+            <DropdownMenuItem onClick={onModificationClick}>
+              Budget Modification
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
