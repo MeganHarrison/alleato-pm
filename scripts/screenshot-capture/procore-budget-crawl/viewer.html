@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procore Budget Crawl Viewer</title>
+    <title>Alleato Viewer</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
@@ -363,7 +363,7 @@
     <div class="content">
         <div class="markdown-body" id="markdown-content">
             <div class="welcome">
-                <h1>Procore Budget Crawl Viewer</h1>
+                <h1>Alleato Viewer</h1>
                 <p>Select a markdown file from the sidebar to view its contents.</p>
             </div>
         </div>
@@ -414,7 +414,13 @@
                             const li = document.createElement('li');
                             const a = document.createElement('a');
                             a.href = '#';
-                            a.textContent = file.name.charAt(0).toUpperCase() + file.name.slice(1);
+                            // Convert to title case (handle all-caps names properly)
+                            const displayName = file.name
+                                .toLowerCase()
+                                .split(' ')
+                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                .join(' ');
+                            a.textContent = displayName;
                             a.dataset.file = file.path;
 
                             a.addEventListener('click', (e) => {
