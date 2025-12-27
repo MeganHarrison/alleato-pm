@@ -3,14 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // POST /api/projects/[id]/budget/lock - Lock the budget
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const projectId = parseInt(id, 10);
+    const projectId = Number.parseInt(id, 10);
 
-    if (isNaN(projectId)) {
+    if (Number.isNaN(projectId)) {
       return NextResponse.json(
         { error: 'Invalid project ID' },
         { status: 400 }
@@ -44,7 +44,7 @@ export async function POST(
       );
     }
 
-    // Lock the budget
+    // Lock the budget - Remove .single() to avoid "Cannot coerce" error
     const { data, error } = await supabase
       .from('projects')
       .update({
@@ -53,27 +53,38 @@ export async function POST(
         budget_locked_by: user?.id || null,
       })
       .eq('id', projectId)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error('Error locking budget:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
       console.error('User ID:', user?.id);
       console.error('Project ID:', projectId);
       return NextResponse.json(
-        { error: `Failed to lock budget: ${error.message || JSON.stringify(error)}` },
+        { error: `Failed to lock budget: ${error.message}` },
         { status: 500 }
       );
     }
+
+    // Check if any rows were updated (RLS might have blocked it)
+    if (!data || data.length === 0) {
+      console.error('No rows updated - RLS policy may have blocked the update');
+      console.error('User ID:', user?.id);
+      console.error('Project ID:', projectId);
+      return NextResponse.json(
+        { error: 'Permission denied: You do not have access to lock this budget' },
+        { status: 403 }
+      );
+    }
+
+    const updatedProject = data[0];
 
     return NextResponse.json({
       success: true,
       message: 'Budget locked successfully',
       data: {
-        budget_locked: data.budget_locked,
-        budget_locked_at: data.budget_locked_at,
-        budget_locked_by: data.budget_locked_by,
+        budget_locked: updatedProject.budget_locked,
+        budget_locked_at: updatedProject.budget_locked_at,
+        budget_locked_by: updatedProject.budget_locked_by,
       },
     });
   } catch (error) {
@@ -87,14 +98,14 @@ export async function POST(
 
 // DELETE /api/projects/[id]/budget/lock - Unlock the budget
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const projectId = parseInt(id, 10);
+    const projectId = Number.parseInt(id, 10);
 
-    if (isNaN(projectId)) {
+    if (Number.isNaN(projectId)) {
       return NextResponse.json(
         { error: 'Invalid project ID' },
         { status: 400 }
@@ -125,7 +136,7 @@ export async function DELETE(
       );
     }
 
-    // Unlock the budget
+    // Unlock the budget - Remove .single() to avoid "Cannot coerce" error
     const { data, error } = await supabase
       .from('projects')
       .update({
@@ -134,24 +145,34 @@ export async function DELETE(
         budget_locked_by: null,
       })
       .eq('id', projectId)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error('Error unlocking budget:', error);
       return NextResponse.json(
-        { error: 'Failed to unlock budget' },
+        { error: `Failed to unlock budget: ${error.message}` },
         { status: 500 }
       );
     }
+
+    // Check if any rows were updated (RLS might have blocked it)
+    if (!data || data.length === 0) {
+      console.error('No rows updated - RLS policy may have blocked the update');
+      return NextResponse.json(
+        { error: 'Permission denied: You do not have access to unlock this budget' },
+        { status: 403 }
+      );
+    }
+
+    const updatedProject = data[0];
 
     return NextResponse.json({
       success: true,
       message: 'Budget unlocked successfully',
       data: {
-        budget_locked: data.budget_locked,
-        budget_locked_at: data.budget_locked_at,
-        budget_locked_by: data.budget_locked_by,
+        budget_locked: updatedProject.budget_locked,
+        budget_locked_at: updatedProject.budget_locked_at,
+        budget_locked_by: updatedProject.budget_locked_by,
       },
     });
   } catch (error) {
@@ -165,14 +186,14 @@ export async function DELETE(
 
 // GET /api/projects/[id]/budget/lock - Get budget lock status
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const projectId = parseInt(id, 10);
+    const projectId = Number.parseInt(id, 10);
 
-    if (isNaN(projectId)) {
+    if (Number.isNaN(projectId)) {
       return NextResponse.json(
         { error: 'Invalid project ID' },
         { status: 400 }
