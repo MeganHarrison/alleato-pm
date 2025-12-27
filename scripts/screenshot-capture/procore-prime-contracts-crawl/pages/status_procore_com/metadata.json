@@ -1,0 +1,1625 @@
+{
+  "url": "https://status.procore.com/",
+  "pageName": "status.procore.com",
+  "category": "prime-contracts",
+  "pageId": "status_procore_com",
+  "timestamp": "2025-12-27T17:45:13.459Z",
+  "analysis": {
+    "components": {
+      "buttons": 156,
+      "forms": 2,
+      "inputs": 15,
+      "tables": 0,
+      "modals": 1,
+      "navigation": 0,
+      "cards": 0,
+      "lists": 0,
+      "tabs": 5,
+      "dropdowns": 1,
+      "icons": 1
+    },
+    "tables": [],
+    "formFields": [
+      {
+        "index": 1,
+        "type": "hidden",
+        "name": "email_otp_verify_flow",
+        "id": "email_otp_verify_flow",
+        "placeholder": null,
+        "label": null,
+        "required": false
+      },
+      {
+        "index": 2,
+        "type": "text",
+        "name": "email",
+        "id": "email",
+        "placeholder": null,
+        "label": "Email address:",
+        "required": false
+      },
+      {
+        "index": 3,
+        "type": "hidden",
+        "name": "email_otp_auth_token",
+        "id": "email-otp-token-field",
+        "placeholder": null,
+        "label": null,
+        "required": false
+      },
+      {
+        "index": 4,
+        "type": "text",
+        "name": "otp",
+        "id": "email-otp",
+        "placeholder": null,
+        "label": "Enter OTP:",
+        "required": false
+      },
+      {
+        "index": 5,
+        "type": "hidden",
+        "name": "captcha_error",
+        "id": "captcha_error",
+        "placeholder": null,
+        "label": null,
+        "required": false
+      },
+      {
+        "index": 6,
+        "type": "textarea",
+        "name": "g-recaptcha-response",
+        "id": "g-recaptcha-response",
+        "placeholder": null,
+        "label": null,
+        "required": false
+      },
+      {
+        "index": 7,
+        "type": "submit",
+        "name": null,
+        "id": "subscribe-btn-email",
+        "placeholder": null,
+        "label": null,
+        "required": false
+      },
+      {
+        "index": 8,
+        "type": "hidden",
+        "name": "otp_verify_flow",
+        "id": "otp_verify_flow",
+        "placeholder": null,
+        "label": null,
+        "required": false
+      },
+      {
+        "index": 9,
+        "type": "hidden",
+        "name": "subscriber_code",
+        "id": "subscriber_code",
+        "placeholder": null,
+        "label": null,
+        "required": false
+      },
+      {
+        "index": 10,
+        "type": "select-one",
+        "name": "phone_country",
+        "id": "phone-country",
+        "placeholder": null,
+        "label": "Country code:",
+        "required": false
+      },
+      {
+        "index": 11,
+        "type": "text",
+        "name": "phone_number",
+        "id": "phone-number",
+        "placeholder": null,
+        "label": "Phone number:",
+        "required": false
+      },
+      {
+        "index": 12,
+        "type": "text",
+        "name": "otp",
+        "id": "otp",
+        "placeholder": null,
+        "label": "Enter OTP:",
+        "required": false
+      },
+      {
+        "index": 13,
+        "type": "hidden",
+        "name": "captcha_error",
+        "id": "captcha_error",
+        "placeholder": null,
+        "label": null,
+        "required": false
+      },
+      {
+        "index": 14,
+        "type": "textarea",
+        "name": "g-recaptcha-response",
+        "id": "g-recaptcha-response-1",
+        "placeholder": null,
+        "label": null,
+        "required": false
+      },
+      {
+        "index": 15,
+        "type": "submit",
+        "name": null,
+        "id": "subscribe-btn-sms",
+        "placeholder": null,
+        "label": null,
+        "required": false
+      }
+    ],
+    "title": "Procore Technologies Status",
+    "h1": null
+  },
+  "links": 9,
+  "linkDetails": [
+    {
+      "href": "http://www.procore.com/",
+      "text": "System Status",
+      "classes": "",
+      "id": null,
+      "index": 0
+    },
+    {
+      "href": "http://support.procore.com/",
+      "text": "support site",
+      "classes": "",
+      "id": null,
+      "index": 19
+    },
+    {
+      "href": "https://status.procore.com/history.atom",
+      "text": "Atom Feed",
+      "classes": "",
+      "id": null,
+      "index": 20
+    },
+    {
+      "href": "https://status.procore.com/history.rss",
+      "text": "RSS Feed",
+      "classes": "",
+      "id": null,
+      "index": 21
+    },
+    {
+      "href": "https://www.procore.com/fine-print/privacy-policy.php",
+      "text": "Procore Privacy Policy",
+      "classes": "",
+      "id": null,
+      "index": 23
+    },
+    {
+      "href": "https://status.procore.com/incidents/s9yjqrp3dyy6",
+      "text": "Performance Degradation affecting Financials and Project Management Tools",
+      "classes": "whitespace-pre-wrap",
+      "id": null,
+      "index": 24
+    },
+    {
+      "href": "https://status.procore.com/incidents/38sjspxfc2wv",
+      "text": "Documents tool unreachable",
+      "classes": "whitespace-pre-wrap",
+      "id": null,
+      "index": 25
+    },
+    {
+      "href": "https://status.procore.com/history",
+      "text": "← Incident History",
+      "classes": "history-footer-link",
+      "id": null,
+      "index": 26
+    },
+    {
+      "href": "https://www.atlassian.com/software/statuspage?utm_campaign=status.procore.com&utm_content=SP-notifications&utm_medium=powered-by&utm_source=inapp",
+      "text": "Powered by Atlassian Statuspage",
+      "classes": "color-secondary",
+      "id": null,
+      "index": 27
+    }
+  ],
+  "clickables": 165,
+  "clickableDetails": [
+    {
+      "text": "",
+      "id": "show-updates-dropdown",
+      "type": "a",
+      "classes": "show-updates-dropdown",
+      "hasDropdown": false,
+      "index": 0
+    },
+    {
+      "text": "x",
+      "id": "updates-dropdown-close-btn",
+      "type": "button",
+      "classes": "",
+      "hasDropdown": false,
+      "index": 1
+    },
+    {
+      "text": "",
+      "id": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "type": "span",
+      "classes": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "hasDropdown": false,
+      "index": 2
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 3
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 4
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 5
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 6
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 7
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 8
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 9
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 10
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 11
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 12
+    },
+    {
+      "text": "",
+      "id": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "type": "span",
+      "classes": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "hasDropdown": false,
+      "index": 13
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 14
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 15
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 16
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 17
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 18
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 19
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 20
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 21
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 22
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 23
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 24
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 25
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 26
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 27
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 28
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 29
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 30
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 31
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 32
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 33
+    },
+    {
+      "text": "?",
+      "id": "tooltip-base tool tooltipstered",
+      "type": "button",
+      "classes": "tooltip-base tool tooltipstered",
+      "hasDropdown": false,
+      "index": 34
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 35
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 36
+    },
+    {
+      "text": "",
+      "id": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "type": "span",
+      "classes": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "hasDropdown": false,
+      "index": 37
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 38
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 39
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 40
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 41
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 42
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 43
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 44
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 45
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 46
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 47
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 48
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 49
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 50
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 51
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 52
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 53
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 54
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 55
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 56
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 57
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 58
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 59
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 60
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 61
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 62
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 63
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 64
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 65
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 66
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 67
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 68
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 69
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 70
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 71
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 72
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 73
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 74
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 75
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 76
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 77
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 78
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 79
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 80
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 81
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 82
+    },
+    {
+      "text": "",
+      "id": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "type": "span",
+      "classes": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "hasDropdown": false,
+      "index": 83
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 84
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 85
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 86
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 87
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 88
+    },
+    {
+      "text": "?",
+      "id": "tooltip-base tool tooltipstered",
+      "type": "button",
+      "classes": "tooltip-base tool tooltipstered",
+      "hasDropdown": false,
+      "index": 89
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 90
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 91
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 92
+    },
+    {
+      "text": "",
+      "id": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "type": "span",
+      "classes": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "hasDropdown": false,
+      "index": 93
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 94
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 95
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 96
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 97
+    },
+    {
+      "text": "?",
+      "id": "tooltip-base tool tooltipstered",
+      "type": "button",
+      "classes": "tooltip-base tool tooltipstered",
+      "hasDropdown": false,
+      "index": 98
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 99
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 100
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 101
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 102
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 103
+    },
+    {
+      "text": "",
+      "id": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "type": "span",
+      "classes": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "hasDropdown": false,
+      "index": 104
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 105
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 106
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 107
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 108
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 109
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 110
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 111
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 112
+    },
+    {
+      "text": "",
+      "id": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "type": "span",
+      "classes": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "hasDropdown": false,
+      "index": 113
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 114
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 115
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 116
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 117
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 118
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 119
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 120
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 121
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 122
+    },
+    {
+      "text": "",
+      "id": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "type": "span",
+      "classes": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "hasDropdown": false,
+      "index": 123
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 124
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 125
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 126
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 127
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 128
+    },
+    {
+      "text": "",
+      "id": "fa group-parent-indicator color-secondary font-small fa-minus-square-o",
+      "type": "span",
+      "classes": "fa group-parent-indicator color-secondary font-small fa-minus-square-o",
+      "hasDropdown": false,
+      "index": 129
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-minus-square status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-minus-square status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 130
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 131
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 132
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 133
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 134
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 135
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 136
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 137
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 138
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 139
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 140
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 141
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-minus-square status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-minus-square status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 142
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 143
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 144
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 145
+    },
+    {
+      "text": "",
+      "id": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "type": "span",
+      "classes": "fa group-parent-indicator color-secondary font-small fa-plus-square-o",
+      "hasDropdown": false,
+      "index": 146
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 147
+    },
+    {
+      "text": "?",
+      "id": "tooltip-base tool tooltipstered",
+      "type": "button",
+      "classes": "tooltip-base tool tooltipstered",
+      "hasDropdown": false,
+      "index": 148
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 149
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 150
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 151
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 152
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 153
+    },
+    {
+      "text": "?",
+      "id": "tooltip-base tool tooltipstered",
+      "type": "button",
+      "classes": "tooltip-base tool tooltipstered",
+      "hasDropdown": false,
+      "index": 154
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 155
+    },
+    {
+      "text": "?",
+      "id": "tooltip-base tool tooltipstered",
+      "type": "button",
+      "classes": "tooltip-base tool tooltipstered",
+      "hasDropdown": false,
+      "index": 156
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 157
+    },
+    {
+      "text": "?",
+      "id": "tooltip-base tool tooltipstered",
+      "type": "button",
+      "classes": "tooltip-base tool tooltipstered",
+      "hasDropdown": false,
+      "index": 158
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 159
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 160
+    },
+    {
+      "text": "?",
+      "id": "tooltip-base tool tooltipstered",
+      "type": "button",
+      "classes": "tooltip-base tool tooltipstered",
+      "hasDropdown": false,
+      "index": 161
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 162
+    },
+    {
+      "text": "?",
+      "id": "tooltip-base tool tooltipstered",
+      "type": "button",
+      "classes": "tooltip-base tool tooltipstered",
+      "hasDropdown": false,
+      "index": 163
+    },
+    {
+      "text": "",
+      "id": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "type": "button",
+      "classes": "tool icon-indicator fa fa-check status-icon-button tooltipstered",
+      "hasDropdown": false,
+      "index": 164
+    }
+  ],
+  "dropdowns": 10,
+  "dropdownDetails": [
+    {
+      "text": "x\n        \n      \n      \n          \n            \n ",
+      "classes": "updates-dropdown-container",
+      "id": null,
+      "hasMenu": false,
+      "index": 0
+    },
+    {
+      "text": "",
+      "classes": "show-updates-dropdown",
+      "id": "show-updates-dropdown",
+      "hasMenu": false,
+      "index": 1
+    },
+    {
+      "text": "x\n        \n      \n      \n          \n            \n ",
+      "classes": "updates-dropdown",
+      "id": "updates-dropdown",
+      "hasMenu": false,
+      "index": 2
+    },
+    {
+      "text": "x",
+      "classes": "updates-dropdown-nav nav-items-6",
+      "id": null,
+      "hasMenu": false,
+      "index": 3
+    },
+    {
+      "text": "Get email notifications whenever Procore Technolog",
+      "classes": "updates-dropdown-sections-container",
+      "id": null,
+      "hasMenu": false,
+      "index": 4
+    },
+    {
+      "text": "Get email notifications whenever Procore Technolog",
+      "classes": "updates-dropdown-section email",
+      "id": "updates-dropdown-email",
+      "hasMenu": false,
+      "index": 5
+    },
+    {
+      "text": "Get text message notifications whenever Procore Te",
+      "classes": "updates-dropdown-section phone",
+      "id": "updates-dropdown-sms",
+      "hasMenu": false,
+      "index": 6
+    },
+    {
+      "text": "Get incident updates and maintenance status messag",
+      "classes": "updates-dropdown-section slack",
+      "id": "updates-dropdown-slack",
+      "hasMenu": false,
+      "index": 7
+    },
+    {
+      "text": "Visit our support site.",
+      "classes": "updates-dropdown-section support",
+      "id": "updates-dropdown-support",
+      "hasMenu": false,
+      "index": 8
+    },
+    {
+      "text": "Get the Atom Feed or RSS Feed.",
+      "classes": "updates-dropdown-section atom",
+      "id": "updates-dropdown-atom",
+      "hasMenu": false,
+      "index": 9
+    }
+  ],
+  "screenshotPath": "pages/status_procore_com/screenshot.png"
+}

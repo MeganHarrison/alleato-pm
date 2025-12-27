@@ -8,3 +8,5 @@ export { BudgetModificationModal } from './budget-modification-modal';
 export { OriginalBudgetEditModal } from './original-budget-edit-modal';
 export { VerticalMarkupSettings } from './vertical-markup-settings';
 export { CostCodesTab } from './cost-codes-tab';
+export { BudgetViewsModal } from './BudgetViewsModal';
+export { BudgetViewsManager } from './BudgetViewsManager';

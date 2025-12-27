@@ -16,6 +16,7 @@ import {
   VerticalMarkupSettings,
   CostCodesTab,
   OriginalBudgetEditModal,
+  BudgetViewsManager,
 } from '@/components/budget';
 import { ImportBudgetModal } from '@/components/budget/ImportBudgetModal';
 import type { BudgetLineItem } from '@/types/budget';
@@ -56,6 +57,7 @@ export default function ProjectBudgetPage() {
   const [selectedGroup, setSelectedGroup] = React.useState('cost-code-tier-1');
   const [budgetData, setBudgetData] = React.useState<BudgetLineItem[]>([]);
   const [quickFilter, setQuickFilter] = React.useState<QuickFilterType>('all');
+  const [currentViewId, setCurrentViewId] = React.useState<string>('');
   const [grandTotals, setGrandTotals] = React.useState(budgetGrandTotals);
   const [loading, setLoading] = React.useState(true);
   const [showLineItemModal, setShowLineItemModal] = React.useState(false);
@@ -404,7 +406,7 @@ export default function ProjectBudgetPage() {
           </div>
         ) : (
           <>
-            <div>
+            <div className="flex items-center justify-between gap-4">
               <BudgetFilters
                 views={budgetViews}
                 snapshots={budgetSnapshots}
@@ -420,6 +422,11 @@ export default function ProjectBudgetPage() {
                 onToggleFullscreen={handleToggleFullscreen}
                 onQuickFilterChange={handleQuickFilterChange}
                 activeQuickFilter={quickFilter}
+              />
+              <BudgetViewsManager
+                projectId={projectId}
+                currentViewId={currentViewId}
+                onViewChange={setCurrentViewId}
               />
             </div>
 
