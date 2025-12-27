@@ -104,8 +104,8 @@ export function BudgetPageHeader({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="outline"
             size="sm"
+            className="bg-orange-500 hover:bg-orange-600 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Create
