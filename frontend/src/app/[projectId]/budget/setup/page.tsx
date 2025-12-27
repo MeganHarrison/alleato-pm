@@ -342,6 +342,7 @@ export default function BudgetSetupPage() {
               ...item,
               projectCostCodeId: costCode.id,
               costCodeLabel: label,
+              qty: item.qty || '1', // Auto-set quantity to 1 if not already set
             }
           : item
       )

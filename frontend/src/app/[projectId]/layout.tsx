@@ -1,10 +1,10 @@
-export default function DefaultLayout({
+export default function ProjectLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <div className="mx-auto w-full max-w-full overflow-x-hidden">
+    <div className="flex flex-1 flex-col">
       {children}
     </div>
   )

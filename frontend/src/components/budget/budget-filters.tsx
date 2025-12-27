@@ -1,15 +1,19 @@
 'use client';
 
 import * as React from 'react';
-import { ChevronDown, Plus, Maximize2, Minimize2 } from 'lucide-react';
+import { ChevronDown, Plus, Maximize2, Minimize2, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { BudgetView, BudgetSnapshot, BudgetGroup } from '@/types/budget';
+import { Badge } from '@/components/ui/badge';
+
+export type QuickFilterType = 'over-budget' | 'under-budget' | 'no-activity' | 'all';
 
 interface BudgetFiltersProps {
   views: BudgetView[];
@@ -24,6 +28,8 @@ interface BudgetFiltersProps {
   onAddFilter?: () => void;
   onAnalyzeVariance?: () => void;
   onToggleFullscreen?: () => void;
+  onQuickFilterChange?: (filter: QuickFilterType) => void;
+  activeQuickFilter?: QuickFilterType;
   isFullscreen?: boolean;
 }
 
@@ -40,6 +46,8 @@ export function BudgetFilters({
   onAddFilter,
   onAnalyzeVariance,
   onToggleFullscreen,
+  onQuickFilterChange,
+  activeQuickFilter = 'all',
   isFullscreen = false,
 }: BudgetFiltersProps) {
   const selectedViewName =
@@ -48,6 +56,13 @@ export function BudgetFilters({
     snapshots.find((s) => s.id === selectedSnapshot)?.name || 'Select Snapshot';
   const selectedGroupName =
     groups.find((g) => g.id === selectedGroup)?.name || 'Select Group';
+
+  const quickFilterLabels = {
+    'all': 'All Items',
+    'over-budget': 'Over Budget',
+    'under-budget': 'Under Budget',
+    'no-activity': 'No Activity',
+  };
 
   return (
     <div className="flex items-center justify-between py-4">
@@ -125,9 +140,55 @@ export function BudgetFilters({
           </DropdownMenu>
         </div>
 
-        {/* Filter Section */}
+        {/* Quick Filters */}
         <div className="flex items-center gap-2 border-l pl-4 ml-2">
-          <span className="text-sm text-gray-500">Filter</span>
+          <span className="text-sm text-gray-500">Quick Filter</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={activeQuickFilter !== 'all' ? 'default' : 'outline'}
+                className="h-9 min-w-[140px] justify-between"
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                {quickFilterLabels[activeQuickFilter]}
+                <ChevronDown className="w-4 h-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-[180px]">
+              <DropdownMenuItem
+                onClick={() => onQuickFilterChange?.('all')}
+                className={activeQuickFilter === 'all' ? 'bg-accent' : ''}
+              >
+                All Items
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => onQuickFilterChange?.('over-budget')}
+                className={activeQuickFilter === 'over-budget' ? 'bg-accent' : ''}
+              >
+                <span className="text-red-600 mr-2">●</span>
+                Over Budget
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onQuickFilterChange?.('under-budget')}
+                className={activeQuickFilter === 'under-budget' ? 'bg-accent' : ''}
+              >
+                <span className="text-green-600 mr-2">●</span>
+                Under Budget
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onQuickFilterChange?.('no-activity')}
+                className={activeQuickFilter === 'no-activity' ? 'bg-accent' : ''}
+              >
+                <span className="text-gray-400 mr-2">●</span>
+                No Activity
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {/* Filter Section */}
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             className="h-9"

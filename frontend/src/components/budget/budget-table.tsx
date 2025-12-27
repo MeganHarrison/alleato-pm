@@ -564,7 +564,7 @@ export function BudgetTable({ data, grandTotals, onEditLineItem, onSelectionChan
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => {
+              table.getRowModel().rows.map((row, index) => {
                 const hasChildren = row.original.children && row.original.children.length > 0;
                 const isClickable = !hasChildren && onEditLineItem;
 
@@ -579,9 +579,10 @@ export function BudgetTable({ data, grandTotals, onEditLineItem, onSelectionChan
                     className={cn(
                       "border-b border-gray-100 transition-colors",
                       isClickable && "cursor-pointer hover:bg-blue-50/50",
-                      !isClickable && "hover:bg-gray-50/50",
-                      row.depth > 0 && "bg-gray-50/30",
-                      row.getIsSelected() && "bg-blue-50"
+                      !isClickable && "hover:bg-gray-100",
+                      row.depth > 0 && "bg-gray-50",
+                      row.getIsSelected() && "bg-blue-50",
+                      !row.getIsSelected() && index % 2 === 1 && "bg-gray-100"
                     )}
                   >
                   {row.getVisibleCells().map((cell) => (

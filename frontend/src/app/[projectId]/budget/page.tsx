@@ -2,6 +2,10 @@
 
 import * as React from 'react';
 import { Suspense } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+
 import {
   BudgetPageHeader,
   BudgetTabs,
@@ -13,7 +17,8 @@ import {
   CostCodesTab,
   OriginalBudgetEditModal,
 } from '@/components/budget';
-import { BudgetLineItem } from '@/types/budget';
+import { ImportBudgetModal } from '@/components/budget/ImportBudgetModal';
+import type { BudgetLineItem } from '@/types/budget';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,16 +30,20 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
 import {
   budgetViews,
   budgetSnapshots,
   budgetGroups,
   budgetGrandTotals,
 } from '@/config/budget';
-import { useParams, useRouter } from 'next/navigation';
 import { useProjectTitle } from '@/hooks/useProjectTitle';
-import { toast } from 'sonner';
+import {
+  applyQuickFilter,
+  loadQuickFilterPreference,
+  saveQuickFilterPreference
+} from '@/lib/budget-filters';
+import type { QuickFilterType } from '@/components/budget/budget-filters';
+
 export default function ProjectBudgetPage() {
   const router = useRouter();
   const params = useParams();
@@ -46,10 +55,12 @@ export default function ProjectBudgetPage() {
   const [selectedSnapshot, setSelectedSnapshot] = React.useState('current');
   const [selectedGroup, setSelectedGroup] = React.useState('cost-code-tier-1');
   const [budgetData, setBudgetData] = React.useState<BudgetLineItem[]>([]);
+  const [quickFilter, setQuickFilter] = React.useState<QuickFilterType>('all');
   const [grandTotals, setGrandTotals] = React.useState(budgetGrandTotals);
   const [loading, setLoading] = React.useState(true);
   const [showLineItemModal, setShowLineItemModal] = React.useState(false);
   const [showModificationModal, setShowModificationModal] = React.useState(false);
+  const [showImportModal, setShowImportModal] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [selectedLineItem, setSelectedLineItem] = React.useState<BudgetLineItem | null>(null);
@@ -102,8 +113,23 @@ export default function ProjectBudgetPage() {
 
     if (projectId) {
       fetchData();
+      // Load saved quick filter preference
+      const savedFilter = loadQuickFilterPreference(projectId);
+      setQuickFilter(savedFilter);
     }
   }, [projectId, fetchLockStatus]);
+
+  // Apply quick filter to budget data
+  const filteredData = React.useMemo(() => {
+    return applyQuickFilter(budgetData, quickFilter);
+  }, [budgetData, quickFilter]);
+
+  // Handle quick filter change
+  const handleQuickFilterChange = React.useCallback((filter: QuickFilterType) => {
+    setQuickFilter(filter);
+    saveQuickFilterPreference(projectId, filter);
+    toast.success(`Filter applied: ${filter === 'all' ? 'All Items' : filter.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`);
+  }, [projectId]);
 
   const handleCreateClick = () => {
     if (isLocked) {
@@ -171,24 +197,11 @@ export default function ProjectBudgetPage() {
   };
 
   const handleImport = () => {
-    // Create a file input element
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.xlsx,.xls,.csv';
-
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      // TODO: Implement file parsing and import logic
-      toast.info(`Importing ${file.name}...`);
-
-      // For now, just show a success message
-      // In the future, this would parse the Excel/CSV file and create budget line items
-      toast.success(`File ${file.name} ready for import (implementation coming soon)`);
-    };
-
-    input.click();
+    if (isLocked) {
+      toast.error('Budget is locked. Unlock to import budget data.');
+      return;
+    }
+    setShowImportModal(true);
   };
 
   const handleExport = (format: string) => {
@@ -215,7 +228,7 @@ export default function ProjectBudgetPage() {
     toast.info('Fullscreen mode coming soon');
   };
 
-  const handleLineItemSuccess = () => {
+  const handleLineItemSuccess = React.useCallback(() => {
     // Refresh budget data after creating line items
     const fetchData = async () => {
       try {
@@ -230,7 +243,41 @@ export default function ProjectBudgetPage() {
       }
     };
     fetchData();
-  };
+  }, [projectId]);
+
+  // Keyboard shortcuts
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+S or Cmd+S: Refresh data
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleLineItemSuccess();
+        toast.success('Budget data refreshed');
+      }
+
+      // Ctrl+E or Cmd+E: Open create line item modal (if not locked)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+        e.preventDefault();
+        if (isLocked) {
+          toast.error('Budget is locked. Unlock to add new line items.');
+        } else {
+          router.push(`/${projectId}/budget/setup`);
+        }
+      }
+
+      // Escape: Close any open modals
+      if (e.key === 'Escape') {
+        setShowLineItemModal(false);
+        setShowModificationModal(false);
+        setShowImportModal(false);
+        setShowEditModal(false);
+        setShowDeleteDialog(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLocked, projectId, router, handleLineItemSuccess]);
 
   const handleModificationSuccess = () => {
     // Refresh budget data after creating modification
@@ -371,6 +418,8 @@ export default function ProjectBudgetPage() {
                 onAddFilter={handleAddFilter}
                 onAnalyzeVariance={handleAnalyzeVariance}
                 onToggleFullscreen={handleToggleFullscreen}
+                onQuickFilterChange={handleQuickFilterChange}
+                activeQuickFilter={quickFilter}
               />
             </div>
 
@@ -400,7 +449,7 @@ export default function ProjectBudgetPage() {
                   </div>
                 ) : (
                   <BudgetTable
-                    data={budgetData}
+                    data={filteredData}
                     grandTotals={grandTotals}
                     onEditLineItem={handleEditLineItem}
                     onSelectionChange={handleSelectionChange}
@@ -423,6 +472,12 @@ export default function ProjectBudgetPage() {
         onOpenChange={setShowModificationModal}
         projectId={projectId}
         onSuccess={handleModificationSuccess}
+      />
+      <ImportBudgetModal
+        open={showImportModal}
+        onOpenChange={setShowImportModal}
+        projectId={projectId}
+        onSuccess={handleLineItemSuccess}
       />
 
       {/* Edit Original Budget Modal */}
