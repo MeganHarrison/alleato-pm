@@ -2,14 +2,14 @@
 
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { ChevronDown, ChevronRight, Plus, ArrowUpDown } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PageContainer, PageToolbar, ProjectPageHeader, PageTabs } from '@/components/layout';
+import { PageContainer, ProjectPageHeader, PageTabs } from '@/components/layout';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import {
@@ -20,8 +20,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MobileFilterModal } from '@/components/tables/MobileFilterModal';
-import { Label } from '@/components/ui/label';
 
 import type { ChangeOrder } from '@/hooks/use-change-orders';
 
@@ -136,13 +134,15 @@ function ContractChangeOrders({ contract, getStatusBadge }: {
 export default function ProjectContractsPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const projectId = parseInt(params.projectId as string, 10);
+  const statusFilter = searchParams.get('status') || 'all';
 
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     const fetchContracts = async () => {
@@ -193,6 +193,15 @@ export default function ProjectContractsPage() {
     });
   }, []);
 
+  const handleSort = useCallback((column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  }, [sortColumn, sortDirection]);
+
   const formatCurrency = (amount: number | null | undefined) => {
     if (amount === null || amount === undefined) return '--';
     return new Intl.NumberFormat('en-US', {
@@ -220,20 +229,88 @@ export default function ProjectContractsPage() {
   };
 
   const filteredContracts = useMemo(() => {
-    return contracts.filter((contract) => {
-      const matchesSearch =
-        !searchTerm ||
-        contract.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contract.contract_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contract.client?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-
-      const matchesStatus =
-        statusFilter === 'all' ||
-        (contract.status || '').toLowerCase() === statusFilter;
-
-      return matchesSearch && matchesStatus;
+    // Apply status filtering based on URL parameter
+    let filtered = contracts.filter((contract) => {
+      if (statusFilter === 'all') return true;
+      if (statusFilter === 'active') {
+        // Active contracts are those that are approved or executed
+        return contract.status === 'approved' || contract.status === 'executed';
+      }
+      if (statusFilter === 'completed') {
+        // Completed contracts are those that are closed
+        return contract.status === 'closed';
+      }
+      return true;
     });
-  }, [contracts, searchTerm, statusFilter]);
+
+    // Apply sorting
+    if (sortColumn) {
+      filtered = filtered.sort((a, b) => {
+        let aVal: string | number | null | undefined;
+        let bVal: string | number | null | undefined;
+
+        switch (sortColumn) {
+          case 'number':
+            aVal = a.contract_number;
+            bVal = b.contract_number;
+            break;
+          case 'client':
+            aVal = a.client?.name;
+            bVal = b.client?.name;
+            break;
+          case 'title':
+            aVal = a.title;
+            bVal = b.title;
+            break;
+          case 'status':
+            aVal = a.status;
+            bVal = b.status;
+            break;
+          case 'executed':
+            aVal = a.executed ? 1 : 0;
+            bVal = b.executed ? 1 : 0;
+            break;
+          case 'original_amount':
+            aVal = a.original_contract_amount || 0;
+            bVal = b.original_contract_amount || 0;
+            break;
+          case 'approved_cos':
+            aVal = a.approved_change_orders || 0;
+            bVal = b.approved_change_orders || 0;
+            break;
+          case 'pending_cos':
+            aVal = a.pending_change_orders || 0;
+            bVal = b.pending_change_orders || 0;
+            break;
+          case 'draft_cos':
+            aVal = a.draft_change_orders || 0;
+            bVal = b.draft_change_orders || 0;
+            break;
+          case 'revised_amount':
+            aVal = (a.original_contract_amount || 0) + (a.approved_change_orders || 0);
+            bVal = (b.original_contract_amount || 0) + (b.approved_change_orders || 0);
+            break;
+          default:
+            return 0;
+        }
+
+        if (aVal === null || aVal === undefined) return 1;
+        if (bVal === null || bVal === undefined) return -1;
+
+        if (typeof aVal === 'string' && typeof bVal === 'string') {
+          return sortDirection === 'asc'
+            ? aVal.localeCompare(bVal)
+            : bVal.localeCompare(aVal);
+        }
+
+        return sortDirection === 'asc'
+          ? (aVal as number) - (bVal as number)
+          : (bVal as number) - (aVal as number);
+      });
+    }
+
+    return filtered;
+  }, [contracts, sortColumn, sortDirection, statusFilter]);
 
   const totals = filteredContracts.reduce(
     (acc, contract) => ({
@@ -255,16 +332,15 @@ export default function ProjectContractsPage() {
         showExportButton={true}
         onExportCSV={() => {
           // TODO: Implement CSV export functionality
-          console.warn('CSV export functionality not yet implemented')
+          toast.info('CSV export coming soon')
         }}
         onExportPDF={() => {
           // TODO: Implement PDF export functionality
-          console.warn('PDF export functionality not yet implemented')
+          toast.info('PDF export coming soon')
         }}
         actions={
           <Button
             size="sm"
-            className="bg-orange-500 hover:bg-orange-600"
             onClick={() => router.push(`/${projectId}/contracts/new`)}
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -272,6 +348,28 @@ export default function ProjectContractsPage() {
           </Button>
         }
       />
+
+      {/* Summary Cards - Above Tabs */}
+      <div className="px-4 sm:px-6 lg:px-12 py-6 bg-white border-b">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="p-4">
+            <div className="text-xl font-bold">{formatCurrency(totals.original)}</div>
+            <p className="text-xs text-muted-foreground">Original Contract Amount</p>
+          </Card>
+          <Card className="p-4">
+            <div className="text-xl font-bold">{formatCurrency(totals.approved)}</div>
+            <p className="text-xs text-muted-foreground">Approved Change Orders</p>
+          </Card>
+          <Card className="p-4">
+            <div className="text-xl font-bold">{formatCurrency(totals.original + totals.approved)}</div>
+            <p className="text-xs text-muted-foreground">Revised Contract Amount</p>
+          </Card>
+          <Card className="p-4">
+            <div className="text-xl font-bold">{formatCurrency(totals.pending)}</div>
+            <p className="text-xs text-muted-foreground">Pending Change Orders</p>
+          </Card>
+        </div>
+      </div>
 
       <PageTabs
         tabs={[
@@ -282,73 +380,6 @@ export default function ProjectContractsPage() {
       />
 
       <PageContainer className="space-y-6">
-        <PageToolbar
-          searchPlaceholder="Search contracts or clients..."
-          onSearch={setSearchTerm}
-          filters={
-            <div className="flex items-center gap-2">
-              <div className="hidden md:block">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[220px]">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All statuses</SelectItem>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
-                    <SelectItem value="executed">Executed</SelectItem>
-                    <SelectItem value="closed">Closed</SelectItem>
-                    <SelectItem value="void">Void</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <MobileFilterModal
-                className="md:hidden"
-                hasActiveFilters={statusFilter !== 'all'}
-                onReset={() => setStatusFilter('all')}
-              >
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">Status</Label>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Filter by status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All statuses</SelectItem>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="executed">Executed</SelectItem>
-                      <SelectItem value="closed">Closed</SelectItem>
-                      <SelectItem value="void">Void</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </MobileFilterModal>
-            </div>
-          }
-        />
-
-        {/* Summary Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
-          <Card className="p-4">
-            <div className="text-xl font-bold">{formatCurrency(totals.original)}</div>
-            <p className="text-xs text-muted-foreground">Original Contract Amount</p>
-          </Card>
-          <Card className="p-4">
-            <div className="text-xl font-bold text-green-600">{formatCurrency(totals.approved)}</div>
-            <p className="text-xs text-muted-foreground">Approved Change Orders</p>
-          </Card>
-          <Card className="p-4">
-            <div className="text-xl font-bold">{formatCurrency(totals.original + totals.approved)}</div>
-            <p className="text-xs text-muted-foreground">Revised Contract Amount</p>
-          </Card>
-          <Card className="p-4">
-            <div className="text-xl font-bold text-yellow-600">{formatCurrency(totals.pending)}</div>
-            <p className="text-xs text-muted-foreground">Pending Change Orders</p>
-          </Card>
-        </div>
 
         {/* Contracts Table */}
         {loading ? (
@@ -371,16 +402,96 @@ export default function ProjectContractsPage() {
                   <TableHead className="w-10">
                     <span className="sr-only">Expand</span>
                   </TableHead>
-                  <TableHead>#</TableHead>
-                  <TableHead>Owner/Client</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Executed</TableHead>
-                  <TableHead className="text-right">Original Amount</TableHead>
-                  <TableHead className="text-right">Approved COs</TableHead>
-                  <TableHead className="text-right">Pending COs</TableHead>
-                  <TableHead className="text-right">Draft COs</TableHead>
-                  <TableHead className="text-right">Revised Amount</TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('number')}
+                  >
+                    <div className="flex items-center gap-1">
+                      #
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('client')}
+                  >
+                    <div className="flex items-center gap-1">
+                      Owner/Client
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('title')}
+                  >
+                    <div className="flex items-center gap-1">
+                      Title
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('status')}
+                  >
+                    <div className="flex items-center gap-1">
+                      Status
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('executed')}
+                  >
+                    <div className="flex items-center gap-1">
+                      Executed
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="text-right cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('original_amount')}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      Original Amount
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="text-right cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('approved_cos')}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      Approved COs
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="text-right cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('pending_cos')}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      Pending COs
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="text-right cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('draft_cos')}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      Draft COs
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="text-right cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleSort('revised_amount')}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      Revised Amount
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -18,6 +18,7 @@ import { ProjectPageHeader, PageContainer, PageToolbar, PageTabs } from '@/compo
 import { DataTableResponsive } from '@/components/tables';
 import { ColumnDef } from '@tanstack/react-table';
 import { useProjectTitle } from '@/hooks/useProjectTitle';
+import { toast } from 'sonner';
 
 export default function ProjectCommitmentsPage() {
   const router = useRouter();
@@ -280,10 +281,19 @@ export default function ProjectCommitmentsPage() {
       <ProjectPageHeader
         title="Commitments"
         description="Manage purchase orders and subcontracts"
+        showExportButton={true}
+        onExportCSV={() => {
+          // TODO: Implement CSV export functionality
+          toast.info('CSV export coming soon')
+        }}
+        onExportPDF={() => {
+          // TODO: Implement PDF export functionality
+          toast.info('PDF export coming soon')
+        }}
         actions={
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="bg-[hsl(var(--procore-orange))] hover:bg-[hsl(var(--procore-orange-hover))] text-white">
+              <Button size="sm">
                 <Plus className="h-4 w-4 mr-2" />
                 Create
                 <ChevronDown className="h-4 w-4 ml-2" />
@@ -338,7 +348,6 @@ export default function ProjectCommitmentsPage() {
             </div>
 
         <PageToolbar
-          onExport={() => console.log('Export commitments')}
           searchPlaceholder="Search commitments..."
         />
 

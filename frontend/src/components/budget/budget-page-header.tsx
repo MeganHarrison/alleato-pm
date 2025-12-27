@@ -10,7 +10,6 @@ import {
   MoreVertical,
   MessageSquare,
   ChevronDown,
-  RefreshCw,
   AlertTriangle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -103,10 +102,10 @@ export function BudgetPageHeader({
     <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center md:justify-end">
       {/* Add Line Item Button - direct action */}
       <Button
-        className="h-auto w-full bg-primary py-3 text-base text-primary-foreground hover:bg-primary/90 md:w-auto md:py-2 md:text-sm"
+        size="sm"
         onClick={onCreateClick}
       >
-        <Plus className="w-4 h-4 mr-1" />
+        <Plus className="w-4 h-4 mr-2" />
         Add Line Item
       </Button>
 
@@ -115,11 +114,11 @@ export function BudgetPageHeader({
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            className="h-auto w-full py-3 text-base text-gray-700 md:w-auto md:py-2 md:text-sm"
+            size="sm"
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-4 h-4 mr-2" />
             Create
-            <ChevronDown className="w-4 h-4 ml-1" />
+            <ChevronDown className="w-4 h-4 ml-2" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -136,10 +135,10 @@ export function BudgetPageHeader({
       {/* Resend to ERP Button */}
       <Button
         variant="outline"
+        size="sm"
         onClick={onResendToERP}
-        className="h-auto w-full py-3 text-base text-gray-700 md:w-auto md:py-2 md:text-sm"
       >
-        <ArrowRight className="w-4 h-4 mr-1" />
+        <ArrowRight className="w-4 h-4 mr-2" />
         Resend to ERP
       </Button>
 
@@ -147,19 +146,19 @@ export function BudgetPageHeader({
       {isLocked ? (
         <Button
           variant="outline"
+          size="sm"
           onClick={() => setShowUnlockDialog(true)}
-          className="h-auto w-full py-3 text-base text-gray-700 md:w-auto md:py-2 md:text-sm"
         >
-          <Unlock className="w-4 h-4 mr-1" />
+          <Unlock className="w-4 h-4 mr-2" />
           Unlock Budget
         </Button>
       ) : (
         <Button
           variant="outline"
+          size="sm"
           onClick={() => setShowLockDialog(true)}
-          className="h-auto w-full py-3 text-base text-gray-700 md:w-auto md:py-2 md:text-sm"
         >
-          <Lock className="w-4 h-4 mr-1" />
+          <Lock className="w-4 h-4 mr-2" />
           Lock Budget
         </Button>
       )}
@@ -169,11 +168,11 @@ export function BudgetPageHeader({
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            className="h-auto w-full py-3 text-base text-gray-700 md:w-auto md:py-2 md:text-sm"
+            size="sm"
           >
-            <Download className="w-4 h-4 mr-1" />
+            <Download className="w-4 h-4 mr-2" />
             Export
-            <ChevronDown className="w-4 h-4 ml-1" />
+            <ChevronDown className="w-4 h-4 ml-2" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -225,17 +224,17 @@ export function BudgetPageHeader({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <Lock className="w-5 h-5 text-orange-500" />
+              <Lock className="w-5 h-5" />
               Lock Budget
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2">
               <p>
                 Are you sure you want to lock the budget for this project?
               </p>
-              <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mt-3">
+              <div className="bg-muted border rounded-md p-3 mt-3">
                 <div className="flex items-start gap-2">
-                  <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5" />
-                  <div className="text-sm text-amber-800">
+                  <AlertTriangle className="w-5 h-5 mt-0.5" />
+                  <div className="text-sm">
                     <p className="font-medium">What happens when you lock:</p>
                     <ul className="list-disc list-inside mt-1 space-y-1">
                       <li>Budget line items cannot be added, edited, or deleted</li>
@@ -250,7 +249,7 @@ export function BudgetPageHeader({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleLockConfirm} className="bg-orange-500 hover:bg-orange-600">
+            <AlertDialogAction onClick={handleLockConfirm}>
               Lock Budget
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -262,17 +261,17 @@ export function BudgetPageHeader({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <Unlock className="w-5 h-5 text-blue-500" />
+              <Unlock className="w-5 h-5" />
               Unlock Budget
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2">
               <p>
                 Are you sure you want to unlock the budget for this project?
               </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mt-3">
+              <div className="bg-muted border rounded-md p-3 mt-3">
                 <div className="flex items-start gap-2">
-                  <AlertTriangle className="w-5 h-5 text-blue-500 mt-0.5" />
-                  <div className="text-sm text-blue-800">
+                  <AlertTriangle className="w-5 h-5 mt-0.5" />
+                  <div className="text-sm">
                     <p className="font-medium">What happens when you unlock:</p>
                     <ul className="list-disc list-inside mt-1 space-y-1">
                       <li>Budget line items can be added, edited, or deleted</li>
@@ -287,7 +286,7 @@ export function BudgetPageHeader({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleUnlockConfirm} className="bg-blue-500 hover:bg-blue-600">
+            <AlertDialogAction onClick={handleUnlockConfirm}>
               Unlock Budget
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -110,7 +110,6 @@ export default function ProjectBudgetPage() {
       toast.error('Budget is locked. Unlock to add new line items.');
       return;
     }
-    console.error('Create clicked for project:', projectId);
     // Navigate to bulk budget setup page
     router.push(`/${projectId}/budget/setup`);
   };
@@ -120,12 +119,12 @@ export default function ProjectBudgetPage() {
       toast.error('Budget is locked. Unlock to create modifications.');
       return;
     }
-    console.error('Modification clicked for project:', projectId);
     setShowModificationModal(true);
   };
 
   const handleResendToERP = () => {
-    console.error('Resend to ERP clicked');
+    // TODO: Implement ERP integration
+    toast.info('ERP integration coming soon');
   };
 
   const handleLockBudget = async () => {
@@ -172,7 +171,8 @@ export default function ProjectBudgetPage() {
   };
 
   const handleExport = (format: string) => {
-    console.error('Export to', format);
+    // TODO: Implement export functionality
+    toast.info(`${format.toUpperCase()} export coming soon`);
   };
 
   const handleTabChange = (tabId: string) => {
@@ -180,15 +180,18 @@ export default function ProjectBudgetPage() {
   };
 
   const handleAddFilter = () => {
-    console.error('Add filter clicked');
+    // TODO: Implement advanced filtering
+    toast.info('Advanced filtering coming soon');
   };
 
   const handleAnalyzeVariance = () => {
-    console.error('Analyze variance clicked');
+    // TODO: Implement variance analysis
+    toast.info('Variance analysis coming soon');
   };
 
   const handleToggleFullscreen = () => {
-    console.error('Toggle fullscreen clicked');
+    // TODO: Implement fullscreen mode
+    toast.info('Fullscreen mode coming soon');
   };
 
   const handleLineItemSuccess = () => {
@@ -321,7 +324,7 @@ export default function ProjectBudgetPage() {
 
       <BudgetTabs activeTab={activeTab} onTabChange={handleTabChange} />
 
-      <div className="flex flex-1 flex-col gap-4 py-6">
+      <div className="flex flex-1 flex-col gap-4 px-4 sm:px-6 lg:px-12 py-6">
         {activeTab === 'settings' ? (
           <div className="flex-1 rounded-lg border bg-white shadow-sm">
             <VerticalMarkupSettings projectId={projectId} />
