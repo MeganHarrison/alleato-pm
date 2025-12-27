@@ -20,7 +20,9 @@ const TEST_PROJECT_ID = '67'; // Use an existing project ID
 // Helper function to login
 async function login(page: Page) {
   await page.goto(`${BASE_URL}/dev-login?email=test@example.com&password=testpassword123`);
-  await page.waitForURL('**/dashboard', { timeout: 15000 });
+  await page.waitForLoadState('networkidle');
+  // Dev-login redirects to '/' by default
+  await page.waitForURL('**/', { timeout: 15000 });
 }
 
 // Helper function to navigate to budget page
