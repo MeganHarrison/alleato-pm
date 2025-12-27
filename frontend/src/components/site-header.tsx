@@ -1,7 +1,7 @@
  "use client"
 
 import { useMemo, useState, useEffect } from "react"
-import { Bell, ChevronDown, ChevronRight, MessageSquare, Search, Star, Plus, Menu } from "lucide-react"
+import { Bell, ChevronDown, ChevronRight, MessageSquare, Search, Star, Plus, Menu, StarOff } from "lucide-react"
 import {
   IconLogout,
   IconUserCircle,
@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import { getBestAvatarUrl } from "@/lib/gravatar"
 import type { User } from "@supabase/supabase-js"
 import Image from "next/image"
+import { useFavorites } from "@/contexts/favorites-context"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -96,6 +97,7 @@ export function SiteHeader({
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites()
 
   // Fetch current user on mount and listen for auth changes
   useEffect(() => {
@@ -593,6 +595,94 @@ export function SiteHeader({
               <MessageSquare className="h-4 w-4" />
             </Link>
           </Button>
+
+          {/* Favorites Dropdown - hidden on mobile */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden md:flex h-8 w-8 text-[hsl(var(--procore-header-text))] hover:bg-brand transition-colors relative"
+                aria-label="Favorites"
+              >
+                <Star className="h-4 w-4" />
+                {favorites.length > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-orange-500 text-[10px] font-semibold text-white flex items-center justify-center">
+                    {favorites.length}
+                  </span>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel className="flex items-center justify-between">
+                <span>Favorites</span>
+                {pathname && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2 text-xs"
+                    onClick={() => {
+                      const pageName = activeToolName;
+                      const currentUrl = pathname;
+                      if (isFavorite(currentUrl)) {
+                        removeFavorite(currentUrl);
+                        toast.success(`Removed "${pageName}" from favorites`);
+                      } else {
+                        addFavorite(pageName, currentUrl);
+                        toast.success(`Added "${pageName}" to favorites`);
+                      }
+                    }}
+                  >
+                    {isFavorite(pathname) ? (
+                      <>
+                        <StarOff className="h-3 w-3 mr-1" />
+                        Remove
+                      </>
+                    ) : (
+                      <>
+                        <Star className="h-3 w-3 mr-1" />
+                        Add Page
+                      </>
+                    )}
+                  </Button>
+                )}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {favorites.length > 0 ? (
+                favorites.map((favorite) => (
+                  <DropdownMenuItem
+                    key={favorite.url}
+                    asChild
+                    className="cursor-pointer"
+                  >
+                    <Link href={favorite.url} className="flex items-center justify-between w-full">
+                      <span className="truncate">{favorite.name}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 ml-2 shrink-0"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          removeFavorite(favorite.url);
+                          toast.success(`Removed "${favorite.name}" from favorites`);
+                        }}
+                      >
+                        <StarOff className="h-3 w-3 text-muted-foreground" />
+                      </Button>
+                    </Link>
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <div className="px-3 py-6 text-center text-sm text-muted-foreground">
+                  <Star className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+                  <p>No favorites yet</p>
+                  <p className="text-xs mt-1">Click "Add Page" to favorite this page</p>
+                </div>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {/* Search - hidden on mobile */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
