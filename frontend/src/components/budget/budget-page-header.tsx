@@ -7,6 +7,7 @@ import {
   Unlock,
   Lock,
   Download,
+  Upload,
   MoreVertical,
   MessageSquare,
   ChevronDown,
@@ -43,6 +44,7 @@ interface BudgetPageHeaderProps {
   onResendToERP?: () => void;
   onLockBudget?: () => void;
   onUnlockBudget?: () => void;
+  onImport?: () => void;
   onExport?: (format: string) => void;
 }
 
@@ -56,6 +58,7 @@ export function BudgetPageHeader({
   onResendToERP,
   onLockBudget,
   onUnlockBudget,
+  onImport,
   onExport,
 }: BudgetPageHeaderProps) {
   const [showLockDialog, setShowLockDialog] = React.useState(false);
@@ -155,6 +158,16 @@ export function BudgetPageHeader({
           Lock Budget
         </Button>
       )}
+
+      {/* Import Button */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onImport}
+      >
+        <Upload className="w-4 h-4 mr-2" />
+        Import
+      </Button>
 
       {/* Export Dropdown */}
       <DropdownMenu>

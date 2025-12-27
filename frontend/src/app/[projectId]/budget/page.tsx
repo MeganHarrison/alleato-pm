@@ -170,6 +170,27 @@ export default function ProjectBudgetPage() {
     }
   };
 
+  const handleImport = () => {
+    // Create a file input element
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xlsx,.xls,.csv';
+
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      // TODO: Implement file parsing and import logic
+      toast.info(`Importing ${file.name}...`);
+
+      // For now, just show a success message
+      // In the future, this would parse the Excel/CSV file and create budget line items
+      toast.success(`File ${file.name} ready for import (implementation coming soon)`);
+    };
+
+    input.click();
+  };
+
   const handleExport = (format: string) => {
     // TODO: Implement export functionality
     toast.info(`${format.toUpperCase()} export coming soon`);
@@ -308,7 +329,7 @@ export default function ProjectBudgetPage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col bg-muted/30">
+    <>
       <BudgetPageHeader
         title="Budget"
         isLocked={isLocked}
@@ -319,12 +340,13 @@ export default function ProjectBudgetPage() {
         onResendToERP={handleResendToERP}
         onLockBudget={handleLockBudget}
         onUnlockBudget={handleUnlockBudget}
+        onImport={handleImport}
         onExport={handleExport}
       />
 
       <BudgetTabs activeTab={activeTab} onTabChange={handleTabChange} />
 
-      <div className="flex flex-1 flex-col gap-4 px-4 sm:px-6 lg:px-12 py-6">
+      <div className="flex flex-1 flex-col gap-4 px-4 sm:px-6 lg:px-12 py-6 bg-muted/30">
         {activeTab === 'settings' ? (
           <div className="flex-1 rounded-lg border bg-white shadow-sm">
             <VerticalMarkupSettings projectId={projectId} />
@@ -447,6 +469,6 @@ export default function ProjectBudgetPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 }
